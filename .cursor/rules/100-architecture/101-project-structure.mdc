@@ -1,0 +1,114 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project Structure Guidelines
+
+Follow these guidelines when creating new files to maintain consistent project organization.
+
+## Directory Structure
+
+```
+├── app/                    # Next.js app router pages and API routes
+│   ├── api/               # API routes
+│   ├── _actions/          # Server actions (private)
+│   ├── actions/           # Server actions (public)
+│   ├── [route]/          # Route directories
+│   │   ├── page.tsx      # Page component
+│   │   ├── layout.tsx    # Layout component
+│   │   └── components/   # Route-specific components
+├── components/            # Shared UI components
+│   ├── ui/               # Basic UI components
+│   └── [feature]/        # Feature-specific components
+├── lib/                   # Utility functions and services
+│   ├── services/         # Business logic and data services
+│   ├── validations/      # Form and data validation
+│   └── config/           # Configuration files
+├── types/                # TypeScript type definitions
+├── public/               # Static assets
+└── supabase/            # Database configuration and migrations
+    ├── migrations/      # Database migrations (timestamped SQL files)
+    │   └── YYYYMMDDHHMMSS_descriptive_name.sql
+    └── config.toml      # Supabase configuration
+```
+
+## File Location Guidelines
+
+1. **Components**
+   - Reusable UI components → `/components/ui/`
+   - Feature-specific shared components → `/components/[feature]/`
+   - Route-specific components → `/app/[route]/components/`
+
+2. **Business Logic**
+   - Database services → `/lib/services/`
+   - Utility functions → `/lib/utils.ts`
+   - Type definitions → `/types/`
+   - Form validation → `/lib/validations/`
+
+3. **Server Actions**
+   - Private actions → `/app/_actions/`
+   - Public actions → `/app/actions/`
+
+4. **API Routes**
+   - All API routes → `/app/api/`
+
+5. **Database**
+   - Migrations → `/supabase/migrations/`
+     - Use timestamp format: `YYYYMMDDHHMMSS_descriptive_name.sql`
+     - Example: `20240324000000_add_payment_fields_to_sponsors.sql`
+   - Supabase config → `/supabase/config.toml`
+
+## Naming Conventions
+
+1. **Files**
+   - React components and Utilities: kebab-case (e.g., `auth-utils.ts`)
+   - Pages: `page.tsx`
+   - Layouts: `layout.tsx`
+   - Server actions: kebab-case (e.g., `create-sponsor.ts`)
+   - Database migrations: timestamp_kebab-case.sql (e.g., `20240324000000_add-payment-fields.sql`)
+
+2. **Directories**
+   - Route directories: kebab-case
+   - Component directories: kebab-case
+   - Feature directories: kebab-case
+
+## File Sizes
+
+Prefer to keep files to 300 lines of code. Split larger components into separate imports.
+
+## Examples
+
+### Good: New Component Location
+```typescript
+// ✅ /components/ui/button.tsx
+export function Button() { ... }
+
+// ✅ /components/sponsors/sponsor-card.tsx
+export function SponsorCard() { ... }
+
+// ✅ /app/sponsors/[slug]/components/tier-selector.tsx
+export function TierSelector() { ... }
+```
+
+### Good: New Service Location
+```typescript
+// ✅ /lib/services/sponsor-service.ts
+export class SponsorService { ... }
+
+// ✅ /lib/validations/sponsor-schema.ts
+export const sponsorSchema = { ... }
+```
+
+### Good: New Server Action Location
+```typescript
+// ✅ /app/_actions/create-sponsor.ts
+export async function createSponsor() { ... }
+```
+
+### Good: New Migration Location
+```sql
+-- ✅ /supabase/migrations/20240324000000_add_payment_fields_to_sponsors.sql
+ALTER TABLE hackathon_sponsors
+ADD COLUMN stripe_session_id TEXT;
+```

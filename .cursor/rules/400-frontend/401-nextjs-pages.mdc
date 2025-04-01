@@ -1,0 +1,59 @@
+---
+description: Next.js: How to handle page props and async params/searchParams in Next.js 14
+globs: **/app/**/page.tsx, **/app/**/layout.tsx
+alwaysApply: false
+---
+
+# Next.js Page Props Rule
+
+## Description
+This rule defines how to handle page props in Next.js components, particularly for pages that receive params or searchParams.
+
+## Rule Details
+1. Page props should be typed with Promise for params and searchParams
+2. The main page component should be async
+3. Params should be awaited at the start of the component
+4. Client-side state management should be moved to a separate client component
+
+### Example:
+
+```typescript
+interface PageProps {
+  params: Promise<{
+    slug: string
+  }>,
+  searchParams?: Promise<{
+    query?: string
+  }>
+}
+
+export default async function Page({ params, searchParams }: PageProps) {
+  const { slug } = await params
+  const { query } = await searchParams || {}
+
+  // Server-side data fetching here
+  const data = await getData(slug)
+
+  return (
+    <ClientComponent data={data} />
+  )
+}
+
+'use client'
+function ClientComponent({ data }: { data: Data }) {
+  // Client-side state management here
+  const [state, setState] = useState()
+  
+  return (
+    // JSX
+  )
+}
+```
+
+## When to Use
+- When creating new Next.js pages that receive params or searchParams
+- When updating existing pages to handle async props correctly
+- When splitting components between server and client responsibilities
+
+## Why This Rule Exists
+Next.js 14 introduces a new pattern for handling page props where params and searchParams are promises that need to be awaited. This rule ensures consistent handling of these props across the application and proper separation of server and client components. 

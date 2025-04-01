@@ -1,0 +1,9 @@
+---
+description: Database: Use supabaseAdmin for server-side write operations
+globs: **/*.ts, **/*.tsx
+alwaysApply: false
+---
+
+# UI Component Location
+
+When creating new UI components, put them in the top level `/components` directory and not within `/app`. Search for an existing sub-directory within `/components` to put the new component file or create a new sub-directory if none of the existing ones seem logical.

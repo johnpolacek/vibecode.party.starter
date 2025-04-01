@@ -1,0 +1,6 @@
+---
+description: When using openai api.
+globs: 
+alwaysApply: false
+---
+The preferred model for openai is "gpt-4o-mini"

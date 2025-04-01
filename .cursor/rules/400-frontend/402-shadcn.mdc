@@ -1,0 +1,114 @@
+---
+description: 
+globs: *.tsx
+alwaysApply: false
+---
+ # shadcn Component Usage Guidelines
+
+## Description
+This rule documents our standard patterns for using shadcn/ui components and finding additional components built on top of shadcn.
+
+## Installation & Setup
+
+### Installing Components
+Always use the shadcn CLI to add new components. This ensures proper installation with all dependencies:
+
+```bash
+# Install a new component
+pnpm dlx shadcn@latest add <component-name>
+
+# Examples:
+pnpm dlx shadcn@latest add button
+pnpm dlx shadcn@latest add alert-dialog
+```
+
+## Core Components
+
+### Using shadcn/ui
+We use shadcn/ui as our primary component library. All basic UI components should come from shadcn/ui first.
+
+```typescript
+// Example of importing and using shadcn components
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+
+// Use them in your components
+<Card>
+  <Input placeholder="Enter text" />
+  <Button>Submit</Button>
+</Card>
+```
+
+## Extended Components
+
+### Finding Additional Components
+When we need more specialized components that aren't in the core shadcn/ui library:
+
+1. First check the [awesome-shadcn-ui repository](mdc:https:/github.com/birobirobiro/awesome-shadcn-ui) for existing solutions
+2. Look for components that:
+   - Are well-maintained
+   - Follow shadcn/ui patterns
+   - Have TypeScript support
+   - Are compatible with our tech stack
+
+### Popular Extended Components
+Some recommended extended components from the ecosystem:
+
+- For date/time: `date-time-picker-shadcn` or `date-range-picker-for-shadcn`
+- For forms: `auto-form` for zod-based form generation
+- For search: `async-select` with debounce search
+- For calendars: `big-calendar` or the basic calendar component
+
+## Best Practices
+
+1. **Installation & Updates**
+   - Always use `pnpm dlx shadcn@latest add` for installing components
+   - Check documentation for the latest installation commands
+   - Keep track of installed components in your project documentation
+
+2. **Consistency First**
+   - Always use shadcn/ui components when available
+   - Keep styling consistent with shadcn/ui patterns
+   - Use the same theming approach
+
+3. **Custom Components**
+   - When building custom components, follow shadcn/ui patterns
+   - Use the same styling variables and classes
+   - Maintain accessibility standards
+
+4. **Extended Components**
+   - Document any third-party components used
+   - Test thoroughly before integration
+   - Keep track of dependencies
+
+## Examples
+
+### Basic Usage
+```typescript
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+
+export function SearchForm() {
+  return (
+    <div className="flex gap-2">
+      <Input placeholder="Search..." />
+      <Button>Search</Button>
+    </div>
+  )
+}
+```
+
+### Extended Component Integration
+```typescript
+import { DatePicker } from "@/components/ui/date-picker"
+import { Button } from "@/components/ui/button"
+
+export function DateSelection() {
+  return (
+    <div className="space-y-2">
+      <DatePicker />
+      <Button>Confirm Date</Button>
+    </div>
+  )
+}

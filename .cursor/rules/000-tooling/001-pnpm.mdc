@@ -1,0 +1,8 @@
+---
+description: When installing packages use pnpm
+globs: 
+alwaysApply: false
+---
+When installing packages use pnpm
+
+Assume I already have a dev server running so do not do `pnpm dev` as a command
