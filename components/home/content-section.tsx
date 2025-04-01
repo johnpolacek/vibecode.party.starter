@@ -1,8 +1,10 @@
+/* eslint-disable max-lines */
+
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
-import { Rocket, Zap, Check, Terminal, Music, Flame } from "lucide-react"
+import { Rocket, Zap, Terminal, Music, Flame, FileCode } from "lucide-react"
 import { Heading } from "../typography/heading"
 import { FeatureCard } from "./feature-card"
 import { ContactFormPreview, AuthFlowPreview } from "./feature-previews"
@@ -61,7 +63,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Clerk auth that's so easy, you'll set it up before your coffee gets cold! ☕</p>
+              <p className="text-sm text-muted-foreground">Clerk auth that’s so easy, you’ll set it up before your coffee gets cold! ☕</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -83,7 +85,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Supabase that's super-powered! Store your data with style. 🗄️</p>
+              <p className="text-sm text-muted-foreground">Supabase that’s super-powered! Store your data with style. 🗄️</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -106,7 +108,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">AWS S3 storage that's ready to handle all your party pics! 📸</p>
+              <p className="text-sm text-muted-foreground">AWS S3 storage that’s ready to handle all your party pics! 📸</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -158,11 +160,11 @@ export function ContentSection() {
           <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_70%_30%,hsl(var(--secondary))_0,transparent_50%),radial-gradient(circle_at_30%_70%,hsl(var(--primary))_0,transparent_50%)]"></div>
         </div>
         <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
-          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Let's Go!</span>
+          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Let’s Go!</span>
           <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
             Join the <span className="text-primary">Party</span>
           </Heading>
-          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Follow these simple steps and you'll be vibing in no time! 🕺💃</p>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Follow these simple steps and you’ll be vibing in no time! 🕺💃</p>
         </div>
         <div className="mx-auto grid max-w-4xl items-center gap-10 py-12">
           <Tabs defaultValue="install" className="w-full">
@@ -272,22 +274,12 @@ export function ContentSection() {
           <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
             Full-Stack <span className="text-primary">Components</span>
           </h2>
-          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Plug-and-play components that just work! No assembly required! 🧩</p>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 text-balance">
+            Plug-and-play full stack components that integrate with best-in-class services! Just add your API keys and you're good to go! 🧩
+          </p>
         </div>
 
         <div className="mx-auto grid max-w-6xl gap-8 py-12">
-          <FeatureCard
-            title="Ready-to-Use Contact Form"
-            description="A complete contact form solution with SendGrid email integration and Google ReCAPTCHA protection against bots."
-            icon={<ContactIcon />}
-            badgeText="Contact Form + SendGrid"
-            features={["Sends emails via SendGrid API", "Protected with Google ReCAPTCHA v3", "Configurable recipient email via env vars", "Form validation with error handling"]}
-            envVars={["SENDGRID_API_KEY", "CONTACT_EMAIL", "RECAPTCHA_SECRET_KEY"]}
-            preview={<ContactFormPreview />}
-            link="/contact"
-            linkText="Go to Contact Form"
-          />
-
           <FeatureCard
             title="Complete Auth Flow"
             description="A fully implemented authentication system with Clerk, including sign-up, login, password reset, and profile management."
@@ -401,15 +393,27 @@ export function ContentSection() {
             link="/donate"
             linkText="Try Payment System"
           />
+
+          <FeatureCard
+            title="Ready-to-Use Contact Form"
+            description="A complete contact form solution with SendGrid email integration and Google ReCAPTCHA protection against bots."
+            icon={<ContactIcon />}
+            badgeText="Contact Form + SendGrid"
+            features={["Sends emails via SendGrid API", "Protected with Google ReCAPTCHA v3", "Configurable recipient email via env vars", "Form validation with error handling"]}
+            envVars={["SENDGRID_API_KEY", "CONTACT_EMAIL", "RECAPTCHA_SECRET_KEY"]}
+            preview={<ContactFormPreview />}
+            link="/contact"
+            linkText="Go to Contact Form"
+          />
         </div>
       </section>
       <section id="services" className="container py-8 md:py-12 lg:py-24">
         <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
           <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">The VIP Section</span>
           <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
-            Premium <span className="text-primary">Integrations</span>
+            Built for <span className="text-primary">Vibecoding</span>
           </Heading>
-          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">We've got the hottest services ready to make your app the life of the party! 🔥</p>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">We’ve got the hottest services ready to make your app the life of the party! 🔥</p>
         </div>
         <div className="mx-auto grid max-w-5xl gap-8 py-12 lg:grid-cols-2">
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
@@ -432,147 +436,40 @@ export function ContentSection() {
                 Shadcn/UI for Components
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4 text-pretty">
               <p className="text-muted-foreground">
-                The components in this starter are so stylish, they make other UIs jealous! Built with Shadcn/UI, TailwindCSS, and Lucide icons. Mix, match, and make magic! ✨
+                Built on a foundation of{" "}
+                <a href="https://ui.shadcn.com/" className="text-primary">
+                  Shadcn/UI
+                </a>{" "}
+                with{" "}
+                <a href="https://tailwindcss.com/" className="text-primary">
+                  TailwindCSS
+                </a>
+                , you will be able to prompt Cursor and other LLMs to produce great UI/UX designs with components that are accessible and easy to use.
+              </p>
+              <p className="text-muted-foreground">
+                Add more components auto-magically with{" "}
+                <a href="https://v0.dev" className="text-primary">
+                  v0
+                </a>{" "}
+                or other AI tools.
               </p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-5 w-5 text-primary"
-                >
-                  <path d="M16 16v-3a2 2 0 0 0-2-2H10a2 2 0 0 0-2 2v3"></path>
-                  <circle cx="12" cy="7" r="3"></circle>
-                  <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
-                </svg>
-                Clerk for Auth
+                <FileCode className="h-5 w-5 text-primary" />
+                Vibecode-Friendly NPM Scripts
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4 text-pretty">
               <p className="text-muted-foreground">
-                Authentication so smooth, users will think they're already logged in! Create a Clerk project, add some env vars, and boom—you've got auth that rocks! 🔐
+                Deploy your code quickly with scripts like <code className="rounded-md text-foreground text-semibold bg-muted px-1.5 py-0.5">pnpm go</code> or{" "}
+                <code className="rounded-md text-foreground text-semibold bg-muted px-1.5 py-0.5">pnpm ship</code> that automatically run tests, write commit messages and get your changes into
+                production so you can keep vibing.
               </p>
-              <ul className="mt-4 space-y-2">
-                <li className="flex items-center">
-                  <Check className="mr-2 h-4 w-4 text-green-500" />
-                  <span>User auth components ready to party</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="mr-2 h-4 w-4 text-green-500" />
-                  <span>VIP admin access configuration</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="mr-2 h-4 w-4 text-green-500" />
-                  <span>Social login that's actually social</span>
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-          <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-5 w-5 text-primary"
-                >
-                  <path d="M12 2C6.5 2 2 4 2 7v10c0 3 4.5 5 10 5s10-2 10-5V7c0-3-4.5-5-10-5z"></path>
-                  <path d="M2 7c0 3 4.5 5 10 5s10-2 10-5"></path>
-                  <path d="M2 12c0 3 4.5 5 10 5s10-2 10-5"></path>
-                </svg>
-                Supabase for Cloud Database
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">A database that's super in name AND function! Supabase gives you PostgreSQL powers with real-time updates that'll make your data dance! 💃</p>
-            </CardContent>
-          </Card>
-          <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-5 w-5 text-primary"
-                >
-                  <path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <path d="M2 15h10"></path>
-                  <path d="M9 18l3-3-3-3"></path>
-                </svg>
-                AWS S3 for File Storage
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Store files like a boss! AWS S3 with Cloudfront makes your images load faster than a DJ drops the beat! 🎧</p>
-            </CardContent>
-          </Card>
-          <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-5 w-5 text-primary"
-                >
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                  <polyline points="22,6 12,13 2,6"></polyline>
-                </svg>
-                SendGrid for Email
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Emails that actually arrive! SendGrid makes sure your messages don't get ghosted. Plus, our contact form has ReCAPTCHA to keep the party crashers out! 📧
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-5 w-5 text-primary"
-                >
-                  <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                  <line x1="2" y1="10" x2="22" y2="10"></line>
-                </svg>
-                Stripe for Payments
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Ka-ching! Stripe makes taking payments so easy, you'll wonder why you ever worried about it. Money moves in, stress stays out! 💰</p>
             </CardContent>
           </Card>
         </div>
@@ -617,7 +514,7 @@ export function ContentSection() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Keep the party going without crashes! Our Playwright testing setup lets you vibe with confidence. Even AI can't break your app when you've got tests! 🧪
+                Keep the party going without crashes! Our Playwright testing setup lets you vibe with confidence. Even AI can’t break your app when you’ve got tests! 🧪
               </p>
               <div className="mt-4 space-y-4">
                 <div className="rounded-md bg-muted p-4">

@@ -5,26 +5,28 @@ import { Database } from '@/types/supabase';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
 
-// Validate required environment variables
-if (!supabaseUrl) {
-  console.error('Missing Supabase URL environment variable');
-  console.error('Available environment variables:', Object.keys(process.env).filter(key => key.includes('SUPABASE')));
-}
+// Log missing variables in development only
+if (process.env.NODE_ENV === 'development') {
+  if (!supabaseUrl) {
+    console.warn('Missing Supabase URL environment variable');
+    console.warn('Available environment variables:', Object.keys(process.env).filter(key => key.includes('SUPABASE')));
+  }
 
-if (!supabaseServiceRoleKey) {
-  console.error('Missing Supabase service role key environment variable');
-  console.error('Available environment variables:', Object.keys(process.env).filter(key => key.includes('SUPABASE')));
+  if (!supabaseServiceRoleKey) {
+    console.warn('Missing Supabase service role key environment variable');
+    console.warn('Available environment variables:', Object.keys(process.env).filter(key => key.includes('SUPABASE')));
+  }
 }
 
 // Ensure URL has proper format
 const formattedSupabaseUrl = supabaseUrl?.startsWith('http') 
   ? supabaseUrl 
-  : `https://${supabaseUrl}`;
+  : supabaseUrl ? `https://${supabaseUrl}` : 'http://localhost:54321';
 
 // Create a service role client for server-side operations only
 const supabaseAdmin = createClient<Database>(
-  formattedSupabaseUrl || '',
-  supabaseServiceRoleKey || '',
+  formattedSupabaseUrl,
+  supabaseServiceRoleKey || 'dummy-key-for-build',
   {
     auth: {
       autoRefreshToken: false,
@@ -42,6 +44,11 @@ const supabaseAdmin = createClient<Database>(
   }
 );
 
+// Function to check if Supabase is properly configured
+export function isSupabaseConfigured(): boolean {
+  return Boolean(supabaseUrl && supabaseServiceRoleKey);
+}
+
 // Function to check Supabase connection
 export async function checkSupabaseConnection(): Promise<{ 
   success: boolean; 
@@ -52,6 +59,17 @@ export async function checkSupabaseConnection(): Promise<{
     count?: number;
   }
 }> {
+  // If not configured, return early
+  if (!isSupabaseConfigured()) {
+    return {
+      success: false,
+      message: 'Supabase is not configured',
+      details: {
+        error: 'Missing required environment variables'
+      }
+    };
+  }
+
   try {
     console.log('Checking Supabase connection...');
     console.log('Using URL:', formattedSupabaseUrl);
@@ -96,7 +114,7 @@ if (process.env.NODE_ENV !== 'production') {
   const testConnection = async () => {
     try {
       const { error } = await supabaseAdmin
-        .from('community_suggestions')
+        .from('hackathons')
         .select('count', { count: 'exact', head: true });
         
       if (error) {

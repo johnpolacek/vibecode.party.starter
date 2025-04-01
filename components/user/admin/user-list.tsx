@@ -6,7 +6,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, ChevronRight } from "lucide-react"
 import { banUser } from "@/app/_actions/ban-user"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
@@ -122,7 +121,7 @@ export function AdminUserList({ initialUsers }: AdminUserListProps) {
                   </TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.createdAt}</TableCell>
+                  <TableCell>{formatDate(user.createdAt)}</TableCell>
                   <TableCell>{user.isAdmin ? <Badge>Admin</Badge> : user.banned ? <Badge variant="destructive">Banned</Badge> : <Badge variant="secondary">User</Badge>}</TableCell>
                   <TableCell>
                     {!user.isAdmin && (

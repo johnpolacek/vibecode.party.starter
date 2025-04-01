@@ -1,5 +1,3 @@
-import Link from "next/link"
-
 export default function PrivacyPage() {
   return (
     <div className="container py-12">

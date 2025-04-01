@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server"
 import { uploadFileToS3 } from "@/lib/s3-utils"
+import { isAwsConfigured } from "@/lib/aws"
 import { v4 as uuidv4 } from "uuid"
 import { auth } from "@clerk/nextjs/server"
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if AWS is configured
+    if (!isAwsConfigured()) {
+      return NextResponse.json(
+        { error: "File upload system not configured" },
+        { status: 503 }
+      )
+    }
+
     const { userId } = await auth()
 
     if (!userId) {
@@ -44,6 +53,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url: fileUrl })
   } catch (error) {
     console.error("Error uploading file:", error)
+    if (error instanceof Error && error.message === "AWS S3 is not configured") {
+      return NextResponse.json(
+        { error: "File upload system not configured" },
+        { status: 503 }
+      )
+    }
     return NextResponse.json({ error: "Failed to upload file" }, { status: 500 })
   }
 } 

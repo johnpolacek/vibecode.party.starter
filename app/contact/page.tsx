@@ -3,7 +3,6 @@ import { ContactForm } from "@/components/contact/contact-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ConfigCard } from "@/components/admin/config-card"
 import { Heading } from "@/components/typography/heading"
-import { Icon } from "@/components/graphics/icon"
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -22,7 +21,7 @@ async function checkEnvironmentVariables() {
 
   // Check which variables are missing
   const missingEnvVars = Object.entries(requiredEnvVars)
-    .filter(([_, value]) => !value)
+    .filter(([, value]) => !value)
     .map(([key]) => key)
 
   // Log missing variables in development
