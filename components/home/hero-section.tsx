@@ -58,7 +58,7 @@ export function HeroSection() {
                   user === undefined ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
                 )}
               >
-                <Link href="https://github.com/johnpolacek/party-starter">
+                <Link href="https://github.com/johnpolacek/vibecode.party.starter">
                   Download Now
                   <Download className="ml-1 h-4 w-4 scale-125" />
                 </Link>
