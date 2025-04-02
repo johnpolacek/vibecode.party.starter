@@ -29,7 +29,7 @@ export const metadata: Metadata = {
         url: "/screenshot.png",
         width: 1200,
         height: 630,
-        alt: "vibecode.party screenshot",
+        alt: "vibecode.party.starter screenshot",
       },
     ],
   },
