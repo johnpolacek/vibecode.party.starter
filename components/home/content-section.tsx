@@ -227,6 +227,18 @@ export function ContentSection() {
                   </p>
                   <div className="rounded-md bg-muted p-4">
                     <div className="flex items-center space-x-2">
+                      <p className="font-mono text-sm">🌐 App URLs</p>
+                    </div>
+                    <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
+                      <code className="text-sm font-mono">
+                        NEXT_PUBLIC_VERCEL_URL=
+                        <br />
+                        NEXT_PUBLIC_APP_URL=
+                      </code>
+                    </pre>
+                  </div>
+                  <div className="rounded-md bg-muted p-4">
+                    <div className="flex items-center space-x-2">
                       <p className="font-mono text-sm">✨ Clerk Authentication</p>
                     </div>
                     <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
@@ -235,7 +247,10 @@ export function ContentSection() {
                         <br />
                         CLERK_SECRET_KEY=
                         <br />
-                        ADMIN_USER_IDS=user_1234567890,user_0987654321
+                        <br />
+                        # Replace with your Clerk user ID after signing in
+                        <br />
+                        ADMIN_USER_IDS=
                       </code>
                     </pre>
                   </div>
@@ -248,12 +263,14 @@ export function ContentSection() {
                         NEXT_PUBLIC_SUPABASE_URL=
                         <br />
                         SUPABASE_SERVICE_ROLE_KEY=
+                        <br />
+                        SUPABASE_PROD_URL=
                       </code>
                     </pre>
                   </div>
                   <div className="rounded-md bg-muted p-4">
                     <div className="flex items-center space-x-2">
-                      <p className="font-mono text-sm">💾 AWS S3 Storage</p>
+                      <p className="font-mono text-sm">💾 AWS S3 & CloudFront</p>
                     </div>
                     <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
                       <code className="text-sm font-mono">
@@ -264,6 +281,54 @@ export function ContentSection() {
                         AWS_REGION=
                         <br />
                         AWS_BUCKET_PUBLIC=
+                        <br />
+                        CLOUDFRONT_DOMAIN=
+                      </code>
+                    </pre>
+                  </div>
+                  <div className="rounded-md bg-muted p-4">
+                    <div className="flex items-center space-x-2">
+                      <p className="font-mono text-sm">📨 Contact Form & Email</p>
+                    </div>
+                    <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
+                      <code className="text-sm font-mono">
+                        NEXT_PUBLIC_RECAPTCHA_SITE_KEY=
+                        <br />
+                        RECAPTCHA_SECRET_KEY=
+                        <br />
+                        SENDGRID_API_KEY=
+                        <br />
+                        SENDGRID_SENDER=
+                        <br />
+                        CONTACT_EMAIL=
+                        <br />
+                        UNSUBSCRIBE_SECRET=
+                      </code>
+                    </pre>
+                  </div>
+                  <div className="rounded-md bg-muted p-4">
+                    <div className="flex items-center space-x-2">
+                      <p className="font-mono text-sm">💳 Stripe Payments</p>
+                    </div>
+                    <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
+                      <code className="text-sm font-mono">
+                        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+                        <br />
+                        STRIPE_SECRET_KEY=
+                      </code>
+                    </pre>
+                  </div>
+                  <div className="rounded-md bg-muted p-4">
+                    <div className="flex items-center space-x-2">
+                      <p className="font-mono text-sm">🧪 Testing</p>
+                    </div>
+                    <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
+                      <code className="text-sm font-mono">
+                        TEST_USER_EMAIL=
+                        <br />
+                        TEST_USER_PASSWORD=
+                        <br />
+                        TEST_USER_ID=
                       </code>
                     </pre>
                   </div>
@@ -275,7 +340,7 @@ export function ContentSection() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Zap className="h-5 w-5 text-primary" />
-                    Vibecoding Examples
+                    Vibecoding Workflows
                   </CardTitle>
                   <CardDescription>Get inspired with these example prompts to enhance your project! 🎨</CardDescription>
                 </CardHeader>
@@ -328,10 +393,10 @@ export function ContentSection() {
                     </div>
                     <div id="cursor-prompts" className="mt-4 space-y-4">
                       <div className="rounded-lg border bg-background p-3">
-                        <p className="font-mono text-sm text-primary mb-2"># Add a new feature</p>
+                        <p className="font-mono text-sm text-primary mb-2"># Use shadcn/ui compatible components</p>
                         <div className="relative text-sm py-3 px-3 rounded-md border">
                           <CopyToClipboard position="top-right" className="!absolute !right-2 !top-1.5">
-                            {"Create a new feature component for user profiles with Clerk authentication and Supabase data storage"}
+                            {"Update the header text to use the new @animated-gradient-text component."}
                           </CopyToClipboard>
                         </div>
                       </div>
@@ -546,36 +611,36 @@ export function ContentSection() {
               <div className="bg-background/80 backdrop-blur-sm rounded-lg border border-indigo-500/20 shadow-xl w-full max-w-xl sm:w-md p-6">
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 mb-6">
-                    <div className="h-8 w-8 bg-teal-500/20 rounded-full flex items-center justify-center">
-                      <div className="h-4 w-4 bg-green-500 rounded-full"></div>
+                    <div className="h-8 w-8 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                      <div className="h-4 w-4 bg-emerald-500/30 rounded-full"></div>
                     </div>
-                    <div className="h-8 flex-1 bg-teal-500/20 rounded"></div>
+                    <div className="h-8 flex-1 bg-emerald-500/20 rounded"></div>
                   </div>
                   <div className="space-y-3">
                     {[1, 2, 3].map((i) => (
                       <div key={i} className="flex items-center gap-3">
-                        <div className="h-4 w-4 bg-green-500/20 rounded-full flex-shrink-0"></div>
-                        <div className="h-8 flex-1 bg-teal-500/10 rounded flex items-center px-4">
-                          <div className="h-3 w-3/4 bg-teal-500/20 rounded"></div>
+                        <div className="h-4 w-4 bg-emerald-500/20 rounded-full flex-shrink-0"></div>
+                        <div className="h-8 flex-1 bg-emerald-500/10 rounded flex items-center px-4">
+                          <div className="h-3 w-3/4 bg-emerald-500/20 rounded"></div>
                         </div>
-                        <div className="h-6 w-16 bg-green-500/20 rounded flex items-center justify-center">
-                          <div className="h-2 w-8 bg-green-500 rounded"></div>
+                        <div className="h-6 w-16 bg-emerald-500/20 rounded flex items-center justify-center">
+                          <div className="h-2 w-8 bg-emerald-500/50 rounded"></div>
                         </div>
                       </div>
                     ))}
                   </div>
-                  <div className="h-24 bg-teal-500/10 rounded p-3">
+                  <div className="h-24 bg-emerald-500/10 rounded p-3">
                     <div className="space-y-2">
-                      <div className="h-3 w-3/4 bg-teal-500/20 rounded"></div>
-                      <div className="h-3 w-1/2 bg-teal-500/20 rounded"></div>
-                      <div className="h-3 w-2/3 bg-teal-500/20 rounded"></div>
+                      <div className="h-3 w-3/4 bg-emerald-500/20 rounded"></div>
+                      <div className="h-3 w-1/2 bg-emerald-500/20 rounded"></div>
+                      <div className="h-3 w-2/3 bg-emerald-500/20 rounded"></div>
                     </div>
                   </div>
                 </div>
               </div>
             }
-            gradientFrom="from-green-500/5"
-            gradientTo="to-green-500/30"
+            gradientFrom="from-emerald-500/5"
+            gradientTo="to-emerald-500/30"
             gradientCirclePosition="60% 40%"
             link="/tests"
             linkText="View Test Results"
