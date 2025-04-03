@@ -9,12 +9,53 @@ import { Heading } from "../typography/heading"
 import { FeatureCard } from "./feature-card"
 import { ContactFormPreview, AuthFlowPreview } from "./feature-previews"
 import { ContactIcon, AuthIcon, FileUploadIcon } from "./feature-icons"
-import { Input } from "@/components/ui/input"
 import { CopyToClipboard } from "@/components/ui/copy-to-clipboard"
 
 export function ContentSection() {
   return (
     <>
+      <section className="container mt-12 lg:-mb-8">
+        <div className="mx-auto max-w-[58rem]">
+          <Card className="border-primary/30 border-dotted border-2 bg-background/60 backdrop-blur-sm">
+            <CardContent>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <svg viewBox="0 0 24 24" className="h-9 w-9" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                  </svg>
+                  <div className="flex flex-col">
+                    <a href="https://github.com/johnpolacek/vibecode.party.starter" className="text-lg font-semibold hover:text-primary">
+                      vibecode.party.starter
+                    </a>
+                    <p className="text-sm text-muted-foreground">A Next.js starter template for building full-stack apps with style! 🎨</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <a
+                    href="https://github.com/johnpolacek/vibecode.party.starter/stargazers"
+                    className="inline-flex items-center justify-center gap-1 rounded-md bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/20"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                    Star
+                  </a>
+                  <a
+                    href="https://github.com/johnpolacek/vibecode.party.starter/watchers"
+                    className="inline-flex items-center justify-center gap-1 rounded-md bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/20"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    Watch
+                  </a>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
       <section id="features" className="container space-y-6 py-8 md:py-12 lg:py-24">
         <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
           <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">The Good Stuff</span>
@@ -65,7 +106,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Clerk auth that's so easy, you'll set it up before your coffee gets cold! ☕</p>
+              <p className="text-sm text-muted-foreground">Clerk auth that’s so easy, you’ll set it up before your coffee gets cold! ☕</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -87,7 +128,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Supabase that's super-powered! Store your data with style. 🗄️</p>
+              <p className="text-sm text-muted-foreground">Supabase that’s super-powered! Store your data with style. 🗄️</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -110,7 +151,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">AWS S3 storage that's ready to handle all your party pics! 📸</p>
+              <p className="text-sm text-muted-foreground">AWS S3 storage that’s ready to handle all your party pics! 📸</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -162,11 +203,11 @@ export function ContentSection() {
           <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_70%_30%,hsl(var(--secondary))_0,transparent_50%),radial-gradient(circle_at_30%_70%,hsl(var(--primary))_0,transparent_50%)]"></div>
         </div>
         <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
-          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Let's Go!</span>
+          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Let’s Go!</span>
           <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
             Join the <span className="text-primary">Party</span>
           </Heading>
-          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Follow these simple steps and you'll be vibing in no time! 🕺💃</p>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Follow these simple steps and you’ll be vibing in no time! 🕺💃</p>
         </div>
         <div className="mx-auto grid max-w-4xl items-center gap-10 py-12">
           <Tabs defaultValue="install" className="w-full">
@@ -358,7 +399,7 @@ export function ContentSection() {
                       <a href="https://v0.dev" className="text-primary hover:underline">
                         v0.dev
                       </a>{" "}
-                      to generate components and import them into your project by selecting the "Add to Codebase" option.
+                      to generate components and import them into your project by selecting the “Add to Codebase” option.
                     </p>
                     <div className="flex items-center space-x-2 mt-6">
                       <FileCode2 className="h-4 w-4 text-primary" />
@@ -402,6 +443,34 @@ export function ContentSection() {
                       </div>
                     </div>
                   </div>
+                  <div className="rounded-md bg-muted p-4">
+                    <div className="flex items-center space-x-2">
+                      <Terminal className="h-4 w-4 text-primary" />
+                      <p className="font-mono text-sm">Vibe-code Friendly NPM Scripts</p>
+                    </div>
+                    <div id="npm-scripts" className="mt-4 space-y-4">
+                      <div className="rounded-lg border bg-background p-3">
+                        <p className="font-mono text-sm text-primary mb-2"># Go straight to production without even writing a commit message.</p>
+                        <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
+                          <code className="text-sm font-mono">pnpm go</code>
+                        </pre>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          Requires{" "}
+                          <a href="https://github.com/Nutlope/aicommits" className="text-primary hover:underline">
+                            aicommits
+                          </a>{" "}
+                          to be installed on your local dev environment.
+                        </p>
+                      </div>
+                      <div className="rounded-lg border bg-background p-3">
+                        <p className="font-mono text-sm text-primary mb-2"># Ship it to production with full CI checks.</p>
+                        <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
+                          <code className="text-sm font-mono">pnpm ship</code>
+                        </pre>
+                        <p className="mt-2 text-sm text-muted-foreground">Runs linting, runs tests, backs up the database then pushes db changes to production - all in one command! 🚀</p>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -415,7 +484,7 @@ export function ContentSection() {
             Full-Stack <span className="text-primary">Components</span>
           </h2>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 text-balance">
-            Plug-and-play full stack components that integrate with best-in-class services! Just add your API keys and you're good to go! 🧩
+            Plug-and-play full stack components that integrate with best-in-class services! Just add your API keys and you’re good to go! 🧩
           </p>
         </div>
 
@@ -653,7 +722,7 @@ export function ContentSection() {
           <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
             Built for <span className="text-primary">Vibecoding</span>
           </Heading>
-          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">We've got the hottest services ready to make your app the life of the party! 🔥</p>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">We’ve got the hottest services ready to make your app the life of the party! 🔥</p>
         </div>
         <div className="mx-auto grid max-w-5xl gap-8 py-12 lg:grid-cols-2">
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
@@ -754,7 +823,7 @@ export function ContentSection() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Keep the party going without crashes! Our Playwright testing setup lets you vibe with confidence. Even AI can't break your app when you've got tests! 🧪
+                Keep the party going without crashes! Our Playwright testing setup lets you vibe with confidence. Even AI can’t break your app when you’ve got tests! 🧪
               </p>
               <div className="mt-4 space-y-4">
                 <div className="rounded-md bg-muted p-4">
