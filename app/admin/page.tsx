@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { requireAdmin } from "@/lib/auth-utils"
 import { AdminConfigMessage } from "@/components/admin/admin-config-message"
 import { DevEnvNotice } from "@/components/admin/dev-env-notice"
+import { SupabaseStatusCard } from "@/components/admin/supabase-status-card"
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
@@ -28,7 +29,7 @@ export default async function AdminPage() {
       <div className="container py-8 md:py-12">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-3xl font-bold mb-4">Access Denied</h1>
-          <p className="text-muted-foreground text-balance mb-8">You don’t have permission to access this page. Please contact an administrator if you believe this is an error.</p>
+          <p className="text-muted-foreground text-balance mb-8">You don't have permission to access this page. Please contact an administrator if you believe this is an error.</p>
           {isDev && <DevEnvNotice />}
         </div>
       </div>
@@ -54,6 +55,7 @@ export default async function AdminPage() {
               </Link>
             </CardFooter>
           </Card>
+          <SupabaseStatusCard />
         </div>
       </div>
     </div>

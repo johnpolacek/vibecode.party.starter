@@ -6,6 +6,8 @@ alwaysApply: false
  # shadcn Component Usage Guidelines
 
 ## Description
+Prefer to use shadcn/ui components rather creating your own.
+
 This rule documents our standard patterns for using shadcn/ui components and finding additional components built on top of shadcn.
 
 ## Installation & Setup

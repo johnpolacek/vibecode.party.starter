@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "go": "git add . && aicommits && git push origin main",
-    "go:db": "supabase db lint && supabase db push --debug --include-all && pnpm go",
+    "go:db": "supabase db lint && supabase db push --include-all && pnpm go",
     "test": "playwright test",
     "pw": "playwright test --ui --debug",
     "db:start": "supabase start",
@@ -17,7 +17,7 @@
     "db:lint:local": "supabase db lint --db-url 'postgresql://postgres:postgres@127.0.0.1:55324/postgres' --level warning",
     "db:push:local": "supabase db push --db-url=postgresql://postgres:postgres@localhost:55324/postgres --include-all",
     "db:reset:local": "supabase db reset --db-url=postgresql://postgres:postgres@localhost:55324/postgres",
-    "db:push:prod": "supabase db push --debug --include-all",
+    "db:push:prod": "supabase db push --include-all",
     "db:diff": "supabase db diff --use-migra -f migration",
     "ship": "pnpm lint && pnpm build && (pnpm dev & sleep 10 && pnpm test && kill $!) && supabase db lint && supabase db push --debug --include-all && pnpm go"
   },

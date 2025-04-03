@@ -4,11 +4,13 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
-import { Rocket, Zap, Terminal, Music, Flame, FileCode } from "lucide-react"
+import { Rocket, Zap, Terminal, Music, Flame, FileCode, FileCode2 } from "lucide-react"
 import { Heading } from "../typography/heading"
 import { FeatureCard } from "./feature-card"
 import { ContactFormPreview, AuthFlowPreview } from "./feature-previews"
 import { ContactIcon, AuthIcon, FileUploadIcon } from "./feature-icons"
+import { Input } from "@/components/ui/input"
+import { CopyToClipboard } from "@/components/ui/copy-to-clipboard"
 
 export function ContentSection() {
   return (
@@ -63,7 +65,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Clerk auth that’s so easy, you’ll set it up before your coffee gets cold! ☕</p>
+              <p className="text-sm text-muted-foreground">Clerk auth that's so easy, you'll set it up before your coffee gets cold! ☕</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -85,7 +87,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Supabase that’s super-powered! Store your data with style. 🗄️</p>
+              <p className="text-sm text-muted-foreground">Supabase that's super-powered! Store your data with style. 🗄️</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -108,7 +110,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">AWS S3 storage that’s ready to handle all your party pics! 📸</p>
+              <p className="text-sm text-muted-foreground">AWS S3 storage that's ready to handle all your party pics! 📸</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -160,20 +162,23 @@ export function ContentSection() {
           <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_70%_30%,hsl(var(--secondary))_0,transparent_50%),radial-gradient(circle_at_30%_70%,hsl(var(--primary))_0,transparent_50%)]"></div>
         </div>
         <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
-          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Let’s Go!</span>
+          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Let's Go!</span>
           <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
             Join the <span className="text-primary">Party</span>
           </Heading>
-          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Follow these simple steps and you’ll be vibing in no time! 🕺💃</p>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Follow these simple steps and you'll be vibing in no time! 🕺💃</p>
         </div>
         <div className="mx-auto grid max-w-4xl items-center gap-10 py-12">
           <Tabs defaultValue="install" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="install" className="text-base">
                 🚀 Installation
               </TabsTrigger>
               <TabsTrigger value="env" className="text-base">
-                ⚙️ Environment Setup
+                ⚙️ Environment
+              </TabsTrigger>
+              <TabsTrigger value="vibes" className="text-base">
+                ✨ Vibes
               </TabsTrigger>
             </TabsList>
             <TabsContent value="install" className="mt-6">
@@ -261,6 +266,76 @@ export function ContentSection() {
                         AWS_BUCKET_PUBLIC=
                       </code>
                     </pre>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="vibes" className="mt-6">
+              <Card className="border-primary/20 bg-background/60 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-primary" />
+                    Vibecoding Examples
+                  </CardTitle>
+                  <CardDescription>Get inspired with these example prompts to enhance your project! 🎨</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="rounded-md bg-muted p-4">
+                    <div className="flex items-center space-x-2">
+                      <FileCode className="h-4 w-4 text-primary" />
+                      <p className="font-mono text-sm">Import components from a v0 project</p>
+                    </div>
+                    <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
+                      <code className="text-sm font-mono font-medium">{`npx shadcn@latest add "https://v0.dev/chat/b/asdfghjkl1234567890"`}</code>
+                    </pre>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Visit{" "}
+                      <a href="https://v0.dev" className="text-primary hover:underline">
+                        v0.dev
+                      </a>{" "}
+                      to generate components and import them into your project by selecting the "Add to Codebase" option.
+                    </p>
+                    <div className="flex items-center space-x-2 mt-6">
+                      <FileCode2 className="h-4 w-4 text-primary" />
+                      <p className="font-mono text-sm">Import shadcn/ui compatible components from the community.</p>
+                    </div>
+                    <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
+                      <code className="text-sm font-mono font-medium">{`pnpm dlx shadcn@latest add "https://21st.dev/r/designali-in/gradient-text"`}</code>
+                    </pre>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Find libraries and components like{" "}
+                      <a href="https://21st.dev" className="text-primary hover:underline">
+                        21st.dev
+                      </a>
+                      ,{" "}
+                      <a href="https://magicui.design/" className="text-primary hover:underline">
+                        Magic UI
+                      </a>{" "}
+                      &{" "}
+                      <a href="https://bundui.io/docs/components/animated-gradient-text" className="text-primary hover:underline">
+                        bundui
+                      </a>{" "}
+                      on{" "}
+                      <a href="https://github.com/birobirobiro/awesome-shadcn-ui" className="text-primary hover:underline">
+                        awesome-shadcn-ui
+                      </a>
+                    </p>
+                  </div>
+                  <div className="rounded-md bg-muted p-4">
+                    <div className="flex items-center space-x-2">
+                      <Terminal className="h-4 w-4 text-primary" />
+                      <p className="font-mono text-sm">Example Cursor prompts</p>
+                    </div>
+                    <div id="cursor-prompts" className="mt-4 space-y-4">
+                      <div className="rounded-lg border bg-background p-3">
+                        <p className="font-mono text-sm text-primary mb-2"># Add a new feature</p>
+                        <div className="relative text-sm py-3 px-3 rounded-md border">
+                          <CopyToClipboard position="top-right" className="!absolute !right-2 !top-1.5">
+                            {"Create a new feature component for user profiles with Clerk authentication and Supabase data storage"}
+                          </CopyToClipboard>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -405,6 +480,106 @@ export function ContentSection() {
             link="/contact"
             linkText="Go to Contact Form"
           />
+
+          <FeatureCard
+            title="Cloud Database"
+            description="A complete database management interface with Supabase integration, including table views, data editing, and backup management."
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 mr-1">
+                <path d="M12 2C6.5 2 2 4 2 7v10c0 3 4.5 5 10 5s10-2 10-5V7c0-3-4.5-5-10-5z"></path>
+                <path d="M2 7c0 3 4.5 5 10 5s10-2 10-5"></path>
+                <path d="M2 12c0 3 4.5 5 10 5s10-2 10-5"></path>
+              </svg>
+            }
+            badgeText="Cloud DB"
+            features={["Easy Local development database setup", "Local and production migration workflows", "Backup and restore functionality", "Role-based access control"]}
+            envVars={["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"]}
+            preview={
+              <div className="bg-background/80 backdrop-blur-sm rounded-lg border border-violet-500/20 shadow-xl w-full max-w-md p-6">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center mb-6">
+                    <div className="h-8 w-32 bg-violet-500/20 rounded"></div>
+                    <div className="h-8 w-20 bg-muted rounded"></div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-4 gap-2">
+                      <div className="h-8 w-full bg-violet-500/20 rounded"></div>
+                      <div className="h-8 w-full bg-violet-500/20 rounded"></div>
+                      <div className="h-8 w-full bg-violet-500/20 rounded"></div>
+                      <div className="h-8 w-full bg-violet-500/20 rounded"></div>
+                    </div>
+                    <div className="space-y-2">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-12 w-full bg-muted rounded flex items-center px-4 gap-2">
+                          <div className="h-4 w-1/4 bg-violet-500/20 rounded"></div>
+                          <div className="h-4 w-1/4 bg-violet-500/20 rounded"></div>
+                          <div className="h-4 w-1/4 bg-violet-500/20 rounded"></div>
+                          <div className="h-4 w-1/4 bg-violet-500/20 rounded"></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+            gradientFrom="from-violet-500/5"
+            gradientTo="to-violet-500/30"
+            gradientCirclePosition="40% 60%"
+            link="/admin"
+            linkText="Admin Dashboard"
+          />
+
+          <FeatureCard
+            title="End-to-End Testing"
+            description="A complete end-to-end testing setup with Playwright, including visual regression and CI/CD integration."
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 mr-1">
+                <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
+                <line x1="16" y1="8" x2="2" y2="22"></line>
+                <line x1="17.5" y1="15" x2="9" y2="15"></line>
+              </svg>
+            }
+            badgeText="E2E Tests"
+            features={["Interactive test development with `pnpm pw`", "Visual regression testing built-in", "CI/CD ready test automation", "Cross-browser test coverage"]}
+            envVars={["TEST_USER_EMAIL", "TEST_USER_PASSWORD", "TEST_USER_ID"]}
+            preview={
+              <div className="bg-background/80 backdrop-blur-sm rounded-lg border border-indigo-500/20 shadow-xl w-full max-w-xl sm:w-md p-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-6">
+                    <div className="h-8 w-8 bg-teal-500/20 rounded-full flex items-center justify-center">
+                      <div className="h-4 w-4 bg-green-500 rounded-full"></div>
+                    </div>
+                    <div className="h-8 flex-1 bg-teal-500/20 rounded"></div>
+                  </div>
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <div className="h-4 w-4 bg-green-500/20 rounded-full flex-shrink-0"></div>
+                        <div className="h-8 flex-1 bg-teal-500/10 rounded flex items-center px-4">
+                          <div className="h-3 w-3/4 bg-teal-500/20 rounded"></div>
+                        </div>
+                        <div className="h-6 w-16 bg-green-500/20 rounded flex items-center justify-center">
+                          <div className="h-2 w-8 bg-green-500 rounded"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="h-24 bg-teal-500/10 rounded p-3">
+                    <div className="space-y-2">
+                      <div className="h-3 w-3/4 bg-teal-500/20 rounded"></div>
+                      <div className="h-3 w-1/2 bg-teal-500/20 rounded"></div>
+                      <div className="h-3 w-2/3 bg-teal-500/20 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+            gradientFrom="from-green-500/5"
+            gradientTo="to-green-500/30"
+            gradientCirclePosition="60% 40%"
+            link="/tests"
+            linkText="View Test Results"
+          />
         </div>
       </section>
       <section id="services" className="container py-8 md:py-12 lg:py-24">
@@ -413,7 +588,7 @@ export function ContentSection() {
           <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
             Built for <span className="text-primary">Vibecoding</span>
           </Heading>
-          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">We’ve got the hottest services ready to make your app the life of the party! 🔥</p>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">We've got the hottest services ready to make your app the life of the party! 🔥</p>
         </div>
         <div className="mx-auto grid max-w-5xl gap-8 py-12 lg:grid-cols-2">
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
@@ -514,7 +689,7 @@ export function ContentSection() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Keep the party going without crashes! Our Playwright testing setup lets you vibe with confidence. Even AI can’t break your app when you’ve got tests! 🧪
+                Keep the party going without crashes! Our Playwright testing setup lets you vibe with confidence. Even AI can't break your app when you've got tests! 🧪
               </p>
               <div className="mt-4 space-y-4">
                 <div className="rounded-md bg-muted p-4">
