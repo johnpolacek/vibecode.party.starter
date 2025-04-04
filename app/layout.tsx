@@ -13,6 +13,7 @@ import { ClerkProvider } from "@clerk/nextjs"
 import { auth } from "@clerk/nextjs/server"
 import { headers } from "next/headers"
 import { trackVisit } from "@/app/_actions/track-visit"
+import { RouteTracker } from "@/components/analytics/route-tracker"
 import "./globals.css"
 
 const rethinkSans = Rethink_Sans({
@@ -54,7 +55,14 @@ export default async function RootLayout({
 
   // Track the visit
   const headersList = await headers()
-  const path = headersList.get("x-invoke-path") || "/"
+
+  // Log all headers to debug
+  console.log("🔍 Available headers:", Array.from(headersList.entries()))
+
+  // Get path from x-matched-path, fallback to x-url, then x-invoke-path, then /
+  const path = headersList.get("x-matched-path") || (headersList.get("x-url") ? new URL(headersList.get("x-url")!).pathname : null) || headersList.get("x-invoke-path") || "/"
+  console.log("📍 Path from headers:", path)
+
   await trackVisit(path)
 
   return (
@@ -62,6 +70,7 @@ export default async function RootLayout({
       <html lang="en" suppressHydrationWarning className={`${rethinkSans.variable}`}>
         <body className={cn("min-h-screen bg-background font-sans antialiased")}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <RouteTracker />
             <div className="relative flex min-h-screen flex-col">
               <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
                 <div className="px-4 sm:px-8 md:px-16 flex h-16 items-center justify-between">

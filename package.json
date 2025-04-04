@@ -13,7 +13,6 @@
     "pw": "playwright test --ui --debug",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
-    "db:admin": "open http://127.0.0.1:55326/project/default",
     "db:lint:local": "supabase db lint --db-url 'postgresql://postgres:postgres@127.0.0.1:55324/postgres' --level warning",
     "db:push:local": "supabase db push --db-url=postgresql://postgres:postgres@localhost:55324/postgres --include-all",
     "db:reset:local": "supabase db reset --db-url=postgresql://postgres:postgres@localhost:55324/postgres",
@@ -25,7 +24,8 @@
     "db:deploy": "echo '🚨 Remember to backup first!' && npm run db:diff && echo '⚠️ Review the diff above. Continue? (ctrl+c to cancel)' && read && npm run db:push && npm run db:unlink",
     "db:backup": "dotenv -- bash -c 'backup_file=\"backup_$(date +%Y%m%d_%H%M%S).sql\" && echo \"🔄 Creating backup...\" && supabase link --project-ref \"$SUPABASE_PROJECT_REF\" --password \"$SUPABASE_DB_PASSWORD\" && supabase db dump --linked -f \"backups/$backup_file\" && supabase unlink && echo \"✅ Backup saved to backups/$backup_file\"'",
     "db:restore": "dotenv -- bash -c 'echo \"⚠️ WARNING: This will overwrite the current database with a backup file\" && echo \"Enter the backup file name from the backups directory (e.g. backup_20240402_123456.sql):\" && read backup_file && echo \"Are you sure you want to restore from backups/$backup_file? This cannot be undone! (y/N)\" && read confirm && [[ $confirm == \"y\" ]] && supabase link --project-ref $SUPABASE_PROJECT_REF --password $SUPABASE_DB_PASSWORD && psql \"postgresql://postgres:$SUPABASE_DB_PASSWORD@db.$SUPABASE_PROJECT_REF.supabase.co:5432/postgres\" -f \"backups/$backup_file\" && supabase unlink && echo \"✅ Database restored from $backup_file\"'",
-    "generate:routes": "tsx scripts/generate-routes.ts"
+    "generate:routes": "tsx scripts/generate-routes.ts",
+    "db:admin": "supabase status | grep 'Studio URL' | awk '{print $3}' | xargs open"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.772.0",

@@ -5,24 +5,36 @@ import { headers } from "next/headers"
 import { supabaseAdmin } from "@/lib/supabase"
 import { validRoutes } from "@/lib/generated/routes"
 
-// Simple function to check common bot patterns
-function isBot(userAgent: string | null): boolean {
+// Check if the user agent is from a common legitimate browser
+function isValidBrowser(userAgent: string | null): boolean {
   if (!userAgent) return false
-  const botPatterns = [
-    'bot', 'crawler', 'spider', 'headless',
-    'selenium', 'puppeteer', 'chrome-lighthouse',
-    'googlebot', 'bingbot', 'yandex'
+  
+  const commonBrowsers = [
+    'Chrome',
+    'Firefox',
+    'Safari',
+    'Edge',
+    'Opera',
+    'Edg',  // Edge's newer user agent
+    'OPR',  // Opera's newer user agent
   ]
-  return botPatterns.some(pattern => 
-    userAgent.toLowerCase().includes(pattern)
+  
+  const lowerUA = userAgent.toLowerCase()
+  return commonBrowsers.some(browser => 
+    lowerUA.includes(browser.toLowerCase())
   )
 }
 
 // Check if a path exists in our app
 function isValidPath(path: string): boolean {
+  // Special case for root path
+  if (path === '/') {
+    return true
+  }
+
   // Normalize the path by removing leading slash
   const normalizedPath = path.startsWith('/') ? path.slice(1) : path
-
+  
   // Check exact match first
   if (validRoutes.has(normalizedPath)) {
     return true
@@ -54,9 +66,9 @@ export async function trackVisit(path: string) {
     const headersList = await headers()
     const userAgent = headersList.get('user-agent')
     const referrer = headersList.get('referer') // Note: 'referer' is the standard header name
-
-    // Skip recording visits from bots
-    if (isBot(userAgent)) {
+    
+    // Skip recording visits from non-browser user agents
+    if (!isValidBrowser(userAgent)) {
       return { success: true }
     }
 
@@ -82,13 +94,11 @@ export async function trackVisit(path: string) {
       })
 
     if (error) {
-      console.error('Error tracking visit:', error)
       return { success: false, error: error.message }
     }
 
     return { success: true }
   } catch (error) {
-    console.error('Error tracking visit:', error)
     return { success: false, error: (error as Error).message }
   }
 } 
