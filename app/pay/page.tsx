@@ -17,7 +17,7 @@ export default function DonatePage() {
   const handleDonate = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch("/api/donate/intent", {
+      const response = await fetch("/api/pay/intent", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -649,7 +649,7 @@ export function ContentSection() {
             gradientFrom="from-emerald-500/5"
             gradientTo="to-emerald-500/30"
             gradientCirclePosition="30% 70%"
-            link="/donate"
+            link="/pay"
             linkText="Try Payment System"
           />
 
