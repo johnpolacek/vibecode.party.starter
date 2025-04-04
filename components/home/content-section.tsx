@@ -271,11 +271,7 @@ export function ContentSection() {
                       <p className="font-mono text-sm">🌐 App URLs</p>
                     </div>
                     <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
-                      <code className="text-sm font-mono">
-                        NEXT_PUBLIC_VERCEL_URL=
-                        <br />
-                        NEXT_PUBLIC_APP_URL=
-                      </code>
+                      <code className="text-sm font-mono">NEXT_PUBLIC_APP_URL=</code>
                     </pre>
                   </div>
                   <div className="rounded-md bg-muted p-4">
