@@ -9,6 +9,8 @@ const awsConfig = {
   cloudfrontDomain: process.env.CLOUDFRONT_DOMAIN,
 }
 
+export const AWS_BUCKET_PUBLIC = process.env.AWS_BUCKET_PUBLIC
+
 // Log missing variables in development only
 if (process.env.NODE_ENV === 'development') {
   const missingVars = Object.entries(awsConfig)
