@@ -4,7 +4,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
-import { Rocket, Zap, Terminal, Music, Flame, FileCode, FileCode2 } from "lucide-react"
+import { Rocket, Zap, Terminal, Music, Flame, FileCode, FileCode2, Sparkles } from "lucide-react"
 import { Heading } from "../typography/heading"
 import { FeatureCard } from "./feature-card"
 import { ContactFormPreview, AuthFlowPreview } from "./feature-previews"
@@ -56,7 +56,7 @@ export function ContentSection() {
           </Card>
         </div>
       </section>
-      <section id="features" className="container space-y-6 py-8 md:py-12 lg:py-24">
+      <section id="features" className="container space-y-6 pt-8 md:pt-12 lg:pt-24">
         <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
           <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">The Good Stuff</span>
           <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
@@ -66,8 +66,8 @@ export function ContentSection() {
         </div>
         <div className="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3">
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Shadcn/UI Components</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-sm font-medium">UI Components</CardTitle>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -84,11 +84,11 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Gorgeous UI components that make your app look like a million bucks! 💅</p>
+              <p className="text-sm text-muted-foreground">Gorgeous Shadcn/UI components that make your app look like a million bucks! 💅</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm font-medium">Authentication</CardTitle>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -106,11 +106,11 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Clerk auth that’s so easy, you’ll set it up before your coffee gets cold! ☕</p>
+              <p className="text-sm text-muted-foreground">Clerk auth that's so easy, you'll set it up before your coffee gets cold! ☕</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm font-medium">Database</CardTitle>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -128,11 +128,11 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Supabase that’s super-powered! Store your data with style. 🗄️</p>
+              <p className="text-sm text-muted-foreground">Supabase that's super-powered! Store your data with style. 🗄️</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm font-medium">File Storage</CardTitle>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -151,11 +151,11 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">AWS S3 storage that’s ready to handle all your party pics! 📸</p>
+              <p className="text-sm text-muted-foreground">AWS S3 storage that's ready to handle all your party pics! 📸</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm font-medium">Email Service</CardTitle>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -176,7 +176,7 @@ export function ContentSection() {
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm font-medium">Payments</CardTitle>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -196,18 +196,72 @@ export function ContentSection() {
               <p className="text-sm text-muted-foreground">Stripe integration so smooth, money just slides right in! 💸</p>
             </CardContent>
           </Card>
+          <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-sm font-medium">AI SDK Integration</CardTitle>
+              <Sparkles className="h-4 w-4 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Text, object, string, and image generation with OpenAI and Replicate! 🤖</p>
+            </CardContent>
+          </Card>
+          <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-sm font-medium">End-to-End Testing</CardTitle>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4 text-primary"
+              >
+                <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
+                <line x1="16" y1="8" x2="2" y2="22"></line>
+                <line x1="17.5" y1="15" x2="9" y2="15"></line>
+              </svg>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Playwright testing with visual regression and CI/CD integration! 🧪</p>
+            </CardContent>
+          </Card>
+          <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-sm font-medium">Analytics</CardTitle>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4 text-primary"
+              >
+                <path d="M3 3v18h18"></path>
+                <path d="M18 17V9"></path>
+                <path d="M13 17V5"></path>
+                <path d="M8 17v-3"></path>
+              </svg>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Built-in visit tracking and route analytics with Supabase! 📊</p>
+            </CardContent>
+          </Card>
         </div>
       </section>
-      <section id="get-started" className="container py-8 md:py-12 lg:py-24 relative">
+      <section id="get-started" className="container pt-8 md:pt-12 lg:pt-24 relative">
         <div className="absolute inset-0 -z-10 overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_70%_30%,hsl(var(--secondary))_0,transparent_50%),radial-gradient(circle_at_30%_70%,hsl(var(--primary))_0,transparent_50%)]"></div>
         </div>
         <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
-          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Let’s Go!</span>
+          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Let's Go!</span>
           <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
             Join the <span className="text-primary">Party</span>
           </Heading>
-          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Follow these simple steps and you’ll be vibing in no time! 🕺💃</p>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Follow these simple steps and you'll be vibing in no time! 🕺💃</p>
         </div>
         <div className="mx-auto grid max-w-4xl items-center gap-10 py-12">
           <Tabs defaultValue="install" className="w-full">
@@ -395,7 +449,7 @@ export function ContentSection() {
                       <a href="https://v0.dev" className="text-primary hover:underline">
                         v0.dev
                       </a>{" "}
-                      to generate components and import them into your project by selecting the “Add to Codebase” option.
+                      to generate components and import them into your project by selecting the "Add to Codebase" option.
                     </p>
                     <div className="flex items-center space-x-2 mt-6">
                       <FileCode2 className="h-4 w-4 text-primary" />
@@ -473,14 +527,14 @@ export function ContentSection() {
           </Tabs>
         </div>
       </section>
-      <section id="full-stack-components" className="container py-8 md:py-12 lg:py-24">
+      <section id="full-stack-components" className="container pt-4 md:pt-8 lg:pt-12">
         <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
           <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Ready-to-Use</span>
           <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
             Full-Stack <span className="text-primary">Components</span>
           </h2>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 text-balance">
-            Plug-and-play full stack components that integrate with best-in-class services! Just add your API keys and you’re good to go! 🧩
+            Plug-and-play full stack components that integrate with best-in-class services! Just add your API keys and you're good to go! 🧩
           </p>
         </div>
 
@@ -712,13 +766,13 @@ export function ContentSection() {
           />
         </div>
       </section>
-      <section id="services" className="container py-8 md:py-12 lg:py-24">
+      <section id="services" className="container py-8 md:py-12">
         <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
           <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">The VIP Section</span>
           <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
             Built for <span className="text-primary">Vibecoding</span>
           </Heading>
-          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">We’ve got the hottest services ready to make your app the life of the party! 🔥</p>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">We've got the hottest services ready to make your app the life of the party! 🔥</p>
         </div>
         <div className="mx-auto grid max-w-5xl gap-8 py-12 lg:grid-cols-2">
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
@@ -779,7 +833,7 @@ export function ContentSection() {
           </Card>
         </div>
       </section>
-      <section id="development" className="container py-8 md:py-12 lg:py-24 bg-primary/5 rounded-lg">
+      <section id="development" className="container py-8 md:py-12 bg-primary/5 rounded-lg">
         <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
           <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Party Tricks</span>
           <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
@@ -788,6 +842,17 @@ export function ContentSection() {
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Tools to keep your code quality high and your vibes even higher! 🚀</p>
         </div>
         <div className="mx-auto grid max-w-4xl gap-8 py-12 lg:grid-cols-2">
+          <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                AI SDK Integration
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Use AI to generate text, structured data and images.</p>
+            </CardContent>
+          </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -819,7 +884,7 @@ export function ContentSection() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Keep the party going without crashes! Our Playwright testing setup lets you vibe with confidence. Even AI can’t break your app when you’ve got tests! 🧪
+                Keep the party going without crashes! Our Playwright testing setup lets you vibe with confidence. Even AI can't break your app when you've got tests! 🧪
               </p>
               <div className="mt-4 space-y-4">
                 <div className="rounded-md bg-muted p-4">
