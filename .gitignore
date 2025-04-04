@@ -49,3 +49,10 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Supabase
+supabase/.temp/
+supabase/.temp/*
+
+# Database backups
+/backups/

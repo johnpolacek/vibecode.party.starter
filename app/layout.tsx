@@ -56,12 +56,8 @@ export default async function RootLayout({
   // Track the visit
   const headersList = await headers()
 
-  // Log all headers to debug
-  console.log("🔍 Available headers:", Array.from(headersList.entries()))
-
   // Get path from x-matched-path, fallback to x-url, then x-invoke-path, then /
   const path = headersList.get("x-matched-path") || (headersList.get("x-url") ? new URL(headersList.get("x-url")!).pathname : null) || headersList.get("x-invoke-path") || "/"
-  console.log("📍 Path from headers:", path)
 
   await trackVisit(path)
 
