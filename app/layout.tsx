@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils"
 import { Toaster } from "sonner"
 import { ClerkProvider } from "@clerk/nextjs"
 import { auth } from "@clerk/nextjs/server"
+import { headers } from "next/headers"
+import { trackVisit } from "@/app/_actions/track-visit"
 import "./globals.css"
 
 const rethinkSans = Rethink_Sans({
@@ -49,6 +51,11 @@ export default async function RootLayout({
   const { userId } = await auth()
   const adminUserIds = process.env.ADMIN_USER_IDS?.split(",") || []
   const isAdmin = userId ? adminUserIds.includes(userId) : false
+
+  // Track the visit
+  const headersList = await headers()
+  const path = headersList.get("x-invoke-path") || "/"
+  await trackVisit(path)
 
   return (
     <ClerkProvider>

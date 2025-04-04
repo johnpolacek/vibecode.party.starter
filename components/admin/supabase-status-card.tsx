@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Database, RefreshCw } from "lucide-react"
 
@@ -54,7 +54,6 @@ export function SupabaseStatusCard() {
           <Database className="h-5 w-5 text-primary" />
           Supabase Status
         </CardTitle>
-        <CardDescription>Check your Supabase connection and configuration</CardDescription>
       </CardHeader>
       <CardContent>
         {status ? (

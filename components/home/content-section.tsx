@@ -626,7 +626,7 @@ export function ContentSection() {
               </svg>
             }
             badgeText="Cloud DB"
-            features={["Easy Local development database setup", "Local and production migration workflows", "Backup and restore functionality", "Role-based access control"]}
+            features={["Easy Local development database setup", "Local and production migration workflows", "Backup and restore functionality", "Basic user analytics tracking"]}
             envVars={["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"]}
             preview={
               <div className="bg-background/80 backdrop-blur-sm rounded-lg border border-violet-500/20 shadow-xl w-full max-w-md p-6">

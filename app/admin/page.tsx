@@ -55,6 +55,20 @@ export default async function AdminPage() {
               </Link>
             </CardFooter>
           </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Analytics</CardTitle>
+              <CardDescription>View site analytics</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Track user visits and monitor site activity.</p>
+            </CardContent>
+            <CardFooter>
+              <Link href="/admin/analytics" className="w-full">
+                <Button className="w-full">View Analytics</Button>
+              </Link>
+            </CardFooter>
+          </Card>
           <SupabaseStatusCard />
         </div>
       </div>

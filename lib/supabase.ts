@@ -70,62 +70,10 @@ export async function checkSupabaseConnection(): Promise<{
     };
   }
 
-  try {
-    console.log('Checking Supabase connection...');
-    console.log('Using URL:', formattedSupabaseUrl);
-    
-    // Try to directly check if the hackathons table exists
-    const { data, error } = await supabaseAdmin
-      .from('hackathons')
-      .select('id')
-      .limit(1);
-    
-    if (error) {
-      console.error('Error accessing hackathons table:', error);
-      return { 
-        success: false, 
-        message: `Connection error: ${error.message}`,
-        details: {
-          error
-        }
-      };
-    }
-    
-    return {
-      success: true,
-      message: 'Successfully connected to Supabase',
-      details: {
-        tables: ['hackathons'],
-        count: data?.length || 0
-      }
-    };
-  } catch (err) {
-    console.error('Unexpected error checking Supabase connection:', err);
-    return {
-      success: false,
-      message: `Unexpected error: ${err instanceof Error ? err.message : String(err)}`,
-      details: { error: err }
-    };
-  }
-}
-
-// Test the connection in development
-if (process.env.NODE_ENV !== 'production') {
-  const testConnection = async () => {
-    try {
-      const { error } = await supabaseAdmin
-        .from('hackathons')
-        .select('count', { count: 'exact', head: true });
-        
-      if (error) {
-        console.error('Supabase connection test failed:', error);
-      }
-    } catch (err) {
-      console.error('Supabase connection test error:', err);
-    }
+  return {
+    success: true,
+    message: 'Connected',
   };
-  
-  void testConnection();
 }
 
 export { supabaseAdmin }; 

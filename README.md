@@ -44,9 +44,14 @@ If using a database, create a new project in [Supabase](https://supabase.com/das
 ```
 NEXT_PUBLIC_SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_PROD_URL
 ```
 
-We may switch to [Convex](https://convex.dev) as they offer more free projects.
+You can find the `NEXT_PUBLIC_SUPABASE_URL` and the `SUPABASE_SERVICE_ROLE_KEY` under Configuration > DATA API > Project API Keys.
+
+`SUPABASE_PROD_URL` is in the format of:
+postgresql://postgres:YOUR_DATABASE_PASSWORD@db.YOUR_PROJECT_ID.supabase.co:5432/postgres
+
 
 ### AWS S3 for File Storage
 

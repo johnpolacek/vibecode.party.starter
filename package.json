@@ -4,10 +4,10 @@
   "scripts": {
     "dev": "next dev -p ${PORT:-3000}",
     "dev:db": "open -a Docker && sleep 5 && pnpm db:start && next dev --turbopack",
-    "build": "next build",
+    "build": "pnpm generate:routes && next build",
     "start": "next start",
     "lint": "next lint",
-    "go": "git add . && aicommits && git push origin main",
+    "go": "pnpm generate:routes &&git add . && aicommits && git push origin main",
     "go:db": "pnpm db:push:prod && pnpm go",
     "test": "playwright test",
     "pw": "playwright test --ui --debug",
@@ -17,20 +17,21 @@
     "db:lint:local": "supabase db lint --db-url 'postgresql://postgres:postgres@127.0.0.1:55324/postgres' --level warning",
     "db:push:local": "supabase db push --db-url=postgresql://postgres:postgres@localhost:55324/postgres --include-all",
     "db:reset:local": "supabase db reset --db-url=postgresql://postgres:postgres@localhost:55324/postgres",
-    "db:push:prod": "dotenv -- bash -c 'mkdir -p backups && backup_file=\"backup_$(date +%Y%m%d_%H%M%S).sql\" && echo \"🔄 Creating backup...\" && supabase link --project-ref \"$SUPABASE_PROJECT_REF\" --password \"$SUPABASE_DB_PASSWORD\" && supabase db dump --linked -f \"backups/$backup_file\" && supabase unlink && echo \"✅ Backup saved to backups/$backup_file\" && echo \"⚠️ Pushing changes to production...\" && supabase link --project-ref \"$SUPABASE_PROJECT_REF\" --password \"$SUPABASE_DB_PASSWORD\" && supabase db push --include-all && supabase unlink",
+    "db:push:prod": "dotenv -- bash -c 'backup_file=\"backup_$(date +%Y%m%d_%H%M%S).sql\" && mkdir -p backups && echo \"🔄 Creating backup...\" && supabase link --project-ref wfqgkunhajbedutoneyv --password \"$SUPABASE_DB_PASSWORD\" && supabase db dump --linked -f \"backups/$backup_file\" && supabase unlink && echo \"✅ Backup saved to backups/$backup_file\" && echo \"⚠️ Pushing changes to production...\" && supabase link --project-ref wfqgkunhajbedutoneyv --password \"$SUPABASE_DB_PASSWORD\" && supabase db push --include-all && supabase unlink'",
     "db:diff": "supabase db diff --use-migra -f migration",
     "ship": "pnpm lint && pnpm build && (pnpm dev & sleep 10 && pnpm test && kill $!) && pnpm db:push:prod && pnpm go",
     "db:link": "supabase link",
     "db:unlink": "supabase unlink",
     "db:deploy": "echo '🚨 Remember to backup first!' && npm run db:diff && echo '⚠️ Review the diff above. Continue? (ctrl+c to cancel)' && read && npm run db:push && npm run db:unlink",
     "db:backup": "dotenv -- bash -c 'backup_file=\"backup_$(date +%Y%m%d_%H%M%S).sql\" && echo \"🔄 Creating backup...\" && supabase link --project-ref \"$SUPABASE_PROJECT_REF\" --password \"$SUPABASE_DB_PASSWORD\" && supabase db dump --linked -f \"backups/$backup_file\" && supabase unlink && echo \"✅ Backup saved to backups/$backup_file\"'",
-    "db:restore": "dotenv -- bash -c 'echo \"⚠️ WARNING: This will overwrite the current database with a backup file\" && echo \"Enter the backup file name from the backups directory (e.g. backup_20240402_123456.sql):\" && read backup_file && echo \"Are you sure you want to restore from backups/$backup_file? This cannot be undone! (y/N)\" && read confirm && [[ $confirm == \"y\" ]] && supabase link --project-ref $SUPABASE_PROJECT_REF --password $SUPABASE_DB_PASSWORD && psql \"postgresql://postgres:$SUPABASE_DB_PASSWORD@db.$SUPABASE_PROJECT_REF.supabase.co:5432/postgres\" -f \"backups/$backup_file\" && supabase unlink && echo \"✅ Database restored from $backup_file\"'"
+    "db:restore": "dotenv -- bash -c 'echo \"⚠️ WARNING: This will overwrite the current database with a backup file\" && echo \"Enter the backup file name from the backups directory (e.g. backup_20240402_123456.sql):\" && read backup_file && echo \"Are you sure you want to restore from backups/$backup_file? This cannot be undone! (y/N)\" && read confirm && [[ $confirm == \"y\" ]] && supabase link --project-ref $SUPABASE_PROJECT_REF --password $SUPABASE_DB_PASSWORD && psql \"postgresql://postgres:$SUPABASE_DB_PASSWORD@db.$SUPABASE_PROJECT_REF.supabase.co:5432/postgres\" -f \"backups/$backup_file\" && supabase unlink && echo \"✅ Database restored from $backup_file\"'",
+    "generate:routes": "tsx scripts/generate-routes.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.772.0",
     "@aws-sdk/s3-request-presigner": "^3.772.0",
     "@clerk/backend": "^1.25.5",
-    "@clerk/nextjs": "^6.12.8",
+    "@clerk/nextjs": "^6.12.12",
     "@heroicons/react": "^2.2.0",
     "@octokit/rest": "^21.1.1",
     "@radix-ui/react-alert-dialog": "^1.1.6",
@@ -69,6 +70,7 @@
     "react-google-recaptcha": "^3.1.0",
     "react-icons": "^5.5.0",
     "react-markdown": "^10.1.0",
+    "server": "link:@clerk/nextjs/server",
     "slugify": "^1.6.6",
     "sonner": "^2.0.1",
     "stripe": "^17.7.0",
@@ -93,6 +95,7 @@
     "supabase": "^2.19.7",
     "tailwindcss": "^4.0.15",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
     "typescript": "^5.8.2"
   }
 }
