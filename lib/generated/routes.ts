@@ -9,8 +9,8 @@ export const validRoutes = new Set([
   'admin/analytics',
   'admin/users',
   'contact',
+  'demo/upload',
   'pay',
   'privacy',
-  'terms',
-  'upload'
+  'terms'
 ])

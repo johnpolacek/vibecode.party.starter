@@ -106,7 +106,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Clerk auth that's so easy, you'll set it up before your coffee gets cold! ☕</p>
+              <p className="text-sm text-muted-foreground">Clerk auth that’s so easy, you’ll set it up before your coffee gets cold! ☕</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -128,7 +128,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Supabase that's super-powered! Store your data with style. 🗄️</p>
+              <p className="text-sm text-muted-foreground">Supabase that’s super-powered! Store your data with style. 🗄️</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -151,7 +151,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">AWS S3 storage that's ready to handle all your party pics! 📸</p>
+              <p className="text-sm text-muted-foreground">AWS S3 storage that’s ready to handle all your party pics! 📸</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -257,11 +257,11 @@ export function ContentSection() {
           <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_70%_30%,hsl(var(--secondary))_0,transparent_50%),radial-gradient(circle_at_30%_70%,hsl(var(--primary))_0,transparent_50%)]"></div>
         </div>
         <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
-          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Let's Go!</span>
+          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Let’s Go!</span>
           <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
             Join the <span className="text-primary">Party</span>
           </Heading>
-          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Follow these simple steps and you'll be vibing in no time! 🕺💃</p>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Follow these simple steps and you’ll be vibing in no time! 🕺💃</p>
         </div>
         <div className="mx-auto grid max-w-4xl items-center gap-10 py-12">
           <Tabs defaultValue="install" className="w-full">
@@ -449,7 +449,7 @@ export function ContentSection() {
                       <a href="https://v0.dev" className="text-primary hover:underline">
                         v0.dev
                       </a>{" "}
-                      to generate components and import them into your project by selecting the "Add to Codebase" option.
+                      to generate components and import them into your project by selecting the “Add to Codebase” option.
                     </p>
                     <div className="flex items-center space-x-2 mt-6">
                       <FileCode2 className="h-4 w-4 text-primary" />
@@ -534,7 +534,7 @@ export function ContentSection() {
             Full-Stack <span className="text-primary">Components</span>
           </h2>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 text-balance">
-            Plug-and-play full stack components that integrate with best-in-class services! Just add your API keys and you're good to go! 🧩
+            Plug-and-play full stack components that integrate with best-in-class services! Just add your API keys and you’re good to go! 🧩
           </p>
         </div>
 
@@ -601,7 +601,7 @@ export function ContentSection() {
             gradientFrom="from-blue-500/5"
             gradientTo="to-blue-500/30"
             gradientCirclePosition="50% 50%"
-            link="/upload"
+            link="/demo/upload"
             linkText="Try File Upload"
           />
 
@@ -772,7 +772,7 @@ export function ContentSection() {
           <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
             Built for <span className="text-primary">Vibecoding</span>
           </Heading>
-          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">We've got the hottest services ready to make your app the life of the party! 🔥</p>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">We’ve got the hottest services ready to make your app the life of the party! 🔥</p>
         </div>
         <div className="mx-auto grid max-w-5xl gap-8 py-12 lg:grid-cols-2">
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
@@ -884,7 +884,7 @@ export function ContentSection() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Keep the party going without crashes! Our Playwright testing setup lets you vibe with confidence. Even AI can't break your app when you've got tests! 🧪
+                Keep the party going without crashes! Our Playwright testing setup lets you vibe with confidence. Even AI can’t break your app when you’ve got tests! 🧪
               </p>
               <div className="mt-4 space-y-4">
                 <div className="rounded-md bg-muted p-4">
