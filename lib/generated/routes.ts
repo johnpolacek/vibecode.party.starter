@@ -9,6 +9,7 @@ export const validRoutes = new Set([
   'admin/analytics',
   'admin/users',
   'contact',
+  'demo/ai',
   'demo/upload',
   'pay',
   'privacy',

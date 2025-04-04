@@ -55,6 +55,25 @@ export type AdminCheckResult = {
   requiresSetup: boolean
 }
 
+export type AuthCheckResult = {
+  isAuthenticated: boolean
+  userId: string | null
+}
+
+/**
+ * Checks if the user is authenticated
+ * @returns The authentication status and user ID
+ */
+export async function checkAuth(): Promise<AuthCheckResult> {
+  // Get the user's ID from Clerk
+  const { userId } = await auth()
+
+  return { 
+    isAuthenticated: !!userId, 
+    userId 
+  }
+}
+
 /**
  * Checks if the current user is an admin and redirects if not
  * @returns The user ID if the user is an admin
