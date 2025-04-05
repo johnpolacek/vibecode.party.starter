@@ -1,11 +1,16 @@
 import { openai } from "@ai-sdk/openai"
 import { streamObject } from "ai"
 import { z } from "zod"
+import { requireAuthMiddleware } from "../../_auth"
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30
 
 export async function POST(req: Request) {
+  // Check authentication
+  const authError = await requireAuthMiddleware()
+  if (authError) return authError
+
   try {
     const body = await req.json()
     const { prompt, count = 6 } = body

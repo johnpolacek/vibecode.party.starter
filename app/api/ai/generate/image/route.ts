@@ -3,8 +3,13 @@ import { experimental_generateImage as generateImage } from 'ai';
 import { NextRequest } from 'next/server';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { s3Client, AWS_BUCKET_PUBLIC } from '@/lib/aws';
+import { requireAuthMiddleware } from "../../_auth"
 
 export async function POST(request: NextRequest) {
+  // Check authentication
+  const authError = await requireAuthMiddleware()
+  if (authError) return authError
+
   try {
     const { input, userId, deckId } = await request.json();
     const userFolder = userId || 'guest';
