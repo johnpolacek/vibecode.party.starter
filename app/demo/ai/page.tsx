@@ -22,6 +22,7 @@ export default async function AIDemo() {
   }))
 
   const hasAllEnvVars = missingEnvVars.every((item) => !item.isMissing)
+  const isMissingReplicateToken = !process.env.REPLICATE_API_TOKEN
 
   return (
     <div className="container py-8 md:py-12">
@@ -59,7 +60,7 @@ export default async function AIDemo() {
             alternativeDescription="If you don't plan to use AI features, you can remove these files:"
           />
         ) : (
-          <AIDemoClient />
+          <AIDemoClient isMissingReplicateToken={isMissingReplicateToken} />
         )}
       </div>
     </div>
