@@ -1,6 +1,10 @@
 {
   "name": "vibecode-party-starter",
   "version": "0.1.0",
+  "license": "MIT",
+  "description": "A Next.js starter template for vibecoding SaaS apps",
+  "keywords": ["nextjs", "template", "starter", "vibecoding"],
+  "author": "John Polacek",
   "scripts": {
     "dev": "next dev -p ${PORT:-3000}",
     "dev:db": "open -a Docker && sleep 5 && pnpm db:start && next dev --turbopack",
