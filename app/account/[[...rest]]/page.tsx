@@ -1,64 +1,38 @@
-"use client"
-
-import { UserProfile, useUser } from "@clerk/nextjs"
+import { auth } from "@clerk/nextjs/server"
 import { Container } from "@/components/ui/container"
-import { useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { SignInButton } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { BookText } from "lucide-react"
+import { AccountProfile } from "./components/account-profile"
 
-function BioSection() {
-  const { user } = useUser()
-  const [bio, setBio] = useState((user?.unsafeMetadata?.bio as string) || "")
-  const [isSaving, setIsSaving] = useState(false)
+export default async function AccountPage() {
+  const { userId } = await auth()
 
-  const saveBio = async () => {
-    if (!user) return
-    setIsSaving(true)
-    try {
-      await user.update({
-        unsafeMetadata: {
-          ...user.unsafeMetadata,
-          bio,
-        },
-      })
-    } catch (error) {
-      console.error("Error saving bio:", error)
-    }
-    setIsSaving(false)
+  if (!userId) {
+    return (
+      <Container>
+        <div className="py-16">
+          <Card className="max-w-xl mx-auto">
+            <CardContent className="flex flex-col items-center gap-6 py-16">
+              <div className="text-center space-y-2">
+                <h2 className="text-2xl font-semibold">Sign in to Access Your Account</h2>
+                <p className="text-muted-foreground">Create an account or sign in to manage your profile</p>
+              </div>
+              <SignInButton mode="modal">
+                <Button size="lg">Sign in to Continue</Button>
+              </SignInButton>
+            </CardContent>
+          </Card>
+        </div>
+      </Container>
+    )
   }
 
   return (
-    <div className="rounded-lg border p-4">
-      <h2 className="text-lg font-semibold mb-4">Your Bio</h2>
-      <Textarea placeholder="Tell us about yourself..." value={bio} onChange={(e) => setBio(e.target.value)} className="mb-4" rows={4} />
-      <Button onClick={saveBio} disabled={isSaving}>
-        {isSaving ? "Saving..." : "Save Bio"}
-      </Button>
-    </div>
-  )
-}
-
-export default function AccountPage() {
-  return (
-    <>
-      <Container>
-        <div className="py-16">
-          <UserProfile
-            appearance={{
-              elements: {
-                rootBox: "mx-auto max-w-3xl",
-                card: "shadow-none",
-              },
-            }}
-            path="/account"
-          >
-            <UserProfile.Page label="Bio" url="bio" labelIcon={<BookText className="h-4 w-4" />}>
-              <BioSection />
-            </UserProfile.Page>
-          </UserProfile>
-        </div>
-      </Container>
-    </>
+    <Container>
+      <div className="py-16">
+        <AccountProfile />
+      </div>
+    </Container>
   )
 }
