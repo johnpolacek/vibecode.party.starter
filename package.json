@@ -11,7 +11,7 @@
     "build": "pnpm generate:routes && next build",
     "start": "next start",
     "lint": "next lint",
-    "go": "pnpm generate:routes &&git add . && aicommits && git push origin main",
+    "go": "pnpm generate:routes && git add . && aicommits && git push origin main",
     "go:db": "pnpm db:push:prod && pnpm go",
     "test": "playwright test",
     "pw": "playwright test --ui --debug",

@@ -47,7 +47,7 @@ export function HeroSection() {
             <span className="text-4xl tracking-wide">vibe code</span>
             <span className="block leading-12">party starter</span>
           </h1>
-          <h2 className="mb-8 text-lg md:text-xl font-medium text-balance">The Next.js starter project for vibe coding.</h2>
+          <h2 className="mb-8 text-lg md:text-xl font-medium text-balance">The Next.js starter project for vibe coding SaaS apps.</h2>
           <div className="flex flex-col justify-center gap-6 sm:flex-row">
             <>
               <Button
