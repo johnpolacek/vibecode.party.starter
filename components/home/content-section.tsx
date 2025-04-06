@@ -4,7 +4,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
-import { Rocket, Zap, Terminal, FileCode, FileCode2, Sparkles, CloudUpload, ShieldCheck } from "lucide-react"
+import { Rocket, Zap, Terminal, FileCode, FileCode2, Sparkles, CloudUpload, ShieldCheck, Download } from "lucide-react"
 import { Heading } from "../typography/heading"
 import { FeatureCard } from "./feature-card"
 import { ContactFormPreview, AuthFlowPreview } from "./feature-previews"
@@ -287,6 +287,15 @@ export function ContentSection() {
                   <CardDescription>Get the party started on your machine in seconds!</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <div className="rounded-md bg-muted p-4">
+                    <div className="flex items-center space-x-2">
+                      <Download className="h-4 w-4 text-primary" />
+                      First,{" "}
+                      <a href="https://github.com/johnpolacek/vibecode.party.starter" className="ml-1 text-primary hover:underline">
+                        download or clone the Party Starter from GitHub
+                      </a>
+                    </div>
+                  </div>
                   <div className="rounded-md bg-muted p-4">
                     <div className="flex items-center space-x-2">
                       <Terminal className="h-4 w-4 text-primary" />
