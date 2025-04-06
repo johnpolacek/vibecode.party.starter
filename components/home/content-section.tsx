@@ -4,13 +4,12 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
-import { Rocket, Zap, Terminal, Music, Flame, FileCode, FileCode2, Sparkles } from "lucide-react"
+import { Rocket, Zap, Terminal, FileCode, FileCode2, Sparkles, CloudUpload, ShieldCheck } from "lucide-react"
 import { Heading } from "../typography/heading"
 import { FeatureCard } from "./feature-card"
 import { ContactFormPreview, AuthFlowPreview } from "./feature-previews"
 import { ContactIcon, AuthIcon, FileUploadIcon } from "./feature-icons"
 import { CopyToClipboard } from "@/components/ui/copy-to-clipboard"
-
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export function ContentSection() {
@@ -904,7 +903,7 @@ export function ContentSection() {
                 <div>
                   <div className="flex items-center space-x-2 mb-2">
                     <FileCode className="h-4 w-4 text-primary" />
-                    <p className="font-mono text-sm">Text Generation with Streaming</p>
+                    <p className="text-sm">Text Generation with Streaming</p>
                   </div>
                   <Accordion type="single" collapsible>
                     <AccordionItem value="text" className="ring ring-foreground/10 rounded-lg">
@@ -933,7 +932,7 @@ const handleGenerate = async () => {
                 <div>
                   <div className="flex items-center space-x-2 mb-2">
                     <FileCode className="h-4 w-4 text-primary" />
-                    <p className="font-mono text-sm">Structured Data Generation</p>
+                    <p className="text-sm">Structured Data Generation</p>
                   </div>
                   <Accordion type="single" collapsible>
                     <AccordionItem value="object" className="ring ring-foreground/10 rounded-lg">
@@ -965,7 +964,7 @@ const handleGenerate = async () => {
                 <div>
                   <div className="flex items-center space-x-2 mb-2">
                     <FileCode className="h-4 w-4 text-primary" />
-                    <p className="font-mono text-sm">String Array Generation</p>
+                    <p className="text-sm">String Array Generation</p>
                   </div>
                   <Accordion type="single" collapsible>
                     <AccordionItem value="strings" className="ring ring-foreground/10 rounded-lg">
@@ -992,7 +991,7 @@ const handleGenerate = async () => {
                 <div>
                   <div className="flex items-center space-x-2 mb-2">
                     <FileCode className="h-4 w-4 text-primary" />
-                    <p className="font-mono text-sm">Image Generation</p>
+                    <p className="text-sm">Image Generation</p>
                   </div>
                   <Accordion type="single" collapsible>
                     <AccordionItem value="image" className="ring ring-foreground/10 rounded-lg">
@@ -1022,30 +1021,8 @@ const handleGenerate = async () => {
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Flame className="h-5 w-5 text-primary" />
-                Linting
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Code so clean it sparkles! ✨ Our eslint and prettier setup automatically formats your code with every save and paste. No more messy code at this party!
-              </p>
-              <div className="mt-4 rounded-md bg-muted p-4">
-                <div className="flex items-center space-x-2">
-                  <Terminal className="h-4 w-4 text-primary" />
-                  <p className="font-mono text-sm">Run the clean machine</p>
-                </div>
-                <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
-                  <code className="text-sm font-mono">pnpm lint</code>
-                </pre>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Music className="h-5 w-5 text-primary" />
-                Testing
+                <ShieldCheck className="h-5 w-5 text-primary" />
+                Test
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -1069,6 +1046,37 @@ const handleGenerate = async () => {
                   </div>
                   <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
                     <code className="text-sm font-mono">pnpm test</code>
+                  </pre>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CloudUpload className="h-5 w-5 text-primary" />
+                Ship
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Vibe-code friendly NPM scripts 🌊</p>
+              <div className="mt-4 space-y-4">
+                <div className="rounded-md bg-muted p-4">
+                  <div className="flex items-start space-x-2">
+                    <Terminal className="h-4 w-4 relative top-0.5 text-primary flex-shrink-0" />
+                    <p className="font-mono text-sm">Go straight to production without even writing a commit message.</p>
+                  </div>
+                  <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
+                    <code className="text-sm font-mono">pnpm go</code>
+                  </pre>
+                </div>
+                <div className="rounded-md bg-muted p-4">
+                  <div className="flex items-start space-x-2">
+                    <Terminal className="h-4 w-4 relative top-0.5 text-primary flex-shrink-0" />
+                    <p className="font-mono text-sm">Ship it to production with full CI checks.</p>
+                  </div>
+                  <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
+                    <code className="text-sm font-mono">pnpm ship</code>
                   </pre>
                 </div>
               </div>
