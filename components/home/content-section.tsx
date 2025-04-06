@@ -28,7 +28,7 @@ export function ContentSection() {
                     <a href="https://github.com/johnpolacek/vibecode.party.starter" className="text-lg font-semibold hover:text-primary">
                       vibecode.party.starter
                     </a>
-                    <p className="text-sm text-muted-foreground">A Next.js starter template for building full-stack apps with style! 🎨</p>
+                    <p className="text-sm text-muted-foreground">A Next.js starter template for building full-stack apps with auth, database, storage, and more! 🚀</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -818,8 +818,6 @@ export function ContentSection() {
             gradientFrom="from-emerald-500/5"
             gradientTo="to-emerald-500/30"
             gradientCirclePosition="60% 40%"
-            link="/tests"
-            linkText="View Test Results"
           />
         </div>
       </section>
