@@ -34,10 +34,10 @@ export function AuthFlowPreview() {
             <line x1="15" y1="12" x2="3" y2="12"></line>
           </svg>
         </div>
-        <div className="h-4 w-16 bg-secondary/20 rounded mb-2"></div>
-        <div className="h-8 w-full bg-muted rounded mb-2"></div>
-        <div className="h-8 w-full bg-muted rounded mb-4"></div>
-        <div className="h-8 w-full bg-secondary/70 rounded"></div>
+        <div className="h-4 w-16 bg-fuchsia-100 rounded mb-2"></div>
+        <div className="h-8 w-full bg-fuchsia-100 rounded mb-2"></div>
+        <div className="h-8 w-full bg-fuchsia-100 rounded mb-4"></div>
+        <div className="h-8 w-full bg-fuchsia-100 rounded"></div>
       </div>
       <div className="bg-background/80 backdrop-blur-sm rounded-lg border border-secondary/20 shadow-xl p-4 flex flex-col items-center justify-center aspect-[4/5]">
         <div className="w-12 h-12 rounded-full bg-secondary/20 mb-4 flex items-center justify-center">
@@ -48,10 +48,10 @@ export function AuthFlowPreview() {
             <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
           </svg>
         </div>
-        <div className="h-4 w-16 bg-secondary/20 rounded mb-2"></div>
-        <div className="h-16 w-16 rounded-full bg-muted mb-4"></div>
-        <div className="h-4 w-24 bg-muted rounded mb-2"></div>
-        <div className="h-4 w-20 bg-muted rounded"></div>
+        <div className="h-4 w-16 bg-fuchsia-100 rounded mb-2"></div>
+        <div className="h-16 w-16 rounded-full bg-fuchsia-100 mb-4"></div>
+        <div className="h-4 w-24 bg-fuchsia-100 rounded mb-2"></div>
+        <div className="h-4 w-20 bg-fuchsia-100 rounded"></div>
       </div>
     </div>
   )

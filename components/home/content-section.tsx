@@ -11,6 +11,8 @@ import { ContactFormPreview, AuthFlowPreview } from "./feature-previews"
 import { ContactIcon, AuthIcon, FileUploadIcon } from "./feature-icons"
 import { CopyToClipboard } from "@/components/ui/copy-to-clipboard"
 
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+
 export function ContentSection() {
   return (
     <>
@@ -21,7 +23,7 @@ export function ContentSection() {
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <svg viewBox="0 0 24 24" className="h-9 w-9" fill="currentColor">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.237 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                   </svg>
                   <div className="flex flex-col">
                     <a href="https://github.com/johnpolacek/vibecode.party.starter" className="text-lg font-semibold hover:text-primary">
@@ -106,7 +108,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Clerk auth that’s so easy, you’ll set it up before your coffee gets cold! ☕</p>
+              <p className="text-sm text-muted-foreground">Clerk auth that&apos;s so easy, you&apos;ll set it up before your coffee gets cold! ☕</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -128,7 +130,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Supabase that’s super-powered! Store your data with style. 🗄️</p>
+              <p className="text-sm text-muted-foreground">Supabase that&apos;s super-powered! Store your data with style. 🗄️</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -151,7 +153,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">AWS S3 storage that’s ready to handle all your party pics! 📸</p>
+              <p className="text-sm text-muted-foreground">AWS S3 storage that&apos;s ready to handle all your party pics! 📸</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -202,7 +204,7 @@ export function ContentSection() {
               <Sparkles className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Text, object, string, and image generation with OpenAI and Replicate! 🤖</p>
+              <p className="text-muted-foreground">Use AI to generate text, structured data and images.</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
@@ -257,11 +259,11 @@ export function ContentSection() {
           <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_70%_30%,hsl(var(--secondary))_0,transparent_50%),radial-gradient(circle_at_30%_70%,hsl(var(--primary))_0,transparent_50%)]"></div>
         </div>
         <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
-          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Let’s Go!</span>
+          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Let&apos;s Go!</span>
           <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
             Join the <span className="text-primary">Party</span>
           </Heading>
-          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Follow these simple steps and you’ll be vibing in no time! 🕺💃</p>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Follow these simple steps and you&apos;ll be vibing in no time! 🕺💃</p>
         </div>
         <div className="mx-auto grid max-w-4xl items-center gap-10 py-12">
           <Tabs defaultValue="install" className="w-full">
@@ -449,7 +451,7 @@ export function ContentSection() {
                       <a href="https://v0.dev" className="text-primary hover:underline">
                         v0.dev
                       </a>{" "}
-                      to generate components and import them into your project by selecting the “Add to Codebase” option.
+                      to generate components and import them into your project by selecting the &quot;Add to Codebase&quot; option.
                     </p>
                     <div className="flex items-center space-x-2 mt-6">
                       <FileCode2 className="h-4 w-4 text-primary" />
@@ -534,7 +536,7 @@ export function ContentSection() {
             Full-Stack <span className="text-primary">Components</span>
           </h2>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 text-balance">
-            Plug-and-play full stack components that integrate with best-in-class services! Just add your API keys and you’re good to go! 🧩
+            Plug-and-play full stack components that integrate with best-in-class services! Just add your API keys and you&apos;re good to go! 🧩
           </p>
         </div>
 
@@ -714,6 +716,53 @@ export function ContentSection() {
           />
 
           <FeatureCard
+            title="AI SDK Hooks"
+            description="A complete AI integration with OpenAI and Replicate, including text generation, structured data, and image generation."
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 mr-1">
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+                <circle cx="7.5" cy="8.5" r="1" />
+                <circle cx="16.5" cy="8.5" r="1" />
+                <path d="M12 18.5c-2.5 0-4-1.5-4-1.5" />
+                <path d="M16 18.5c-2.5 0-4-1.5-4-1.5" />
+              </svg>
+            }
+            badgeText="AI Integration"
+            features={["Text generation with useGenerateText() and useGenerateTextStrings()", "Structured data generation with useGenerateObject()", "Image generation with useGenerateImage()"]}
+            envVars={["OPENAI_API_KEY", "REPLICATE_API_TOKEN"]}
+            preview={
+              <div className="bg-background/80 backdrop-blur-sm rounded-lg border border-indigo-500/20 shadow-xl w-full max-w-md p-6">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center mb-6">
+                    <div className="h-8 w-32 bg-indigo-500/20 rounded"></div>
+                    <div className="h-8 w-20 bg-muted rounded"></div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-24 w-full bg-muted rounded p-3">
+                      <div className="h-4 w-3/4 bg-indigo-500/20 rounded mb-2"></div>
+                      <div className="h-4 w-1/2 bg-indigo-500/20 rounded"></div>
+                    </div>
+                    <div className="h-10 w-full bg-indigo-500/70 rounded"></div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="h-32 w-full bg-muted rounded"></div>
+                    <div className="space-y-2">
+                      <div className="h-6 w-full bg-indigo-500/20 rounded"></div>
+                      <div className="h-6 w-3/4 bg-indigo-500/20 rounded"></div>
+                      <div className="h-6 w-1/2 bg-indigo-500/20 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+            gradientFrom="from-indigo-500/5"
+            gradientTo="to-indigo-500/30"
+            gradientCirclePosition="60% 40%"
+            link="/demo/ai"
+            linkText="Try AI Demo"
+          />
+
+          <FeatureCard
             title="End-to-End Testing"
             description="A complete end-to-end testing setup with Playwright, including visual regression and CI/CD integration."
             icon={
@@ -772,7 +821,7 @@ export function ContentSection() {
           <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
             Built for <span className="text-primary">Vibecoding</span>
           </Heading>
-          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">We’ve got the hottest services ready to make your app the life of the party! 🔥</p>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">We&apos;ve got the hottest services ready to make your app the life of the party! 🔥</p>
         </div>
         <div className="mx-auto grid max-w-5xl gap-8 py-12 lg:grid-cols-2">
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
@@ -851,6 +900,123 @@ export function ContentSection() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">Use AI to generate text, structured data and images.</p>
+              <div className="mt-4 space-y-6">
+                <div>
+                  <div className="flex items-center space-x-2 mb-2">
+                    <FileCode className="h-4 w-4 text-primary" />
+                    <p className="font-mono text-sm">Text Generation with Streaming</p>
+                  </div>
+                  <Accordion type="single" collapsible>
+                    <AccordionItem value="text" className="ring ring-foreground/10 rounded-lg">
+                      <AccordionTrigger className="px-4 hover:no-underline hover:bg-muted [&[data-state=open]>svg]:rotate-180">
+                        <code className="text-sm font-mono">{"const { generate, isLoading } = useGenerateText()"}</code>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-4">
+                        <pre className="overflow-x-auto rounded-lg bg-background">
+                          <code className="text-sm font-mono">
+                            {`// Generate text with streaming
+const handleGenerate = async () => {
+  await generate({
+    prompt: "Write a story about...",
+    onStream: (text) => {
+      // Handle streaming text updates
+    }
+  })
+}`}
+                          </code>
+                        </pre>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
+
+                <div>
+                  <div className="flex items-center space-x-2 mb-2">
+                    <FileCode className="h-4 w-4 text-primary" />
+                    <p className="font-mono text-sm">Structured Data Generation</p>
+                  </div>
+                  <Accordion type="single" collapsible>
+                    <AccordionItem value="object" className="ring ring-foreground/10 rounded-lg">
+                      <AccordionTrigger className="px-4 hover:no-underline hover:bg-muted [&[data-state=open]>svg]:rotate-180">
+                        <code className="text-sm font-mono">{"const { generate, isLoading } = useGenerateObject()"}</code>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-4">
+                        <pre className="overflow-x-auto rounded-lg bg-background">
+                          <code className="text-sm font-mono">
+                            {`// Generate structured data
+const handleGenerate = async () => {
+  const result = await generate({
+    prompt: "Generate a profile for...",
+    schema: {
+      name: z.string(),
+      age: z.number(),
+      bio: z.string(),
+      interests: z.array(z.string())
+    }
+  })
+}`}
+                          </code>
+                        </pre>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
+
+                <div>
+                  <div className="flex items-center space-x-2 mb-2">
+                    <FileCode className="h-4 w-4 text-primary" />
+                    <p className="font-mono text-sm">String Array Generation</p>
+                  </div>
+                  <Accordion type="single" collapsible>
+                    <AccordionItem value="strings" className="ring ring-foreground/10 rounded-lg">
+                      <AccordionTrigger className="px-4 hover:no-underline hover:bg-muted [&[data-state=open]>svg]:rotate-180">
+                        <code className="text-sm font-mono">{"const { generate, isLoading } = useGenerateStrings()"}</code>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-4">
+                        <pre className="overflow-x-auto rounded-lg bg-background">
+                          <code className="text-sm font-mono">
+                            {`// Generate array of strings
+const handleGenerate = async () => {
+  const strings = await generate({
+    prompt: "Generate 5 creative names for...",
+    count: 5
+  })
+}`}
+                          </code>
+                        </pre>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
+
+                <div>
+                  <div className="flex items-center space-x-2 mb-2">
+                    <FileCode className="h-4 w-4 text-primary" />
+                    <p className="font-mono text-sm">Image Generation</p>
+                  </div>
+                  <Accordion type="single" collapsible>
+                    <AccordionItem value="image" className="ring ring-foreground/10 rounded-lg">
+                      <AccordionTrigger className="px-4 hover:no-underline hover:bg-muted [&[data-state=open]>svg]:rotate-180">
+                        <code className="text-sm font-mono">{"const { generate, isLoading } = useGenerateImage()"}</code>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-4">
+                        <pre className="overflow-x-auto rounded-lg bg-background">
+                          <code className="text-sm font-mono">
+                            {`// Generate an image
+const handleGenerate = async () => {
+  const imageUrl = await generate({
+    prompt: "A beautiful landscape with...",
+    width: 1024,
+    height: 1024
+  })
+}`}
+                          </code>
+                        </pre>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
+              </div>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
@@ -884,7 +1050,7 @@ export function ContentSection() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Keep the party going without crashes! Our Playwright testing setup lets you vibe with confidence. Even AI can’t break your app when you’ve got tests! 🧪
+                Keep the party going without crashes! Our Playwright testing setup lets you vibe with confidence. Even AI can&apos;t break your app when you&apos;ve got tests! 🧪
               </p>
               <div className="mt-4 space-y-4">
                 <div className="rounded-md bg-muted p-4">

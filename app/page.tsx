@@ -1,6 +1,7 @@
 import { Icon } from "@/components/graphics/icon"
 import { HeroSection } from "@/components/home/hero-section"
 import { ContentSection } from "@/components/home/content-section"
+
 export default async function HomePage() {
   return (
     <div className="flex min-h-screen flex-col bg-violet-100/10">
