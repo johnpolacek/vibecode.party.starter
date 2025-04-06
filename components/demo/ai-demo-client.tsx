@@ -90,7 +90,10 @@ export function AIDemoClient({ isMissingReplicateToken }: { isMissingReplicateTo
       <TabsContent value="text" className="space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle>Text Generation</CardTitle>
+            <CardTitle className="flex justify-between items-center">
+              <div>Text Generation</div>
+              <div className="font-mono text-sm font-normal text-primary">useGenerateText()</div>
+            </CardTitle>
             <CardDescription>Enter a prompt and the AI will generate text based on your input.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -118,7 +121,10 @@ export function AIDemoClient({ isMissingReplicateToken }: { isMissingReplicateTo
       <TabsContent value="strings" className="space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle>String Generation</CardTitle>
+            <CardTitle className="flex justify-between items-center">
+              <div>String Array Generation</div>
+              <div className="font-mono text-sm font-normal text-primary">useGenerateStrings()</div>
+            </CardTitle>
             <CardDescription>Generate multiple strings based on your prompt. Useful for brainstorming names, titles, or ideas.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -154,7 +160,10 @@ export function AIDemoClient({ isMissingReplicateToken }: { isMissingReplicateTo
       <TabsContent value="object" className="space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle>Structured Data Generation</CardTitle>
+            <CardTitle className="flex justify-between items-center">
+              <div>Structured Data Generation</div>
+              <div className="font-mono text-sm font-normal text-primary">useGenerateObject()</div>
+            </CardTitle>
             <CardDescription>Generate structured data about a person. The AI will create a profile with name, age, occupation, interests, and contact information.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -216,8 +225,11 @@ export function AIDemoClient({ isMissingReplicateToken }: { isMissingReplicateTo
       <TabsContent value="image" className="space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle>Image Generation</CardTitle>
-            <CardDescription>Generate an image based on your description. The image will be created with a 2:3 aspect ratio.</CardDescription>
+            <CardTitle className="flex justify-between items-center">
+              <div>Image Generation</div>
+              <div className="font-mono text-sm font-normal text-primary">useGenerateImage()</div>
+            </CardTitle>
+            <CardDescription>Generate an image based on your description.</CardDescription>
           </CardHeader>
           <CardContent>
             {isMissingReplicateToken ? (
@@ -225,12 +237,15 @@ export function AIDemoClient({ isMissingReplicateToken }: { isMissingReplicateTo
                 <p>Please configure your Replicate API token to enable image generation.</p>
               </div>
             ) : (
-              <form onSubmit={handleGenerateImage} className="space-y-4">
-                <Textarea name="prompt" placeholder="Describe the image you want to generate..." className="min-h-[100px]" />
-                <Button type="submit" className="w-full" disabled={isGeneratingImage}>
-                  {isGeneratingImage ? "Generating..." : "Generate Image"}
-                </Button>
-              </form>
+              <>
+                <div className="font-mono text-xs -mt-4 mb-1 w-full text-right text-muted-foreground">black-forest-labs/flux-schnell</div>
+                <form onSubmit={handleGenerateImage} className="space-y-4">
+                  <Textarea name="prompt" placeholder="Describe the image you want to generate..." className="min-h-[100px]" />
+                  <Button type="submit" className="w-full" disabled={isGeneratingImage}>
+                    {isGeneratingImage ? "Generating..." : "Generate Image"}
+                  </Button>
+                </form>
+              </>
             )}
           </CardContent>
         </Card>
