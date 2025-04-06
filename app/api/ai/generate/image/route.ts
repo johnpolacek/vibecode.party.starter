@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
   if (authError) return authError
 
   try {
-    const { input, userId, deckId } = await request.json();
+    const { input, userId, deckId, aspectRatio } = await request.json();
     const userFolder = userId || 'guest';
 
     // Check if placeholder images should be used
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     const { image } = await generateImage({
       model: replicate.image(process.env.REPLICATE_MODEL || "black-forest-labs/flux-schnell"),
       prompt: input,
-      aspectRatio: '2:3',
+      aspectRatio: aspectRatio || '1:1',
     });
 
     // Upload to S3
