@@ -11,6 +11,7 @@ export const validRoutes = new Set([
   'contact',
   'demo/ai',
   'demo/upload',
+  'get-started',
   'pay',
   'privacy',
   'terms'
