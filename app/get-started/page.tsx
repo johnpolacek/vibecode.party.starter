@@ -1,6 +1,7 @@
 import { Icon } from "@/components/graphics/icon"
 import { HeroSection } from "@/components/home/hero-section"
 import { Heading } from "@/components/typography/heading"
+import { Card } from "@/components/ui/card"
 
 export default async function HomePage() {
   return (
@@ -18,6 +19,7 @@ export default async function HomePage() {
           Getting Started
         </Heading>
         <p className="text-center">This is a guide to help you get started with the Vibe Code Party project.</p>
+        <Card className="p-16 py-8 mt-8 mx-auto text-center">Coming Soon!</Card>
       </section>
     </div>
   )
