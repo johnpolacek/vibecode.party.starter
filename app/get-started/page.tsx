@@ -1,9 +1,21 @@
 import { Icon } from "@/components/graphics/icon"
 import { HeroSection } from "@/components/home/hero-section"
 import { Heading } from "@/components/typography/heading"
-import { Card } from "@/components/ui/card"
+import { redirect } from "next/navigation"
+import { headers } from "next/headers"
+import GetStartedClerk from "./_components/getstarted-clerk"
 
-export default async function HomePage() {
+export default async function GetStartedPage() {
+  // Check if we're on localhost
+  const headersList = await headers()
+  const host = headersList.get("host") || ""
+  const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1")
+
+  // If not localhost, redirect to home
+  if (!isLocalhost) {
+    redirect("/")
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-violet-100/10">
       <HeroSection gettingStarted={true} />
@@ -18,8 +30,7 @@ export default async function HomePage() {
         <Heading variant="h2" className="text-center">
           Getting Started
         </Heading>
-        <p className="text-center">This is a guide to help you get started with the Vibe Code Party project.</p>
-        <Card className="p-16 py-8 mt-8 mx-auto text-center">Coming Soon!</Card>
+        <GetStartedClerk />
       </section>
     </div>
   )
