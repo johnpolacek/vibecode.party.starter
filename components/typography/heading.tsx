@@ -2,7 +2,7 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
-const headingVariants = cva("font-extrabold", {
+const headingVariants = cva("text-balance font-extrabold", {
   variants: {
     variant: {
       h1: "text-4xl sm:text-5xl md:text-7xl scale-x-110 tracking-wide",

@@ -1,6 +1,18 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
+export function isClerkConfigured(): boolean {
+  return Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY);
+}
+
+export function isAdminConfigured(): boolean {
+  return Boolean(process.env.ADMIN_USER_IDS);
+}
+
+export function isDev(): boolean {
+  return process.env.NODE_ENV === "development";
+}
+
 /**
  * Checks if a user is an admin
  * @param userId - Optional user ID to check. If not provided, checks the current user.

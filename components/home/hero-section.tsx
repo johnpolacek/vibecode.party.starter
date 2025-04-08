@@ -1,12 +1,13 @@
 "use client"
 
 import Link from "next/link"
-import { Download, PartyPopper } from "lucide-react"
+import { Github, PartyPopper } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useUser } from "@clerk/nextjs"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import AnimateIn from "@/components/ui/animate-in"
+import { CopyOneliner } from "../ui/copy-oneliner"
 
 type RandomStyle = {
   top: string
@@ -15,7 +16,7 @@ type RandomStyle = {
   opacity: number
 }
 
-export function HeroSection({ gettingStarted }: { gettingStarted?: boolean }) {
+export function HeroSection({ gettingStarted, title }: { gettingStarted?: boolean; title?: string }) {
   const [randomStyles, setRandomStyles] = useState<RandomStyle[]>([])
   const { user } = useUser()
 
@@ -33,7 +34,7 @@ export function HeroSection({ gettingStarted }: { gettingStarted?: boolean }) {
     <section
       className={cn(
         "relative overflow-hidden dark:bg-linear-to-br dark:from-indigo-700/30 dark:via-purple-600 dark:to-blue-500/70 bg-linear-to-br from-indigo-700 via-purple-600 to-blue-600 py-12 text-white md:py-16 border-b-8 border-purple-100 dark:border-background/80",
-        gettingStarted && "!pt-0 !pb-"
+        gettingStarted && "!pt-8 !pb-"
       )}
     >
       <AnimateIn from="opacity-0" to="opacity-100" duration={8000}>
@@ -48,14 +49,28 @@ export function HeroSection({ gettingStarted }: { gettingStarted?: boolean }) {
 
       <div className="container relative z-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-12 text-4xl font-extrabold scale-x-110 text-balance sm:text-6xl tracking-wide md:text-8xl" style={{ textShadow: "0 0 10px rgba(255, 255, 255, 0.5)" }}>
-            <span className="text-4xl tracking-wide">vibe code</span>
-            <span className="block leading-12">party starter</span>
+          <h1 className="mb-6 sm:mb-12 text-5xl font-extrabold scale-x-110 text-balance sm:text-6xl tracking-wide md:text-8xl" style={{ textShadow: "0 0 10px rgba(255, 255, 255, 0.5)" }}>
+            {title && title !== "Vibecode Party Starter" ? (
+              title
+            ) : (
+              <>
+                <span className="text-5xl tracking-wide">vibe code</span>
+                <span className="block leading-12">party starter</span>
+              </>
+            )}
           </h1>
           {!gettingStarted && (
             <>
               <h2 className="mb-8 text-lg md:text-xl font-medium text-balance">The Next.js starter project for vibe coding SaaS apps.</h2>
-              <div className="flex flex-col justify-center gap-6 sm:flex-row">
+              <div className="pt-4 pb-8 max-w-lg mx-auto">
+                <CopyOneliner
+                  iconClassName="w-4 sm:w-6 h-4 sm:h-6 opacity-70 mx-1"
+                  className="bg-black/30 ring-8 hover:ring-[12px] transition-all duration-300 ease-in-out ring-black/10 tracking-wide font-semibold sm:text-lg"
+                >
+                  npx vibecode-party-starter
+                </CopyOneliner>
+              </div>
+              <div className="flex flex-col justify-center gap-4 sm:gap-6 sm:flex-row pb-4 sm:pb-0">
                 <>
                   <Button
                     asChild
@@ -66,8 +81,8 @@ export function HeroSection({ gettingStarted }: { gettingStarted?: boolean }) {
                     )}
                   >
                     <Link href="https://github.com/johnpolacek/vibecode.party.starter">
-                      Download Now
-                      <Download className="ml-1 h-4 w-4 scale-125" />
+                      View on GitHub
+                      <Github className="ml-1 h-4 w-4 scale-150" />
                     </Link>
                   </Button>
                   <Button

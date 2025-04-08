@@ -2,7 +2,9 @@ import { Card } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CopyToClipboard } from "@/components/ui/copy-to-clipboard"
 import { Heading } from "@/components/typography/heading"
-
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { Sparkles } from "lucide-react"
 export default async function GetStartedAI() {
   // Check for required configuration
   const hasOpenAI = process.env.OPENAI_API_KEY
@@ -25,6 +27,8 @@ export default async function GetStartedAI() {
    - OPENAI_API_KEY
    - REPLICATE_API_TOKEN
    - REPLICATE_MODEL
+
+4. And remove GetStartedAI from the get-started page
 
 After these changes, please run \`pnpm install\` to update the dependency tree.`
 
@@ -117,10 +121,10 @@ After these changes, please run \`pnpm install\` to update the dependency tree.`
           </Card>
         </div>
       ) : (
-        <Card className="py-2 px-8 mt-8 mx-auto text-center max-w-2xl w-full">
+        <div className="mx-auto text-center max-w-2xl w-full">
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="features">
-              <AccordionTrigger className="text-green-600 font-semibold">✓ AI Integrations are properly configured!</AccordionTrigger>
+              <AccordionTrigger className="text-green-600 font-semibold">✓ AI Integrations are configured!</AccordionTrigger>
               <AccordionContent>
                 <div className="text-left">
                   <p className="mb-4">Your AI system is ready to use. You can now:</p>
@@ -145,10 +149,18 @@ After these changes, please run \`pnpm install\` to update the dependency tree.`
                     </div>
                   </div>
                 </div>
+                <div className="mt-4">
+                  <Button asChild className="w-[210px]">
+                    <Link href="/demo/ai">
+                      <Sparkles className="w-5 h-5 scale-110 text-amber-300" />
+                      Open AI Demo
+                    </Link>
+                  </Button>
+                </div>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-        </Card>
+        </div>
       )}
     </>
   )

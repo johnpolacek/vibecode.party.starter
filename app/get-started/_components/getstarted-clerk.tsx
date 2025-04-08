@@ -45,10 +45,10 @@ export default async function GetStartedClerk() {
           </Card>
         </div>
       ) : (
-        <Card className="py-2 px-8 mt-8 mx-auto text-center max-w-2xl w-full">
+        <div className="mx-auto text-center max-w-2xl w-full">
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="features">
-              <AccordionTrigger className="text-green-600 font-semibold">✓ Clerk is properly configured!</AccordionTrigger>
+              <AccordionTrigger className="text-green-600 font-semibold">✓ Clerk is configured!</AccordionTrigger>
               <AccordionContent>
                 <div className="text-left">
                   <p className="mb-4">Your authentication system is ready to use. You can now:</p>
@@ -62,7 +62,7 @@ export default async function GetStartedClerk() {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-        </Card>
+        </div>
       )}
     </>
   )

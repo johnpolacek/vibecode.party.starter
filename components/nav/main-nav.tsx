@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { LogoLockup } from "@/components/graphics/logo-lockup"
 import { cn } from "@/lib/utils"
 import { navItems } from "@/lib/config/navigation"
+import { siteConfig } from "@/lib/config"
 
 interface MainNavProps {
   isAdmin: boolean
@@ -16,7 +17,15 @@ export function MainNav({ isAdmin }: MainNavProps) {
   return (
     <nav className="hidden md:flex md:gap-6 items-center">
       <Link href="/" className="mr-4">
-        <LogoLockup />
+        {siteConfig.title === "Vibecode Party Starter" ? (
+          <LogoLockup />
+        ) : (
+          <div className="flex items-center gap-3">
+            <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-br dark:bg-linear-to-br from-blue-500 via-purple-700 to-indigo-500 dark:from-blue-300 dark:via-purple-500 dark:to-indigo-500">
+              {siteConfig.title}
+            </span>
+          </div>
+        )}
       </Link>
 
       {navItems.map((item) => (

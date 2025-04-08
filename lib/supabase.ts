@@ -4,6 +4,9 @@ import { Database } from '@/types/supabase';
 // Environment variables
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
+const supabaseProjectRef = process.env.SUPABASE_PROJECT_REF;
+const supabaseProdUrl = process.env.SUPABASE_PROD_URL;
+const supabaseDbPassword = process.env.SUPABASE_DB_PASSWORD;
 
 // Log missing variables in development only
 if (process.env.NODE_ENV === 'development') {
@@ -44,8 +47,11 @@ const supabaseAdmin = createClient<Database>(
   }
 );
 
-// Function to check if Supabase is properly configured
-export function isSupabaseConfigured(): boolean {
+// Function to check if Supabase is configured
+export function isSupabaseConfigured(fullCheck: boolean = false): boolean {
+  if (fullCheck) {
+    return Boolean(supabaseUrl && supabaseServiceRoleKey && supabaseProjectRef && supabaseProdUrl && supabaseDbPassword);
+  }
   return Boolean(supabaseUrl && supabaseServiceRoleKey);
 }
 

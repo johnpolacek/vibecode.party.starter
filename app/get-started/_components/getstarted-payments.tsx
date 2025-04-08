@@ -2,6 +2,9 @@ import { Card } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CopyToClipboard } from "@/components/ui/copy-to-clipboard"
 import { Heading } from "@/components/typography/heading"
+import { BadgeDollarSign } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export default async function GetStartedPayments() {
   // Check for required configuration
@@ -22,6 +25,8 @@ export default async function GetStartedPayments() {
 3. Removing these environment variables from .env:
    - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
    - STRIPE_SECRET_KEY
+
+4. And remove GetStartedPayments from the get-started page
 
 After these changes, please run \`pnpm install\` to update the dependency tree.`
 
@@ -110,10 +115,10 @@ After these changes, please run \`pnpm install\` to update the dependency tree.`
           </Card>
         </div>
       ) : (
-        <Card className="py-2 px-8 mt-8 mx-auto text-center max-w-2xl w-full">
+        <div className="mx-auto text-center max-w-2xl w-full">
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="features">
-              <AccordionTrigger className="text-green-600 font-semibold">✓ Stripe Payments are properly configured!</AccordionTrigger>
+              <AccordionTrigger className="text-green-600 font-semibold">✓ Stripe Payments are configured!</AccordionTrigger>
               <AccordionContent>
                 <div className="text-left">
                   <p className="mb-4">Your payment system is ready to use. You can now:</p>
@@ -132,10 +137,18 @@ After these changes, please run \`pnpm install\` to update the dependency tree.`
                     </p>
                   </div>
                 </div>
+                <div className="mt-4">
+                  <Button asChild className="w-[210px]">
+                    <Link href="/demo/upload">
+                      <BadgeDollarSign className="w-5 h-5 scale-110 text-amber-300" />
+                      Open Payment Form
+                    </Link>
+                  </Button>
+                </div>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-        </Card>
+        </div>
       )}
     </>
   )

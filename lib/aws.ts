@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === 'development') {
   }
 }
 
-// Function to check if AWS is properly configured
+// Function to check if AWS is configured
 export function isAwsConfigured(): boolean {
   return Boolean(
     awsConfig.region &&

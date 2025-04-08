@@ -12,7 +12,7 @@ import { useUser } from "@clerk/nextjs"
 import { useEffect } from "react"
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs"
 import { navItems } from "@/lib/config/navigation"
-
+import { siteConfig } from "@/lib/config"
 export function MobileNav() {
   const [open, setOpen] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -57,7 +57,15 @@ export function MobileNav() {
         <SheetTitle className="sr-only">Menu</SheetTitle>
         <div className="flex items-center justify-between border-b pb-4">
           <Link href="/" className="flex items-center space-x-2 pl-4 pt-4" onClick={() => setOpen(false)}>
-            <LogoLockup />
+            {siteConfig.title === "Vibecode Party Starter" ? (
+              <LogoLockup />
+            ) : (
+              <div className="flex items-center gap-3">
+                <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-br dark:bg-linear-to-br from-blue-500 via-purple-700 to-indigo-500 dark:from-blue-300 dark:via-purple-500 dark:to-indigo-500">
+                  {siteConfig.title}
+                </span>
+              </div>
+            )}
           </Link>
         </div>
         <nav className="mt-6 flex flex-col gap-4 pl-10">

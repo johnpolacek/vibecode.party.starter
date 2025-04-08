@@ -14,6 +14,7 @@ import { auth } from "@clerk/nextjs/server"
 import { headers } from "next/headers"
 import { trackVisit } from "@/app/_actions/track-visit"
 import { RouteTracker } from "@/components/analytics/route-tracker"
+import { siteConfig } from "@/lib/config"
 import "./globals.css"
 
 const rethinkSans = Rethink_Sans({
@@ -22,25 +23,25 @@ const rethinkSans = Rethink_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "Vibecode Party Starter",
-  description: "The Next.js Starter for vibecoding.",
+  title: siteConfig.title,
+  description: siteConfig.description,
   openGraph: {
-    title: "Vibecode Party Starter",
-    description: "The Next.js Starter for vibecoding.",
+    title: siteConfig.title,
+    description: siteConfig.description,
     images: [
       {
-        url: "/screenshot.png",
+        url: siteConfig.shareImage,
         width: 1200,
         height: 630,
-        alt: "vibecode.party.starter screenshot",
+        alt: siteConfig.title + " screenshot",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vibecode Party Starter",
-    description: "The Next.js Starter for vibecoding.",
-    images: ["/screenshot.png"],
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [siteConfig.shareImage],
   },
 }
 

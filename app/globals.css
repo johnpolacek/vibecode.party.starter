@@ -172,5 +172,6 @@
 
 html {
   font-family: var(--font-rethink-sans);
+  text-wrap: pretty;
 }
 

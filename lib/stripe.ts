@@ -8,7 +8,7 @@ if (process.env.NODE_ENV === 'development' && !stripeSecretKey) {
   console.warn('Missing Stripe secret key environment variable')
 }
 
-// Function to check if Stripe is properly configured
+// Function to check if Stripe is configured
 export function isStripeConfigured(): boolean {
   return Boolean(stripeSecretKey)
 }
