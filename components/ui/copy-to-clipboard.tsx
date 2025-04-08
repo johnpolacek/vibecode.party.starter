@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { Check, Copy } from "lucide-react"
 
 interface CopyToClipboardProps {
   children: string
@@ -9,6 +10,7 @@ interface CopyToClipboardProps {
   iconClassName?: string
   timeout?: number
   position?: "top-right" | "top-left" | "bottom-right" | "bottom-left"
+  hideContent?: boolean
 }
 
 const positionClasses = {
@@ -18,7 +20,7 @@ const positionClasses = {
   "bottom-left": "left-5 bottom-5",
 }
 
-export function CopyToClipboard({ children, className, iconClassName, timeout = 1000, position = "top-right" }: CopyToClipboardProps) {
+export function CopyToClipboard({ children, className, iconClassName, timeout = 1000, position = "top-right", hideContent = false }: CopyToClipboardProps) {
   const [copied, setCopiedState] = useState(false)
 
   const handleCopy = () => {
@@ -32,49 +34,13 @@ export function CopyToClipboard({ children, className, iconClassName, timeout = 
 
   return (
     <>
-      <button className={cn("absolute p-0.5 border dark:border-neutral-800 rounded-md z-[2] backdrop-blur-2xl cursor-pointer", positionClasses[position], className)} onClick={handleCopy}>
-        {copied ? <CheckMark className={iconClassName} /> : <ClipBoard className={iconClassName} />}
+      <button
+        className={cn("absolute p-1.5 border dark:border-neutral-800 rounded-md z-[2] backdrop-blur-2xl cursor-pointer", positionClasses[position], copied && "text-green-500", className)}
+        onClick={handleCopy}
+      >
+        {copied ? <Check className={cn("w-4.5 h-4.5 scale-110", iconClassName)} /> : <Copy className={cn("w-4.5 h-4.5", iconClassName)} />}
       </button>
-      {children}
+      {!hideContent && children}
     </>
   )
 }
-
-interface IconProps {
-  className?: string
-}
-
-const ClipBoard = ({ className }: IconProps) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    className={cn("scale-[0.70] dark:stroke-neutral-400 stroke-neutral-800", className)}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
-    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-  </svg>
-)
-
-const CheckMark = ({ className }: IconProps) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    className={cn("scale-[0.70] dark:stroke-neutral-400 stroke-neutral-800", className)}
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M20 6 9 17l-5-5" />
-  </svg>
-)

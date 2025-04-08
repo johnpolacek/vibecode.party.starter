@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Heading } from "@/components/typography/heading"
 
 export default async function GetStartedSupabase() {
   // Check for Supabase configuration
@@ -8,8 +9,10 @@ export default async function GetStartedSupabase() {
   return (
     <div className="max-w-4xl mx-auto px-4 w-full">
       {!hasSupabaseConfig ? (
-        <Card className="py-2 px-8 mt-8 w-full">
-          <h3 className="text-xl font-semibold">Setup Required: Supabase Database</h3>
+        <Card className="p-8 mt-8 w-full">
+          <Heading variant="h4" className="text-primary">
+            Setup Required: Supabase Database
+          </Heading>
           <p>To set up your database with Supabase:</p>
           <ol className="list-decimal pl-6 space-y-4">
             <li>
@@ -33,12 +36,6 @@ export default async function GetStartedSupabase() {
             </li>
             <li>Restart your development server after adding the environment variables</li>
           </ol>
-          <div className="mt-6 p-4 bg-amber-50 rounded-md">
-            <p className="text-amber-800 text-sm">
-              <strong>Note:</strong> Make sure to never commit your <code className="px-1 py-0.5 bg-amber-100 rounded">.env</code> file to version control. Add it to your{" "}
-              <code className="px-1 py-0.5 bg-amber-100 rounded">.gitignore</code> file if it's not already there.
-            </p>
-          </div>
         </Card>
       ) : (
         <Card className="py-2 px-8 mt-8 mx-auto text-center max-w-2xl w-full">

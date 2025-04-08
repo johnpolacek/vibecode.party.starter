@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card"
 import { redirect } from "next/navigation"
 import { headers } from "next/headers"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-
+import { Heading } from "@/components/typography/heading"
 export default async function GetStartedClerk() {
   // Check if we're on localhost
   const headersList = await headers()
@@ -22,7 +22,9 @@ export default async function GetStartedClerk() {
       {!hasClerkConfig ? (
         <div className="max-w-4xl mx-auto px-4 w-full">
           <Card className="p-8 mt-8 w-full">
-            <h3 className="text-xl font-semibold">Setup Required: Clerk Authentication</h3>
+            <Heading variant="h4" className="text-primary">
+              Setup Required: Clerk Authentication
+            </Heading>
             <p>To get started, you need to set up Clerk authentication:</p>
             <ol className="list-decimal pl-6 space-y-4">
               <li>
