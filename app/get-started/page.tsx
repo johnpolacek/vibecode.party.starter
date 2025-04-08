@@ -6,6 +6,7 @@ import { headers } from "next/headers"
 import GetStartedClerk from "./_components/getstarted-clerk"
 import GetStartedSupabase from "./_components/getstarted-supabase"
 import GetStartedStorage from "./_components/getstarted-storage"
+import GetStartedEmail from "./_components/getstarted-email"
 
 export default async function GetStartedPage() {
   // Check if we're on localhost
@@ -36,6 +37,7 @@ export default async function GetStartedPage() {
           <GetStartedClerk />
           <GetStartedSupabase />
           <GetStartedStorage />
+          <GetStartedEmail />
         </div>
       </section>
     </div>
