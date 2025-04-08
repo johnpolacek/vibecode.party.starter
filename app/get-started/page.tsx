@@ -4,6 +4,8 @@ import { Heading } from "@/components/typography/heading"
 import { redirect } from "next/navigation"
 import { headers } from "next/headers"
 import GetStartedClerk from "./_components/getstarted-clerk"
+import GetStartedSupabase from "./_components/getstarted-supabase"
+import GetStartedStorage from "./_components/getstarted-storage"
 
 export default async function GetStartedPage() {
   // Check if we're on localhost
@@ -30,7 +32,11 @@ export default async function GetStartedPage() {
         <Heading variant="h2" className="text-center">
           Getting Started
         </Heading>
-        <GetStartedClerk />
+        <div className="space-y-8">
+          <GetStartedClerk />
+          <GetStartedSupabase />
+          <GetStartedStorage />
+        </div>
       </section>
     </div>
   )

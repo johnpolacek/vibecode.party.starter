@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { headers } from "next/headers"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
-export default async function GetStartedPage() {
+export default async function GetStartedClerk() {
   // Check if we're on localhost
   const headersList = await headers()
   const host = headersList.get("host") || ""
@@ -43,7 +43,7 @@ export default async function GetStartedPage() {
           </Card>
         </div>
       ) : (
-        <Card className="p-8 mt-8 mx-auto text-center max-w-2xl w-full">
+        <Card className="py-2 px-8 mt-8 mx-auto text-center max-w-2xl w-full">
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="features">
               <AccordionTrigger className="text-green-600 font-semibold">✓ Clerk is properly configured!</AccordionTrigger>
