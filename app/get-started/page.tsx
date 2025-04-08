@@ -7,6 +7,7 @@ import GetStartedClerk from "./_components/getstarted-clerk"
 import GetStartedSupabase from "./_components/getstarted-supabase"
 import GetStartedStorage from "./_components/getstarted-storage"
 import GetStartedEmail from "./_components/getstarted-email"
+import GetStartedAI from "./_components/getstarted-ai"
 
 export default async function GetStartedPage() {
   // Check if we're on localhost
@@ -38,6 +39,7 @@ export default async function GetStartedPage() {
           <GetStartedSupabase />
           <GetStartedStorage />
           <GetStartedEmail />
+          <GetStartedAI />
         </div>
       </section>
     </div>

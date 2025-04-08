@@ -6,7 +6,7 @@ import { Heading } from "@/components/typography/heading"
 export default async function GetStartedEmail() {
   // Check for required configuration
   const hasRecaptcha = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && process.env.RECAPTCHA_SECRET_KEY
-  const hasEmail = process.env.SENDGRID_API_KEY && process.env.SENDGRID_SENDER && process.env.CONTACT_EMAIL
+  const hasEmail = process.env.SENDGRID_API_KEY && process.env.SENDGRID_SENDER && process.env.CONTACT_EMAIL && process.env.UNSUBSCRIBE_SECRET
 
   const cursorPrompt = `Please help me remove email and contact form functionality from my project by:
 
@@ -26,6 +26,7 @@ export default async function GetStartedEmail() {
    - SENDGRID_API_KEY
    - SENDGRID_SENDER
    - CONTACT_EMAIL
+   - UNSUBSCRIBE_SECRET
 
 After these changes, please run \`pnpm install\` to update the dependency tree.`
 
@@ -76,7 +77,8 @@ After these changes, please run \`pnpm install\` to update the dependency tree.`
                     {"\n"}# Email{"\n"}
                     SENDGRID_API_KEY=your_api_key{"\n"}
                     SENDGRID_SENDER=your_verified_sender_email{"\n"}
-                    CONTACT_EMAIL=your_contact_form_recipient
+                    CONTACT_EMAIL=your_contact_form_recipient{"\n"}
+                    UNSUBSCRIBE_SECRET=your_unsubscribe_secret_key
                   </code>
                 </pre>
               </li>
@@ -86,18 +88,19 @@ After these changes, please run \`pnpm install\` to update the dependency tree.`
             <div className="mt-6 space-y-4">
               <div className="p-4 bg-amber-50 rounded-md">
                 <p className="text-amber-800 text-sm">
-                  <strong>Security Note:</strong> Never commit your secret keys to version control. Always use environment variables for sensitive data.
+                  <strong>Security Note:</strong> Never commit your secret keys to version control. Always use environment variables for sensitive data. The UNSUBSCRIBE_SECRET should be a long, random
+                  string used to validate unsubscribe links.
                 </p>
               </div>
               <div className="p-4 bg-blue-50 rounded-md">
                 <p className="text-blue-800 text-sm">
-                  <strong>Testing Tip:</strong> Use SendGrid's sandbox mode for testing to avoid using your email quota during development.
+                  <strong>Testing Tip:</strong> Use SendGrid’s sandbox mode for testing to avoid using your email quota during development.
                 </p>
               </div>
             </div>
 
             <div className="space-y-2 pt-8">
-              <Heading variant="h5">Don't need email functionality?</Heading>
+              <Heading variant="h5">Don’t need email functionality?</Heading>
               <div className="border rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2 relative">
                   <h4 className="font-semibold text-primary">Cursor Prompt</h4>
@@ -127,6 +130,7 @@ After these changes, please run \`pnpm install\` to update the dependency tree.`
                     <li>Use the contact form with reCAPTCHA protection</li>
                     <li>Send emails through SendGrid</li>
                     <li>Receive contact form submissions</li>
+                    <li>Process unsubscribe requests securely</li>
                     <li>Customize email templates</li>
                   </ul>
                   <div className="mt-6 p-4 bg-blue-50 rounded-md">

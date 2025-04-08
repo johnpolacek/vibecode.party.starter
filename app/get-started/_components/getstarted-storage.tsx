@@ -78,7 +78,7 @@ After these changes, please run \`pnpm install\` to update the dependency tree.`
             </div>
 
             <div className="space-y-2 pt-8">
-              <Heading variant="h5">Don't need file storage?</Heading>
+              <Heading variant="h5">Don’t need file storage?</Heading>
               <div className="border rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2 relative">
                   <h4 className="font-semibold text-primary">Cursor Prompt</h4>
