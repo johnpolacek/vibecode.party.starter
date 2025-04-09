@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
-import { Rocket, Zap, Terminal, FileCode, FileCode2, Sparkles, CloudUpload, ShieldCheck, Download } from "lucide-react"
+import { Rocket, Zap, Terminal, FileCode, FileCode2, Sparkles, CloudUpload, ShieldCheck } from "lucide-react"
 import { Heading } from "../typography/heading"
 import { FeatureCard } from "./feature-card"
 import { ContactFormPreview, AuthFlowPreview } from "./feature-previews"
@@ -13,6 +13,7 @@ import { isDev } from "@/lib/auth-utils"
 import Link from "next/link"
 import { Button } from "../ui/button"
 import { BoltIcon } from "@heroicons/react/24/solid"
+import { CopyOneliner } from "../ui/copy-oneliner"
 
 export function ContentSection() {
   return (
@@ -316,31 +317,11 @@ export function ContentSection() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="rounded-md bg-muted p-4">
-                    <div className="flex items-center space-x-2">
-                      <Download className="h-4 w-4 text-primary" />
-                      First,{" "}
-                      <a href="https://github.com/johnpolacek/vibecode.party.starter" className="ml-1 text-primary hover:underline">
-                        download or clone the Party Starter from GitHub
-                      </a>
-                    </div>
-                  </div>
-                  <div className="rounded-md bg-muted p-4">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1">
                       <Terminal className="h-4 w-4 text-primary" />
-                      <p className="font-mono text-sm">Install the party supplies</p>
+                      <p className="font-medium">Run the command and follow the prompts...</p>
                     </div>
-                    <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
-                      <code className="text-sm font-mono">pnpm install</code>
-                    </pre>
-                  </div>
-                  <div className="rounded-md bg-muted p-4">
-                    <div className="flex items-center space-x-2">
-                      <Terminal className="h-4 w-4 text-primary" />
-                      <p className="font-mono text-sm">Fire up the party</p>
-                    </div>
-                    <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
-                      <code className="text-sm font-mono">pnpm dev</code>
-                    </pre>
+                    <CopyOneliner className="mt-2 bg-background border-primary/70">npx vibecode-party-starter</CopyOneliner>
                   </div>
                 </CardContent>
               </Card>
