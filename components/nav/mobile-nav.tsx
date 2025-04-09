@@ -13,6 +13,8 @@ import { useEffect } from "react"
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs"
 import { navItems } from "@/lib/config/navigation"
 import { siteConfig } from "@/lib/config"
+import Image from "next/image"
+
 export function MobileNav() {
   const [open, setOpen] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -61,6 +63,7 @@ export function MobileNav() {
               <LogoLockup />
             ) : (
               <div className="flex items-center gap-3">
+                {siteConfig.logo && <Image src={siteConfig.logo} alt={siteConfig.title + " logo"} width={32} height={32} />}
                 <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-br dark:bg-linear-to-br from-blue-500 via-purple-700 to-indigo-500 dark:from-blue-300 dark:via-purple-500 dark:to-indigo-500">
                   {siteConfig.title}
                 </span>
