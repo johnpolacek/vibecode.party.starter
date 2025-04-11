@@ -3,6 +3,7 @@ import { Check, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { Heading } from "@/components/typography/heading"
 
 interface FeatureCardProps {
   title: string
@@ -42,7 +43,9 @@ export function FeatureCard({
               {icon}
               {badgeText}
             </div>
-            <h3 className="text-2xl font-bold mb-2">{title}</h3>
+            <Heading variant="h3" className="text-2xl font-bold mb-2">
+              {title}
+            </Heading>
             <p className="text-muted-foreground mb-4">{description}</p>
           </div>
           <ul className="space-y-2 mb-6">

@@ -1,6 +1,8 @@
 import { requireAdmin } from "@/lib/auth-utils"
 import { AdminBreadcrumb } from "@/components/nav/admin-breadcrumb"
 import { supabaseAdmin } from "@/lib/supabase"
+import { Heading } from "@/components/typography/heading"
+import { Card, CardHeader } from "@/components/ui/card"
 
 async function getAnalyticsData() {
   // Get visits from the last 30 days
@@ -29,21 +31,33 @@ export default async function AdminAnalyticsPage() {
       <AdminBreadcrumb items={[{ label: "Analytics" }]} />
 
       <div className="mb-8">
-        <h1 className="text-4xl font-bold">Analytics</h1>
+        <Heading variant="h1" className="mb-8">
+          Analytics
+        </Heading>
         <p className="text-muted-foreground">View site analytics and user activity</p>
       </div>
 
       <div className="grid gap-6">
         {/* Total Visits Card */}
-        <div className="rounded-lg border p-6 shadow-sm">
-          <h2 className="text-xl font-semibold mb-2">Total Visits (30 Days)</h2>
-          <p className="text-3xl font-bold">{analyticsData.length}</p>
-        </div>
+        <Card>
+          <CardHeader>
+            <Heading variant="h2" className="mb-2">
+              Total Visits (30 Days)
+            </Heading>
+          </CardHeader>
+          <div className="p-6">
+            <p className="text-3xl font-bold">{analyticsData.length}</p>
+          </div>
+        </Card>
 
         {/* Recent Visits Table */}
-        <div className="rounded-lg border shadow-sm">
+        <Card>
+          <CardHeader>
+            <Heading variant="h2" className="mb-4">
+              Recent Visits
+            </Heading>
+          </CardHeader>
           <div className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Recent Visits</h2>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -67,7 +81,7 @@ export default async function AdminAnalyticsPage() {
               </table>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   )

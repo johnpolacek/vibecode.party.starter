@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import AnimateIn from "@/components/ui/animate-in"
 import { CopyOneliner } from "../ui/copy-oneliner"
+import { Heading } from "@/components/typography/heading"
 
 type RandomStyle = {
   top: string
@@ -49,7 +50,7 @@ export function HeroSection({ gettingStarted, title }: { gettingStarted?: boolea
 
       <div className="container relative z-10">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-6 sm:mb-12 text-5xl font-extrabold scale-x-110 text-balance sm:text-6xl tracking-wide md:text-8xl" style={{ textShadow: "0 0 10px rgba(255, 255, 255, 0.5)" }}>
+          <Heading variant="h1" className="mb-6 sm:mb-12 scale-x-110 tracking-wide" style={{ textShadow: "0 0 10px rgba(255, 255, 255, 0.5)" }}>
             {title && title !== "Vibecode Party Starter" ? (
               title
             ) : (
@@ -58,10 +59,12 @@ export function HeroSection({ gettingStarted, title }: { gettingStarted?: boolea
                 <span className="block leading-12">party starter</span>
               </>
             )}
-          </h1>
+          </Heading>
           {!gettingStarted && (
             <>
-              <h2 className="mb-8 text-lg md:text-xl font-medium text-balance">The Next.js starter project for vibe coding SaaS apps.</h2>
+              <Heading variant="h2" className="mb-8 text-lg md:text-xl font-medium text-balance">
+                The Next.js starter project for vibe coding SaaS apps.
+              </Heading>
               <div className="pt-4 pb-8 max-w-lg mx-auto">
                 <CopyOneliner
                   iconClassName="w-4 sm:w-6 h-4 sm:h-6 opacity-70 mx-1"

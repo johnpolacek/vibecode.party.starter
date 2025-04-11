@@ -28,6 +28,10 @@ export default async function GetStartedPage() {
 
   const isTitleCustomized = siteConfig.title !== "Vibecode Party Starter"
   const isDescriptionCustomized = siteConfig.description !== "A modern Next.js starter with authentication, database, storage, AI, and more."
+  const additionalInstructions = `
+
+Please come up with an implementation plan that follows the project’s architecture patterns and uses existing components where possible. Do NOT make any code changes yet, just plan the implementation.
+  `
 
   const examplePrompts = {
     creative: `Please help me create an AI Creative Studio with:
@@ -69,7 +73,8 @@ Please implement this following the project’s architecture patterns and existi
 Please implement this following the project’s architecture patterns and using existing auth and storage systems.`,
   }
 
-  const customPrompt = `Please help me enhance the ${siteConfig.title} - the description for this project is: ${siteConfig.description}`
+  const customPrompt = `I am building a new project starting from a Next.js starter template (see the project README and package.json for more info). Please help me come up with a plan for building ${siteConfig.title} - ${siteConfig.description}`
+  const newHomePrompt = `I am building a new project starting from a Next.js starter template. Please update the home page by removing the default starter project content and creating new home page content for ${siteConfig.title} - ${siteConfig.description}. Use our custom Heading component from @/components/typography/heading for any h1-h6 headings. Also update the Icon component with an icon from Lucide or another icon or svg library that would be appropriate for ${siteConfig.title}.`
 
   return (
     <div className="flex min-h-screen flex-col bg-violet-100/10">
@@ -107,12 +112,15 @@ Please implement this following the project’s architecture patterns and using 
         </p>
         <div className="space-y-6">
           {isTitleCustomized && isDescriptionCustomized ? (
-            <GetStartedExample title={siteConfig.title} prompt={customPrompt} />
+            <>
+              <GetStartedExample title="Update the home page" prompt={newHomePrompt} />
+              <GetStartedExample title="Come up with a build plan" prompt={customPrompt + additionalInstructions} />
+            </>
           ) : (
             <>
-              <GetStartedExample title="AI Creative Studio" prompt={examplePrompts.creative} />
-              <GetStartedExample title="Marketplace" prompt={examplePrompts.marketplace} />
-              <GetStartedExample title="Community Platform" prompt={examplePrompts.community} />
+              <GetStartedExample title="AI Creative Studio" prompt={examplePrompts.creative + additionalInstructions} />
+              <GetStartedExample title="Marketplace" prompt={examplePrompts.marketplace + additionalInstructions} />
+              <GetStartedExample title="Community Platform" prompt={examplePrompts.community + additionalInstructions} />
             </>
           )}
         </div>

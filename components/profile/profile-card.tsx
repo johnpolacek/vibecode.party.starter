@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { Calendar, CheckCircle, Globe, Twitter, Github, Link as LinkIcon } from "lucide-react"
 import { EditProfile } from "@/components/edit-profile"
 import { refreshProfile } from "@/app/_actions/profile"
+import { Heading } from "@/components/typography/heading"
 
 interface Link {
   label: string
@@ -68,7 +69,9 @@ export function ProfileCard({ user, bio, status, joinedDate, path }: ProfileCard
           </Link>
           <div className="space-y-2">
             <Link href={`/participants/${user.username}`} className="block hover:text-primary transition-colors">
-              <h1 className="text-2xl font-bold">{name}</h1>
+              <Heading variant="h1" className="text-2xl font-bold">
+                {name}
+              </Heading>
             </Link>
             <div className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800 dark:bg-green-900 dark:text-green-100">
               <CheckCircle className="mr-1 h-3 w-3" />
@@ -119,7 +122,9 @@ export function ProfileCard({ user, bio, status, joinedDate, path }: ProfileCard
         <div className="space-y-4">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h2 className="font-medium">About</h2>
+              <Heading variant="h2" className="font-medium">
+                About
+              </Heading>
               <EditProfile user={user} bio={bio} onUpdate={handleUpdate} isEditing={false} onCancel={() => setIsEditing(false)} onStartEdit={() => setIsEditing(true)} />
             </div>
             <p className={cn("text-sm", bio ? "text-foreground" : "text-muted-foreground italic")}>{bio || "No bio created yet"}</p>

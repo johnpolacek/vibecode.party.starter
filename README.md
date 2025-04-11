@@ -4,15 +4,16 @@ VibeStarter is a [Next.js](https://nextjs.org) starter project that comes with e
 
 ## Initializing Project
 
-Install packages:
+You can install with a single command, then answer the prompts:
 
 ```
-pnpm install
+npx vibecode-party-starter
 ```
-
-Create a `.env` file and set environment variables for the services you wish to use (see below).
 
 ## Services
+
+You will need to create a `.env` file and set environment variables for the services you wish to use (see below).
+
 
 ### Shadcn/UI for Components
 
@@ -108,6 +109,15 @@ If using payment, create a new project on [Stripe](https://dashboard.stripe.com/
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 STRIPE_SECRET_KEY=
 ```
+
+## AI SDK
+
+We have hooks available for:
+
+- Generating text with `useGenerateText()`
+- Generating an array of strings with `useGenerateStrings()`
+- Generating structured data with `useGenerateObject()`
+- Generating images with `useGenerateImage()`
 
 ## Local Development
 

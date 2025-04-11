@@ -15,18 +15,13 @@ export default function GetStartedExample({ title, prompt }: GetStartedExamplePr
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(prompt + additionalInstructions)
+      await navigator.clipboard.writeText(prompt)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
       console.error("Failed to copy text: ", err)
     }
   }
-
-  const additionalInstructions = `
-
-Please come up with an implementation plan that follows the project’s architecture patterns and uses existing components where possible. Do NOT make any code changes yet, just plan the implementation.
-  `
 
   return (
     <Card className="p-6 hover:shadow-lg transition-all cursor-pointer relative group" onClick={copyToClipboard}>
@@ -41,13 +36,8 @@ Please come up with an implementation plan that follows the project’s architec
       >
         {copied ? <Check className="h-4 w-4 text-green-600 scale-125" /> : <Copy className="h-4 w-4" />}
       </Button>
-      <Heading variant="h4" className="text-primary">
-        {title}
-      </Heading>
-      <pre className="bg-muted/50 border p-4 rounded-md text-xs sm:text-sm font-mono whitespace-pre-wrap -mt-2">
-        {prompt}
-        {additionalInstructions}
-      </pre>
+      <Heading variant="h6">{title}</Heading>
+      <pre className="bg-muted/50 border p-4 rounded-md text-xs sm:text-sm font-mono whitespace-pre-wrap -mt-2">{prompt}</pre>
     </Card>
   )
 }

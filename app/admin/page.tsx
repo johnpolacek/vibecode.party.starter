@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/auth-utils"
 import { AdminConfigMessage } from "@/components/admin/admin-config-message"
 import { DevEnvNotice } from "@/components/admin/dev-env-notice"
 import { SupabaseStatusCard } from "@/components/admin/supabase-status-card"
+import { Heading } from "@/components/typography/heading"
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
@@ -28,7 +29,9 @@ export default async function AdminPage() {
     return (
       <div className="container py-8 md:py-12">
         <div className="mx-auto max-w-2xl text-center">
-          <h1 className="text-3xl font-bold mb-4">Access Denied</h1>
+          <Heading variant="h1" className="mb-4">
+            Access Denied
+          </Heading>
           <p className="text-muted-foreground text-balance mb-8">You don’t have permission to access this page. Please contact an administrator if you believe this is an error.</p>
           {isDev && <DevEnvNotice />}
         </div>
@@ -39,7 +42,9 @@ export default async function AdminPage() {
   return (
     <div className="container py-8 md:py-12">
       <div className="mx-auto max-w-6xl">
-        <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+        <Heading variant="h1" className="mb-8">
+          Admin Dashboard
+        </Heading>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader>

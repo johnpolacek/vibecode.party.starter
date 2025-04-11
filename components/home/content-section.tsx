@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { Rocket, Zap, Terminal, FileCode, FileCode2, Sparkles, CloudUpload, ShieldCheck } from "lucide-react"
-import { Heading } from "../typography/heading"
+import { Heading } from "@/components/typography/heading"
 import { FeatureCard } from "./feature-card"
 import { ContactFormPreview, AuthFlowPreview } from "./feature-previews"
 import { ContactIcon, AuthIcon, FileUploadIcon } from "./feature-icons"
@@ -549,9 +549,9 @@ export function ContentSection() {
       <section id="full-stack-components" className="container pt-4 md:pt-8 lg:pt-12">
         <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
           <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Ready-to-Use</span>
-          <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
+          <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
             Full-Stack <span className="text-primary">Components</span>
-          </h2>
+          </Heading>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 text-balance">
             Plug-and-play full stack components that integrate with best-in-class services! Just add your API keys and you&apos;re good to go! 🧩
           </p>
