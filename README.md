@@ -1,4 +1,6 @@
-# VibeStarter
+<a href="https://starter.vibecode.party"><img src="https://starter.vibecode.party/screenshot.png" alt="Vibecode Party Starter Project Image" /></a>
+
+# Vibecode Party Starter
 
 VibeStarter is a [Next.js](https://nextjs.org) starter project that comes with everything I need to get started with a new vibe-coding project.
 
