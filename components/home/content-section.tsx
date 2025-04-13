@@ -69,7 +69,9 @@ export function ContentSection() {
               </Heading>
             </CardHeader>
             <CardContent>
-              <p className="text-balance dark:text-purple-300 text-sm sm:text-base">This is a dev environment where you can build your app locally before you’re ready to ship it to production.</p>
+              <p className="text-balance dark:text-purple-300 text-sm sm:text-base">
+                This is a dev environment where you can build your app locally before you&apos;re ready to ship it to production.
+              </p>
               <div className="flex justify-center pt-6">
                 <Button
                   asChild
@@ -570,7 +572,7 @@ export function ContentSection() {
           ></iframe>
         </div>
 
-        <div className="mx-auto grid max-w-6xl gap-8 py-12">
+        <div id="feature-cards" className="mx-auto grid max-w-6xl gap-8 py-12">
           <FeatureCard
             title="Complete Auth Flow"
             description="A fully implemented authentication system with Clerk, including sign-up, login, password reset, and profile management."
@@ -790,6 +792,43 @@ export function ContentSection() {
             gradientCirclePosition="60% 40%"
             link="/demo/ai"
             linkText="Try AI Demo"
+          />
+
+          <FeatureCard
+            title="Built-In Cursor Rules"
+            description="A complete set of project guidelines and best practices enforced through Cursor rules, helping maintain consistency and quality across your codebase."
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 mr-1">
+                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                <polyline points="14 2 14 8 20 8" />
+                <path d="M12 18v-6" />
+                <path d="m9 15 3 3 3-3" />
+              </svg>
+            }
+            badgeText="Project Guidelines"
+            features={[
+              "Project structure and file organization guidelines",
+              "Component location and naming conventions",
+              "Authentication patterns and best practices",
+              "Database and frontend development rules",
+            ]}
+            preview={
+              <div className="bg-background/80 backdrop-blur-sm rounded-lg border border-amber-500/20 shadow-xl w-full max-w-md p-6">
+                <div className="space-y-3 font-mono text-amber-700/60 divide-y divide-amber-700/20">
+                  <div className="pb-2 px-8">000-tooling</div>
+                  <div className="pb-2 px-8">100-architecture</div>
+                  <div className="pb-2 px-8">200-database</div>
+                  <div className="pb-2 px-8">300-auth</div>
+                  <div className="pb-2 px-8">400-frontend</div>
+                  <div className="pb-2 px-8">999-meta</div>
+                </div>
+              </div>
+            }
+            gradientFrom="from-amber-500/5"
+            gradientTo="to-amber-500/30"
+            gradientCirclePosition="45% 55%"
+            link="/.cursor/rules"
+            linkText="View Cursor Rules"
           />
 
           <FeatureCard
