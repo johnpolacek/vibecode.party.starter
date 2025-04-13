@@ -39,7 +39,6 @@ export async function uploadFileToS3(
     throw new Error("Failed to generate asset URL")
   }
   
-  console.log("Generated asset URL:", url)
   return url
 }
 

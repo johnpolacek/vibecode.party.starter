@@ -32,7 +32,7 @@ export default async function AdminPage() {
           <Heading variant="h1" className="mb-4">
             Access Denied
           </Heading>
-          <p className="text-muted-foreground text-balance mb-8">You don’t have permission to access this page. Please contact an administrator if you believe this is an error.</p>
+          <p className="text-muted-foreground text-balance mb-8">You don&apos;t have permission to access this page. Please contact an administrator if you believe this is an error.</p>
           {isDev && <DevEnvNotice />}
         </div>
       </div>
@@ -42,7 +42,7 @@ export default async function AdminPage() {
   return (
     <div className="container py-8 md:py-12">
       <div className="mx-auto max-w-6xl">
-        <Heading variant="h1" className="mb-8">
+        <Heading variant="h3" className="mb-8 text-center text-primary">
           Admin Dashboard
         </Heading>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -71,6 +71,20 @@ export default async function AdminPage() {
             <CardFooter>
               <Link href="/admin/analytics" className="w-full">
                 <Button className="w-full">View Analytics</Button>
+              </Link>
+            </CardFooter>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Mailing List</CardTitle>
+              <CardDescription>Manage subscribers</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">View and manage newsletter subscribers and preferences.</p>
+            </CardContent>
+            <CardFooter>
+              <Link href="/admin/mailing-list" className="w-full">
+                <Button className="w-full">Manage Subscribers</Button>
               </Link>
             </CardFooter>
           </Card>

@@ -47,9 +47,6 @@ export async function POST(request: NextRequest) {
     // Upload to S3
     const fileUrl = await uploadFileToS3(file, fileName)
     
-    // Log the URL for debugging
-    console.log("Uploaded file URL:", fileUrl)
-    
     return NextResponse.json({ url: fileUrl })
   } catch (error) {
     console.error("Error uploading file:", error)

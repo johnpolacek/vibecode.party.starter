@@ -7,11 +7,13 @@ export const validRoutes = new Set([
   'account/*',
   'admin',
   'admin/analytics',
+  'admin/mailing-list',
   'admin/users',
   'contact',
   'demo/ai',
   'demo/upload',
   'get-started',
+  'mailing-list',
   'pay',
   'privacy',
   'terms'

@@ -1,6 +1,6 @@
 {
   "name": "vibecode-party-starter",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "license": "MIT",
   "description": "A Next.js starter template for vibecoding SaaS apps",
   "keywords": [
@@ -22,9 +22,10 @@
     "pw": "playwright test --ui --debug",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
-    "db:lint:local": "supabase db lint --db-url 'postgresql://postgres:postgres@127.0.0.1:55324/postgres' --level warning",
-    "db:push:local": "supabase db push --db-url=postgresql://postgres:postgres@localhost:55324/postgres --include-all",
-    "db:reset:local": "supabase db reset --db-url=postgresql://postgres:postgres@localhost:55324/postgres",
+    "db:get-url": "supabase status | grep 'DB URL' | sed 's/.*postgresql/postgresql/'",
+    "db:lint:local": "pnpm db:get-url | xargs supabase db lint --db-url",
+    "db:push:local": "pnpm db:get-url | xargs -I {} supabase db push --db-url={} --include-all",
+    "db:reset:local": "pnpm db:get-url | xargs -I {} supabase db reset --db-url={}",
     "db:push:prod": "dotenv -e .env.production -- bash -c 'backup_file=\"backup_$(date +%Y%m%d_%H%M%S).sql\" && mkdir -p backups && echo \"🔄 Creating backup...\" && supabase link --project-ref \"$SUPABASE_PROJECT_REF\" --password \"$SUPABASE_DB_PASSWORD\" && supabase db dump --linked -f \"backups/$backup_file\" && supabase unlink && echo \"✅ Backup saved to backups/$backup_file\" && echo \"⚠️ Pushing changes to production...\" && supabase link --project-ref \"$SUPABASE_PROJECT_REF\" --password \"$SUPABASE_DB_PASSWORD\" && supabase db push --include-all && supabase unlink'",
     "db:diff": "supabase db diff --use-migra -f migration",
     "ship": "pnpm lint && pnpm build && (pnpm dev & sleep 10 && pnpm test && kill $!) && pnpm db:push:prod && pnpm go",

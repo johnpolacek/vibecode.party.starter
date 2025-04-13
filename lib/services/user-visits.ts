@@ -1,6 +1,6 @@
 import { supabaseAdmin } from '@/lib/supabase'
-import { toClientCase, toDatabaseCase, ToCamelCase, ToSnakeCase } from '@/lib/utils/case-transforms'
-import { Tables } from '@/types/supabase'
+import { toClientCase, toDatabaseCase, ToCamelCase } from '@/lib/utils/case-transforms'
+import { Database } from '@/types/supabase'
 
 // Define the client-side type with camelCase
 export interface UserVisit {
@@ -23,7 +23,7 @@ export interface CreateUserVisit {
 }
 
 // Convert database type to client type
-type DatabaseUserVisit = Tables<'user_visits'>
+type DatabaseUserVisit = Database['public']['Tables']['user_visits']['Row']
 type ClientUserVisit = ToCamelCase<DatabaseUserVisit>
 
 export async function createUserVisit(visit: CreateUserVisit) {

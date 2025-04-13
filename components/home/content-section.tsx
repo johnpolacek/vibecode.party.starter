@@ -400,7 +400,7 @@ export function ContentSection() {
                   </div>
                   <div className="rounded-md bg-muted p-4">
                     <div className="flex items-center space-x-2">
-                      <p className="font-mono text-sm">📨 Contact Form & Email</p>
+                      <p className="font-mono text-sm">📨 Contact Form & Mailing List</p>
                     </div>
                     <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
                       <code className="text-sm font-mono">
@@ -1150,6 +1150,26 @@ const handleGenerate = async () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+      </section>
+      <section className="container py-8 md:py-12 lg:py-24">
+        <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
+          <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">Stay Connected</span>
+          <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
+            Join the <span className="text-primary">Vibe Tribe</span>
+          </Heading>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 text-balance">
+            Sign up for our mailing list and stay up to date with the latest features, updates, and community vibes! 🎉
+          </p>
+          <Button asChild size="lg" className="mt-4">
+            <Link href="/mailing-list" className="gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                <path d="M21.2 8.4c.5.38.8.97.8 1.6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V10c0-.63.3-1.22.8-1.6l8-6a2 2 0 0 1 2.4 0l8 6Z" />
+                <path d="m22 10-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 10" />
+              </svg>
+              Sign Up for Mailing List
+            </Link>
+          </Button>
         </div>
       </section>
     </>

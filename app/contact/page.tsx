@@ -41,8 +41,6 @@ async function checkEnvironmentVariables() {
 export default async function ContactPage() {
   const { isConfigured, missingVars } = await checkEnvironmentVariables()
 
-  console.log("isConfigured", { isConfigured, missingVars })
-
   if (!isConfigured) {
     return (
       <div className="container max-w-2xl py-8 md:py-12">

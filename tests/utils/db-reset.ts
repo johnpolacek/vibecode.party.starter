@@ -1,20 +1,44 @@
 import dotenv from 'dotenv';
 import { clerkClient } from "@/lib/clerk"
 import { TEST_USER } from "./auth-helpers"
+import { supabaseAdmin } from "@/lib/supabase-admin"
+
+function isClerkError(error: unknown): error is { status: number; message: string } {
+  return typeof error === 'object' && error !== null && 'status' in error;
+}
 
 // Load environment variables from .env
 dotenv.config();
 
+// Define tables with their ID types in reverse order of dependencies
+const TABLES_TO_RESET = [
+  { name: 'mailing_list_subscriptions', idType: 'uuid' },
+  { name: 'user_visits', idType: 'uuid' }
+] as const;
+
 /**
- * Reset test data - placeholder for future table clearing logic
+ * Reset test data
  */
 export async function resetDatabase() {
   try {
-    // Placeholder for future database reset logic
-    console.log('Database reset complete - No tables to reset yet');
-  } catch (error) {
-    console.error('Error resetting database:', error);
-    // Don't throw error to allow tests to continue
+    // Delete all rows from each table
+    for (const table of TABLES_TO_RESET) {
+      const { error } = await supabaseAdmin
+        .from(table.name)
+        .delete()
+        .neq('id', table.idType === 'uuid' ? '00000000-0000-0000-0000-000000000000' : 0)
+      
+      if (error) {
+        console.error(`Error clearing ${table.name}:`, error)
+        throw error
+      }
+      console.log(`Cleared table: ${table.name}`)
+    }
+    
+    console.log("Database reset complete")
+  } catch (error: unknown) {
+    console.error("Error resetting database:", error)
+    throw error
   }
 }
 
@@ -38,11 +62,11 @@ export async function seedTestData() {
           });
           console.log('Test user profile reset successfully');
         }
-      } catch (clerkError: any) {
-        if (clerkError?.status === 404) {
+      } catch (error: unknown) {
+        if (isClerkError(error) && error.status === 404) {
           console.log('Test user not found in Clerk - skipping user reset');
         } else {
-          console.warn('Warning: Could not reset test user profile:', clerkError.message);
+          console.warn('Warning: Could not reset test user profile:', error instanceof Error ? error.message : String(error));
         }
         // Don't throw error to allow tests to continue
       }
