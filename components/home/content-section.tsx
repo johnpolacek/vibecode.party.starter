@@ -553,8 +553,21 @@ export function ContentSection() {
             Full-Stack <span className="text-primary">Components</span>
           </Heading>
           <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 text-balance">
-            Plug-and-play full stack components that integrate with best-in-class services! Just add your API keys and you&apos;re good to go! 🧩
+            Plug-and-play full stack components that integrate with <span className="whitespace-nowrap">best-in-class</span> services! Just add your API keys and you&apos;re good to go!
           </p>
+        </div>
+
+        <div className="w-full pt-8 flex justify-center items-center">
+          <iframe
+            width="720"
+            height="405"
+            src="https://www.youtube.com/embed/1gzCvATzUdM?si=XSGrKNvWvSIcOiAW"
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          ></iframe>
         </div>
 
         <div className="mx-auto grid max-w-6xl gap-8 py-12">
