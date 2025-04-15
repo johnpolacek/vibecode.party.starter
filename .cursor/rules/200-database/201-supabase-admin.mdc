@@ -1,16 +1,29 @@
 ---
-description: Database: Use supabaseAdmin for server-side write operations
+description: Guideline for implementing Supabase operations and tables
 globs: 
 alwaysApply: false
 ---
-
-# Supabase Admin Client Usage
+ # Supabase Admin Client Usage
 
 When performing write operations (create, update, delete) in server components or server actions, always use `supabaseAdmin` from `@/lib/supabase`. The regular client should only be used for read operations.
 
 ## Why Use supabaseAdmin
 
 The admin client has elevated permissions and bypasses RLS policies, which is necessary for server-side write operations. Using the regular client may fail due to RLS policies, even if the user is authenticated.
+
+## Service Role and RLS Guidelines
+
+1. **Tables accessed only by service role**
+   - Do NOT enable RLS
+   - Do NOT create any policies
+   - Service role has full access by default
+   - Example use cases: audit logs, system settings, mailing lists
+
+2. **Tables with mixed access**
+   - Enable RLS
+   - Create policies for client access
+   - Service role bypasses policies automatically
+   - Example use cases: user data, public content
 
 ## Guidelines
 
@@ -45,6 +58,8 @@ const { error } = await supabaseAdmin
 2. Never expose the service role key in client code
 3. Always validate data before writing to the database
 4. Use RLS policies as a first line of defense
+5. For service-role-only tables, skip RLS entirely
+6. Use Clerk server-side to validated authenticated users
 
 ## Examples
 
