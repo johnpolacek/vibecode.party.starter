@@ -75,6 +75,7 @@ Please implement this following the project’s architecture patterns and using 
 
   const customPrompt = `I am building a new project starting from a Next.js starter template (see the project README and package.json for more info). Please help me come up with a plan for building ${siteConfig.title} - ${siteConfig.description}`
   const newHomePrompt = `I am building a new project starting from a Next.js starter template. Please update the home page by removing the default starter project content and creating new home page content for ${siteConfig.title} - ${siteConfig.description}. Use our custom Heading component from @/components/typography/heading for any h1-h6 headings. Also update the Icon component with an icon from Lucide or another icon or svg library that would be appropriate for ${siteConfig.title}.`
+  const newRoadmapPrompt = `I am building a new project starting from a Next.js starter template. Please update the roadmap page by removing the default starter project content at /app/roadmap/data/features.json and /app/roadmap/data/featureRequests.json with new data for ${siteConfig.title} - ${siteConfig.description}. `
 
   return (
     <div className="flex min-h-screen flex-col bg-violet-100/10">
@@ -115,6 +116,7 @@ Please implement this following the project’s architecture patterns and using 
             <>
               <GetStartedExample title="Update the home page" prompt={newHomePrompt} />
               <GetStartedExample title="Come up with a build plan" prompt={customPrompt + additionalInstructions} />
+              <GetStartedExample title="Update the roadmap" prompt={newRoadmapPrompt} />
             </>
           ) : (
             <>

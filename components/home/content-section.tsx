@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
-import { Rocket, Zap, Terminal, FileCode, FileCode2, Sparkles, CloudUpload, ShieldCheck } from "lucide-react"
+import { Rocket, Zap, Terminal, FileCode, FileCode2, Sparkles, CloudUpload, ShieldCheck, Blocks } from "lucide-react"
 import { Heading } from "@/components/typography/heading"
 import { FeatureCard } from "./feature-card"
 import { ContactFormPreview, AuthFlowPreview } from "./feature-previews"
@@ -1168,6 +1168,20 @@ const handleGenerate = async () => {
                 <path d="m22 10-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 10" />
               </svg>
               Sign Up for Mailing List
+            </Link>
+          </Button>
+        </div>
+      </section>
+      <section className="container py-8 md:py-12 lg:py-24">
+        <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
+          <Heading variant="h2" className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold">
+            Features <span className="text-green-500">Roadmap</span>
+          </Heading>
+          <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7 text-balance">See what&apos;s coming next and share your ideas.</p>
+          <Button asChild size="lg" className="mt-4 bg-green-500 hover:bg-green-600">
+            <Link href="/roadmap">
+              <Blocks className="h-5 w-5 scale-125" />
+              View Roadmap
             </Link>
           </Button>
         </div>

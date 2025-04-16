@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     const { prompt, count = 6 } = body
 
     const result = streamObject({
-      model: openai("gpt-4o-mini"),
+      model: openai("gpt-4.1-nano"),
       schema: z.object({
         strings: z.array(z.string()).describe("Array of generated strings based on the prompt"),
       }),

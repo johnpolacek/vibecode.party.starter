@@ -110,7 +110,7 @@ export async function POST(req: Request) {
     // console.log("Generated schema structure:", JSON.stringify(describeSchema(schema), null, 2))
 
     const result = streamObject({
-      model: openai("gpt-4o-mini"),
+      model: openai("gpt-4.1-nano"),
       schema,
       prompt,
     })

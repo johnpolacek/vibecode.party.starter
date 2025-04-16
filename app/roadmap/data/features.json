@@ -1,0 +1,58 @@
+[
+  {
+    "id": "1",
+    "title": "Feature Roadmap",
+    "votes": 42,
+    "status": "completed",
+    "description": "Add a feature roadmap page"
+  },
+  {
+    "id": "3",
+    "title": "API integration",
+    "votes": 28,
+    "status": "planned",
+    "description": "Support for third-party API integrations"
+  },
+  {
+    "id": "4",
+    "title": "User authentication",
+    "votes": 24,
+    "status": "completed",
+    "description": "Secure login and authentication system"
+  },
+  {
+    "id": "5",
+    "title": "Better analytics",
+    "votes": 18,
+    "status": "planned",
+    "description": "Improve the analytics dashboard to provide more insights"
+  },
+  {
+    "id": "6",
+    "title": "Mailing List",
+    "votes": 15,
+    "status": "completed",
+    "description": "Allow users to create and manage mailing lists"
+  },
+  {
+    "id": "7",
+    "title": "Support other cloud databases",
+    "votes": 32,
+    "status": "planned",
+    "description": "Support for other cloud database providers like Convex"
+  },
+  {
+    "id": "8",
+    "title": "Realtime updates",
+    "votes": 19,
+    "status": "backlog",
+    "description": "Integrate with realtime service"
+  },
+  {
+    "id": "9",
+    "title": "Custom themes",
+    "votes": 22,
+    "status": "backlog",
+    "description": "Allow users to more easily customize the application theme"
+  }
+]
