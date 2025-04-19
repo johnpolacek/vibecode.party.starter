@@ -5,6 +5,8 @@ export const siteConfig: SiteConfig = {
   url: "https://starter.vibecode.party",
   shareImage: "https://starter.vibecode.party/screenshot.png",
   logo: "",
+  x: "https://x.com/vibecodeparty",
+  github: "https://github.com/johnpolacek/vibecode.party.starter",
 }
 
 export type SiteConfig = {
@@ -14,4 +16,6 @@ export type SiteConfig = {
     url: string
     shareImage: string
     logo: string
+    x: string
+    github: string
 }

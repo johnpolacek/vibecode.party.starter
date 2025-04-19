@@ -16,6 +16,7 @@ import { trackVisit } from "@/app/_actions/track-visit"
 import { RouteTracker } from "@/components/analytics/route-tracker"
 import { siteConfig } from "@/lib/config"
 import "./globals.css"
+import { Github } from "lucide-react"
 
 const rethinkSans = Rethink_Sans({
   subsets: ["latin"],
@@ -76,6 +77,18 @@ export default async function RootLayout({
                     <MainNav isAdmin={isAdmin} />
                   </div>
                   <div className="flex items-center gap-2">
+                    <div className="flex items-center pr-2 gap-2">
+                      {siteConfig.x && (
+                        <Link href={siteConfig.x} target="_blank" className="text-muted-foreground hover:text-primary">
+                          <span className="text-xl font-extrabold px-2 mx-1">𝕏</span>
+                        </Link>
+                      )}
+                      {siteConfig.github && (
+                        <Link href={siteConfig.github} target="_blank" className="px-1 mx-1 text-muted-foreground hover:text-primary">
+                          <Github className="w-5 h-5" />
+                        </Link>
+                      )}
+                    </div>
                     <ThemeToggle />
                     <AuthButtons />
                   </div>
