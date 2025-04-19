@@ -40,7 +40,7 @@ export default async function AdminMailingListPage() {
         <CardHeader>
           <CardTitle>All Subscribers</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pb-6">
           <MailingListSubscriberTable subscribers={subscribers} />
         </CardContent>
       </Card>

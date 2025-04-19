@@ -77,18 +77,12 @@ export async function trackVisit(path: string) {
       return { success: true }
     }
 
-    // Round timestamp to nearest second and convert to ISO string
-    const now = new Date()
-    now.setMilliseconds(0)
-    const timestamp = now.toISOString()
-
     // Insert the visit into the database
     const { error } = await supabaseAdmin
       .from('user_visits')
       .insert({
         user_id: userId || null,
         path,
-        timestamp,
         user_agent: userAgent || null,
         referrer: referrer || null,
       })

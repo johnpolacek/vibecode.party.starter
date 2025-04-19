@@ -9,7 +9,8 @@ async function getAnalyticsData() {
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-  const { data: visits, error } = await supabaseAdmin.from("user_visits").select("*").gte("timestamp", thirtyDaysAgo.toISOString()).order("timestamp", { ascending: false })
+  // Try using timestamp column first, fall back to created_at if timestamp doesn't exist
+  const { data: visits, error } = await supabaseAdmin.from("user_visits").select("*").gte("created_at", thirtyDaysAgo.toISOString()).order("created_at", { ascending: false })
 
   if (error) {
     console.error("Error fetching analytics data:", error)
@@ -31,21 +32,19 @@ export default async function AdminAnalyticsPage() {
       <AdminBreadcrumb items={[{ label: "Analytics" }]} />
 
       <div className="mb-8">
-        <Heading variant="h1" className="mb-8">
-          Analytics
-        </Heading>
-        <p className="text-muted-foreground">View site analytics and user activity</p>
+        <h1 className="text-4xl font-bold">Analytics</h1>
+        <p className="text-muted-foreground">View and manage user visits</p>
       </div>
 
       <div className="grid gap-6">
         {/* Total Visits Card */}
         <Card>
           <CardHeader>
-            <Heading variant="h2" className="mb-2">
+            <Heading variant="h4" className="text-primary">
               Total Visits (30 Days)
             </Heading>
           </CardHeader>
-          <div className="p-6">
+          <div className="px-6">
             <p className="text-3xl font-bold">{analyticsData.length}</p>
           </div>
         </Card>
@@ -53,17 +52,17 @@ export default async function AdminAnalyticsPage() {
         {/* Recent Visits Table */}
         <Card>
           <CardHeader>
-            <Heading variant="h2" className="mb-4">
+            <Heading variant="h4" className="text-primary">
               Recent Visits
             </Heading>
           </CardHeader>
-          <div className="p-6">
+          <div className="px-6 pb-6">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
                     <th className="text-left p-2">Path</th>
-                    <th className="text-left p-2">Timestamp</th>
+                    <th className="text-left p-2">Time</th>
                     <th className="text-left p-2">User ID</th>
                     <th className="text-left p-2">Referrer</th>
                   </tr>
@@ -72,7 +71,7 @@ export default async function AdminAnalyticsPage() {
                   {analyticsData.slice(0, 10).map((visit, index) => (
                     <tr key={index} className="border-b text-sm">
                       <td className="p-2">{visit.path}</td>
-                      <td className="p-2">{new Date(visit.timestamp).toLocaleString()}</td>
+                      <td className="p-2">{new Date(visit.created_at).toLocaleString()}</td>
                       <td className="p-2">{visit.user_id || "Anonymous"}</td>
                       <td className="p-2">{visit.referrer || "-"}</td>
                     </tr>
