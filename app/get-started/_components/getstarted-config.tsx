@@ -12,6 +12,8 @@ const defaultSiteConfig: SiteConfig = {
   shortDescription: "Next.js Starter with Clerk, Supabase, AWS & AI",
   url: "https://starter.vibecode.party",
   shareImage: "https://starter.vibecode.party/screenshot.png",
+  x: "",
+  github: "",
   logo: "",
 } as const
 

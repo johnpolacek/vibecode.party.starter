@@ -1,13 +1,13 @@
-export const siteConfig: SiteConfig = {
-  title: "Vibecode Party Starter",
-  description: "A modern Next.js starter with authentication, database, storage, AI, and more.",
-  shortDescription: "Next.js Starter with Clerk, Supabase, AWS & AI",
-  url: "https://starter.vibecode.party",
+export const siteConfig = {
+  title: "VibeCademy",
+  description: "Get the resources you need to learn how to vibecode",
+  shortDescription: "Get the resources you need to learn how to vibecode",
+  url: "vibecademy.vercel.app",
   shareImage: "https://starter.vibecode.party/screenshot.png",
-  logo: "",
   x: "https://x.com/vibecodeparty",
-  github: "https://github.com/johnpolacek/vibecode.party.starter",
-}
+  github: "",
+  logo: ""
+} as const
 
 export type SiteConfig = {
     title: string
@@ -15,7 +15,7 @@ export type SiteConfig = {
     shortDescription: string
     url: string
     shareImage: string
-    logo: string
     x: string
     github: string
+    logo: string
 }

@@ -4,6 +4,7 @@ import { getSubscription, unsubscribe } from "@/app/_actions/mailing-list"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { auth } from "@clerk/nextjs/server"
+import { isSupabaseConfigured } from "@/lib/supabase"
 
 async function handleUnsubscribe() {
   "use server"
@@ -13,6 +14,33 @@ async function handleUnsubscribe() {
 }
 
 export default async function MailingListPage() {
+  // Check if Supabase is configured
+  const hasSupabaseConfig = isSupabaseConfigured()
+
+  if (!hasSupabaseConfig) {
+    return (
+      <div className="container max-w-2xl py-8 md:py-12">
+        <Card className="p-6">
+          <CardHeader>
+            <CardTitle>Setup Required: Mailing List</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4">The mailing list feature requires Supabase configuration. Please set up your database first.</p>
+            <p className="text-sm text-muted-foreground">
+              Add the following to your <code className="px-1.5 py-0.5 bg-muted rounded text-xs">.env</code> file:
+            </p>
+            <pre className="mt-2 p-3 bg-muted rounded-md text-xs">
+              <code>
+                NEXT_PUBLIC_SUPABASE_URL=your_project_url{"\n"}
+                SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+              </code>
+            </pre>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   const result = await getSubscription()
   const subscription = result.success ? result.data : null
 
