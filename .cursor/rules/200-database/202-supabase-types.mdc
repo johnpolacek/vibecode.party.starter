@@ -3,144 +3,63 @@ description: Database: Type Safety Guidelines when working with supabase data
 globs: 
 alwaysApply: false
 ---
-# Supabase Type Safety Guidelines
+# Supabase Type Safety and Case Transformation Standard
 
 ## Description
-This rule defines our standards for ensuring type safety when working with Supabase data. It covers how to properly type database responses and transform data between snake_case (database) and camelCase (frontend) formats.
+This standard outlines how to maintain type safety and handle the `snake_case` (database) vs `camelCase` (application) convention difference when working with Supabase in TypeScript.
 
-## Type Safety Rules
+## The Conflict: Snakes vs Camels
 
-1. **Raw Database Types**
-   - Create interfaces prefixed with `Raw` for database table shapes
-   - Use snake_case to match database column names
-   - Include all possible null values
-   ```typescript
-   interface RawTableName {
-     id: string
-     created_at: string
-     updated_at: string
-     some_field: string | null
-     // ... other fields
-   }
-   ```
+Supabase stores data with `snake_case` column names (`user_id`), while our application code uses `camelCase` (`userId`). This requires consistent data transformation.
 
-2. **Supabase Query Types**
-   - Always type Supabase query responses
-   - Use PostgrestError for error typing
-   ```typescript
-   const { data, error } = await supabaseAdmin
-     .from("table_name")
-     .select("*") as {
-       data: RawTableName[] | null
-       error: PostgrestError | null
-     }
-   ```
+## Solution: Types and Transformation Utilities
 
-3. **Data Transformations**
-   - Create explicit transformations from Raw types to frontend types
-   - Document any type coercion (e.g., string to number)
-   - Handle null/undefined values with defaults
-   ```typescript
-   return (data || []).map(raw => ({
-     id: raw.id,
-     createdAt: raw.created_at,
-     someField: raw.some_field || defaultValue,
-     // ... other transformations
-   }))
-   ```
+Use separate TypeScript types and dedicated transformation functions:
 
-## Example Implementation
+1.  **Raw Database Types (Snake Case):** Types generated directly from your Supabase schema using the Supabase CLI (`supabase gen types typescript --schema public > types/supabase.ts`). These define the `snake_case` data shape *as it is in the DB*.
 
-```typescript
-// 1. Import PostgrestError
-import { PostgrestError } from "@supabase/supabase-js"
+2.  **Application Types (Camel Case):** Types defined in your application code that reflect the `camelCase` shape needed for frontend components and business logic. Use type helpers like `ToCamelCase` from your `lib/utils/case-transforms.ts` to derive these from Raw types.
 
-// 2. Define raw database type
-interface RawHackathonSponsor {
-  id: string
-  hackathon_id: string | number
-  name: string
-  created_at: string
-  updated_at: string
-  // ... other fields
-}
+3.  **Transformation Functions:** Utilize `toCamelCase` (DB -> App) and `toSnakeCase` (App -> DB) from `lib/utils/case-transforms.ts` to handle the key mapping.
 
-// 3. Define frontend type (in types/supabase.ts)
-interface HackathonSponsor {
-  id: string
-  hackathonId: number
-  name: string
-  createdAt: string
-  updatedAt: string
-  // ... other fields
-}
+## Rules for Data Handling
 
-// 4. Implement type-safe query and transformation
-async function getSponsors(hackathonId: string): Promise<HackathonSponsor[]> {
-  const { data, error } = await supabaseAdmin
-    .from("hackathon_sponsors")
-    .select("*")
-    .eq("hackathon_id", hackathonId) as {
-      data: RawHackathonSponsor[] | null
-      error: PostgrestError | null
-    }
+*   **Reading Data (DB to App):**
+    *   Fetch data from Supabase. The initial result will conform to the Raw (snake_case) types.
+    *   Immediately apply `toCamelCase()` to the fetched data.
+    *   All subsequent application logic and frontend code should work with the `camelCase` output.
+    ```typescript
+    import { toCamelCase } from 'lib/utils/case-transforms';
+    // Assume DatabaseRowType is generated snake_case type
+    // Assume ApplicationType is camelCase derived type
 
-  if (error) throw new Error(error.message)
+    const { data, error } = await supabase // ... fetch ...
+    if (error) throw error; // handle error
 
-  return (data || []).map(raw => ({
-    id: raw.id,
-    hackathonId: Number(raw.hackathon_id),
-    name: raw.name,
-    createdAt: raw.created_at,
-    updatedAt: raw.updated_at
-  }))
-}
-```
+    const applicationData: ApplicationType[] = toCamelCase(data || []);
+    // Use applicationData (now camelCase)
+    ```
 
-## Best Practices
+*   **Writing Data (App to DB):**
+    *   Receive or prepare data in your application logic using `camelCase` types.
+    *   Apply `toSnakeCase()` to the data just before sending it to Supabase for inserts or updates.
+    *   Send the resulting `snake_case` data to Supabase.
+    ```typescript
+    import { toSnakeCase } from 'lib/utils/case-transforms';
+    // Assume applicationInputData is type ApplicationInputType (camelCase)
 
-1. **Type Organization**
-   - Keep Raw types close to where they're used
-   - Keep frontend types in `types/supabase.ts`
-   - Consider generating types from database schema
+    const databasePayload = toSnakeCase(applicationInputData);
+    // databasePayload now has snake_case keys
 
-2. **Error Handling**
-   - Always type and handle PostgrestError
-   - Provide meaningful error messages
-   - Log raw error details when needed
+    const { data, error } = await supabase.from("table_name").insert(databasePayload);
+    if (error) throw error; // handle error
+    ```
 
-3. **Type Coercion**
-   - Document why type coercion is needed
-   - Use explicit conversion functions
-   - Handle edge cases
+## The `.cursor` Rule: Localize Snakes
 
-4. **Null Safety**
-   - Always provide defaults for null values
-   - Document why defaults are chosen
-   - Consider using nullish coalescing
+**Principle:** `snake_case` data and types should be confined to the data access layer (where you directly interact with Supabase).
 
-## Why These Rules Matter
+*   Raw (snake_case) types are used primarily as input/output for `toCamelCase`/`toSnakeCase`.
+*   All code outside the direct data fetch/save logic must use `camelCase` data and types.
 
-1. **Type Safety**
-   - Catches mismatches between database and frontend
-   - Prevents runtime errors from type mismatches
-   - Makes refactoring safer
-
-2. **Maintainability**
-   - Clear separation between raw and transformed data
-   - Explicit documentation of data flow
-   - Easier to update when schema changes
-
-3. **Developer Experience**
-   - Better IDE support
-   - Clearer error messages
-   - Easier to understand data transformations
-
-## Migration Strategy
-
-When updating existing code:
-1. Identify database tables without Raw types
-2. Create Raw types based on actual database schema
-3. Update queries to use type assertions
-4. Add explicit transformations
-5. Test for edge cases with null values
+This pattern creates a clear boundary, centralizes transformation logic, and prevents `snake_case` from polluting the application's core, which simplifies development and makes LLM assistance more reliable.

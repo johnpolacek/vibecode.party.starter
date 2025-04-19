@@ -21,20 +21,22 @@ export function MailingListSubscriberTable({ subscribers }: MailingListSubscribe
         </TableRow>
       </TableHeader>
       <TableBody>
-        {subscribers.map((subscriber) => (
-          <TableRow key={subscriber.id}>
-            <TableCell>{subscriber.email}</TableCell>
-            <TableCell>{subscriber.name || "-"}</TableCell>
-            <TableCell>{new Date(subscriber.subscribedAt).toLocaleDateString()}</TableCell>
-            <TableCell>{subscriber.unsubscribedAt ? <Badge variant="destructive">Unsubscribed</Badge> : <Badge variant="default">Active</Badge>}</TableCell>
-            <TableCell>
-              <div className="flex gap-2">
-                {subscriber.preferences.marketing && <Badge variant="outline">Marketing</Badge>}
-                {subscriber.preferences.updates && <Badge variant="outline">Updates</Badge>}
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
+        {subscribers.map((subscriber) => {
+          return (
+            <TableRow key={subscriber.id}>
+              <TableCell>{subscriber.email}</TableCell>
+              <TableCell>{subscriber.name || "-"}</TableCell>
+              <TableCell>{new Date(subscriber.subscribedAt).toLocaleDateString()}</TableCell>
+              <TableCell>{subscriber.unsubscribedAt ? <Badge variant="destructive">Unsubscribed</Badge> : <Badge variant="default">Active</Badge>}</TableCell>
+              <TableCell>
+                <div className="flex gap-2">
+                  {subscriber.preferences.marketing && <Badge variant="outline">Marketing</Badge>}
+                  {subscriber.preferences.updates && <Badge variant="outline">Updates</Badge>}
+                </div>
+              </TableCell>
+            </TableRow>
+          )
+        })}
       </TableBody>
     </Table>
   )

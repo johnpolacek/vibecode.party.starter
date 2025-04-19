@@ -49,8 +49,6 @@ const requestSchema = z.object({
 })
 
 function createZodSchema(shape: SchemaField | Record<string, SchemaField>): z.ZodTypeAny {
-  // console.log("Creating Zod schema for shape:", shape)
-
   // If it's a record of fields (root schema), create an object schema
   if (!("type" in shape)) {
     const schema: Record<string, z.ZodTypeAny> = {}
@@ -102,20 +100,17 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json()
-    // console.log("Generate object API received body:", body)
     const { schema: schemaShape, prompt } = requestSchema.parse(body)
 
     // Create a new schema from the shape
     const schema = createZodSchema(schemaShape)
-    // console.log("Generated schema structure:", JSON.stringify(describeSchema(schema), null, 2))
-
+    
     const result = streamObject({
       model: openai("gpt-4.1-nano"),
       schema,
       prompt,
     })
-
-    console.log("Generate object API streaming response started")
+    
     return result.toTextStreamResponse()
   } catch (error) {
     console.error("Error in generate object route:", error)

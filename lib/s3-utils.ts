@@ -49,9 +49,7 @@ export const transferImageToS3 = async (imageUrl: string, key: string): Promise<
 
   try {
     // Download the image from the URL
-    console.log("Downloading image from URL:", imageUrl)
     const response = await fetch(imageUrl)
-    console.log("Image downloaded successfully")
     const arrayBuffer = await response.arrayBuffer()
 
     // Prepare the parameters for uploading to S3
@@ -63,15 +61,10 @@ export const transferImageToS3 = async (imageUrl: string, key: string): Promise<
       ContentLength: parseInt(response.headers.get("content-length") || "0", 10),
     }
 
-    console.log("Prepare for upload to S3")
-
     // Upload the image to the S3 bucket
     const putCommand = new PutObjectCommand(params)
-
-    console.log("Sending PutObjectCommand to S3...")
+    
     await s3Client.send(putCommand)
-
-    console.log("Upload complete")
 
     // Get the URL
     const publicUrl = getAssetUrl(key)
@@ -79,7 +72,6 @@ export const transferImageToS3 = async (imageUrl: string, key: string): Promise<
       throw new Error("Failed to generate asset URL")
     }
 
-    console.log("Image uploaded successfully:", publicUrl)
     return publicUrl
   } catch (error) {
     throw new Error("Error uploading image to S3: " + error)

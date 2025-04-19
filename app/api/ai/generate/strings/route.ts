@@ -22,8 +22,7 @@ export async function POST(req: Request) {
       }),
       prompt: `${prompt}\n\nGenerate exactly ${count} responses. Return them in a JSON object with a "strings" array property.`,
     })
-
-    console.log("Generate strings API streaming response started")
+    
     return result.toTextStreamResponse()
   } catch (error) {
     console.error("Error in generate strings route:", error)

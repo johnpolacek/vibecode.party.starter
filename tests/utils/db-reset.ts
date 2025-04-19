@@ -32,10 +32,7 @@ export async function resetDatabase() {
         console.error(`Error clearing ${table.name}:`, error)
         throw error
       }
-      console.log(`Cleared table: ${table.name}`)
     }
-    
-    console.log("Database reset complete")
   } catch (error: unknown) {
     console.error("Error resetting database:", error)
     throw error
@@ -60,11 +57,9 @@ export async function seedTestData() {
               bio: "",
             },
           });
-          console.log('Test user profile reset successfully');
         }
       } catch (error: unknown) {
         if (isClerkError(error) && error.status === 404) {
-          console.log('Test user not found in Clerk - skipping user reset');
         } else {
           console.warn('Warning: Could not reset test user profile:', error instanceof Error ? error.message : String(error));
         }

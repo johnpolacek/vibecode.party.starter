@@ -7,7 +7,7 @@ export function useGenerateText() {
   })
 
   const streamText = async (prompt: string, onUpdate: (output: string) => void) => {
-    console.log("streamTextprompt", prompt)
+    
     const response = await fetch("/api/ai/generate/text", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

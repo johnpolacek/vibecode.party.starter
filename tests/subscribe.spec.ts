@@ -22,8 +22,13 @@ test('should be able to subscribe to the mailing list when signed in', async ({ 
   await expect(page.getByRole('heading', { name: 'Mailing List Subscribers' })).toBeVisible();
   await expect(page.getByRole('cell', { name: 'john.polacek@gmail.com' })).toBeVisible();
 
+  // Verify admin can see the subscriber
+  await page.goto('http://localhost:3000/admin/mailing-list');
+  await expect(page.getByRole('cell', { name: 'john.polacek@gmail.com' })).toBeVisible();
+  
   // Unsubscribe
   await page.goto('http://localhost:3000/mailing-list');
+  await page.pause();
   await page.getByRole('button', { name: 'Unsubscribe' }).click();
   await expect(page.getByText('Unsubscribed', { exact: true })).toBeVisible();
   await page.goto('http://localhost:3000/admin/mailing-list');

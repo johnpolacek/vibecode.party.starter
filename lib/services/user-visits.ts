@@ -1,11 +1,16 @@
 import { supabaseAdmin } from '@/lib/supabase'
-import { toCamelCase, toSnakeCase } from '@/lib/utils/transform'
-import { Database } from '@/types/supabase'
+import { toCamelCase } from '@/lib/utils/case-transforms'
 
 // Database types
-type DbUserVisit = Database['public']['Tables']['user_visits']['Row']
-type DbUserVisitInsert = Database['public']['Tables']['user_visits']['Insert']
-type DbUserVisitUpdate = Database['public']['Tables']['user_visits']['Update']
+interface DatabaseUserVisit {
+  id: string
+  user_id: string | null
+  path: string
+  referrer: string | null
+  user_agent: string | null
+  created_at: string
+  updated_at: string
+}
 
 // Frontend types
 export interface UserVisit {
@@ -36,47 +41,65 @@ export interface UpdateUserVisit {
  * Create a new user visit record
  */
 export async function createUserVisit(visit: CreateUserVisit): Promise<UserVisit> {
-  const dbVisit = toSnakeCase<DbUserVisitInsert>(visit)
-  
-  const { data, error } = await supabaseAdmin
-    .from('user_visits')
-    .insert(dbVisit)
-    .select()
-    .single()
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('user_visits')
+      .insert({
+        user_id: visit.userId,
+        path: visit.path,
+        referrer: visit.referrer,
+        user_agent: visit.userAgent,
+      })
+      .select()
+      .single()
 
-  if (error) throw error
+    if (error) throw error
 
-  return toCamelCase<UserVisit>(data)
+    return toCamelCase<DatabaseUserVisit>(data) as unknown as UserVisit
+  } catch (error) {
+    console.error('Error creating user visit:', error)
+    throw new Error('Failed to create user visit')
+  }
 }
 
 /**
  * Get all user visits
  */
 export async function getUserVisits(): Promise<UserVisit[]> {
-  const { data, error } = await supabaseAdmin
-    .from('user_visits')
-    .select('*')
-    .order('created_at', { ascending: false })
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('user_visits')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-  if (error) throw error
+    if (error) throw error
 
-  return data.map(visit => toCamelCase<UserVisit>(visit))
+    return toCamelCase<DatabaseUserVisit[]>(data || []) as unknown as UserVisit[]
+  } catch (error) {
+    console.error('Error fetching user visits:', error)
+    throw new Error('Failed to fetch user visits')
+  }
 }
 
 /**
  * Get a single user visit by ID
  */
 export async function getUserVisit(id: string): Promise<UserVisit | null> {
-  const { data, error } = await supabaseAdmin
-    .from('user_visits')
-    .select('*')
-    .eq('id', id)
-    .single()
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('user_visits')
+      .select('*')
+      .eq('id', id)
+      .single()
 
-  if (error) throw error
-  if (!data) return null
+    if (error) throw error
+    if (!data) return null
 
-  return toCamelCase<UserVisit>(data)
+    return toCamelCase<DatabaseUserVisit>(data) as unknown as UserVisit
+  } catch (error) {
+    console.error(`Error fetching user visit ${id}:`, error)
+    throw new Error('Failed to fetch user visit')
+  }
 }
 
 /**
@@ -86,43 +109,61 @@ export async function updateUserVisit(
   id: string,
   visit: UpdateUserVisit
 ): Promise<UserVisit> {
-  const dbVisit = toSnakeCase<DbUserVisitUpdate>(visit)
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('user_visits')
+      .update({
+        user_id: visit.userId,
+        path: visit.path,
+        referrer: visit.referrer,
+        user_agent: visit.userAgent,
+      })
+      .eq('id', id)
+      .select()
+      .single()
 
-  const { data, error } = await supabaseAdmin
-    .from('user_visits')
-    .update(dbVisit)
-    .eq('id', id)
-    .select()
-    .single()
+    if (error) throw error
 
-  if (error) throw error
-
-  return toCamelCase<UserVisit>(data)
+    return toCamelCase<DatabaseUserVisit>(data) as unknown as UserVisit
+  } catch (error) {
+    console.error(`Error updating user visit ${id}:`, error)
+    throw new Error('Failed to update user visit')
+  }
 }
 
 /**
  * Delete a user visit record
  */
 export async function deleteUserVisit(id: string): Promise<void> {
-  const { error } = await supabaseAdmin
-    .from('user_visits')
-    .delete()
-    .eq('id', id)
+  try {
+    const { error } = await supabaseAdmin
+      .from('user_visits')
+      .delete()
+      .eq('id', id)
 
-  if (error) throw error
+    if (error) throw error
+  } catch (error) {
+    console.error(`Error deleting user visit ${id}:`, error)
+    throw new Error('Failed to delete user visit')
+  }
 }
 
 /**
  * Get user visits by path
  */
 export async function getUserVisitsByPath(path: string): Promise<UserVisit[]> {
-  const { data, error } = await supabaseAdmin
-    .from('user_visits')
-    .select('*')
-    .eq('path', path)
-    .order('created_at', { ascending: false })
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('user_visits')
+      .select('*')
+      .eq('path', path)
+      .order('created_at', { ascending: false })
 
-  if (error) throw error
+    if (error) throw error
 
-  return data.map(visit => toCamelCase<UserVisit>(visit))
+    return toCamelCase<DatabaseUserVisit[]>(data || []) as unknown as UserVisit[]
+  } catch (error) {
+    console.error(`Error fetching user visits for path ${path}:`, error)
+    throw new Error('Failed to fetch user visits by path')
+  }
 } 

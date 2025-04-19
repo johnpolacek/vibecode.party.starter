@@ -8,44 +8,15 @@ alwaysApply: false
 ## Description
 When making changes that affect the database or when debugging database-related issues, use the `mcp_supabase_query` tool to check the current state of the database.
 
+## Restrictions
+
+IMPORTANT! Only use the tool to read. NEVER WRITE!
+
 ## When to Use
 1. When modifying database-related code
 2. When debugging data issues
 3. When verifying data transformations
 4. When checking relationships between tables
-
-## Example Queries
-
-### Check Sponsors Table
-```sql
-SELECT 
-  hs.*,
-  hst.name as tier_name,
-  hst.fixed_amount as tier_fixed_amount,
-  hst.minimum_amount as tier_minimum_amount
-FROM hackathon_sponsors hs
-LEFT JOIN hackathon_sponsor_tiers hst ON hs.tier_id = hst.id
-WHERE hs.hackathon_id = '[hackathon_id]';
-```
-
-### Check Sponsor Tiers
-```sql
-SELECT * FROM hackathon_sponsor_tiers 
-WHERE hackathon_id = '[hackathon_id]'
-ORDER BY created_at DESC;
-```
-
-### Check User's Sponsorships
-```sql
-SELECT 
-  hs.*,
-  h.title as hackathon_title,
-  hst.name as tier_name
-FROM hackathon_sponsors hs
-JOIN hackathons h ON hs.hackathon_id = h.id
-LEFT JOIN hackathon_sponsor_tiers hst ON hs.tier_id = hst.id
-WHERE hs.created_by = '[user_id]';
-```
 
 ## Best Practices
 1. Always include relevant JOIN tables to get complete context

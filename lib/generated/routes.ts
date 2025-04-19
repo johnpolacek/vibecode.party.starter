@@ -16,5 +16,6 @@ export const validRoutes = new Set([
   'mailing-list',
   'pay',
   'privacy',
+  'roadmap',
   'terms'
 ])
