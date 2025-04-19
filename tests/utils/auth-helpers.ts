@@ -1,4 +1,5 @@
 import { Page, expect } from '@playwright/test';
+import { clerk, clerkSetup } from '@clerk/testing/playwright';
 
 /**
  * Login credentials for test user
@@ -16,11 +17,25 @@ export const TEST_USER = {
  * @param page - Playwright page object
  */
 export async function loginTestUser(page: Page): Promise<void> {
-  // Navigate to the sign-in page
+  // Navigate to an unprotected page that loads Clerk
   await page.goto('/');
-  await page.getByRole('button', { name: 'Sign In' }).first().click();
-  await fillLoginCredentials(page);
-  await page.waitForTimeout(500);
+
+  // Setup Clerk for testing
+  await clerkSetup();
+
+  // Use Clerk's testing utilities to sign in
+  await clerk.signIn({
+    page,
+    signInParams: {
+      strategy: 'password',
+      identifier: TEST_USER.email,
+      password: TEST_USER.password
+    }
+  });
+
+  // Navigate to the home page and verify we're logged in
+  await page.goto('/');
+  await expect(page.getByRole('button', { name: 'Open user button' })).toBeVisible({timeout: 30000});
 }
 
 /**
@@ -42,7 +57,9 @@ export async function fillLoginCredentials(page: Page): Promise<void> {
  * @param page - Playwright page object
  */
 export async function logoutUser(page: Page): Promise<void> {
-  await page.getByRole('button', { name: 'Open user button' }).click();
-  await page.getByRole('menuitem', { name: 'Sign out' }).click();
+  // Navigate to an unprotected page that loads Clerk
+  await page.goto('/');
+  
+  await clerk.signOut({ page });
   await page.waitForTimeout(500);
 } 
