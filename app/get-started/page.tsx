@@ -26,8 +26,8 @@ export default async function GetStartedPage() {
     redirect("/")
   }
 
-  const isTitleCustomized = siteConfig.title !== "Vibecode Party Starter"
-  const isDescriptionCustomized = siteConfig.description !== "A modern Next.js starter with authentication, database, storage, AI, and more."
+  const isTitleCustomized = siteConfig.title !== ("Vibecode Party Starter" as string)
+  const isDescriptionCustomized = siteConfig.description !== ("A modern Next.js starter with authentication, database, storage, AI, and more." as string)
   const additionalInstructions = `
 
 Please come up with an implementation plan that follows the project’s architecture patterns and uses existing components where possible. Do NOT make any code changes yet, just plan the implementation.

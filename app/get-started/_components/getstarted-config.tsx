@@ -2,11 +2,11 @@ import { Card } from "@/components/ui/card"
 import { redirect } from "next/navigation"
 import { headers } from "next/headers"
 import { Heading } from "@/components/typography/heading"
-import { siteConfig, SiteConfig } from "@/lib/config"
+import { siteConfig } from "@/lib/config"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, AlertCircle } from "lucide-react"
 
-const defaultSiteConfig: SiteConfig = {
+const defaultSiteConfig = {
   title: "Vibecode Party Starter",
   description: "A modern Next.js starter with authentication, database, storage, AI, and more.",
   shortDescription: "Next.js Starter with Clerk, Supabase, AWS & AI",
@@ -14,8 +14,8 @@ const defaultSiteConfig: SiteConfig = {
   shareImage: "https://starter.vibecode.party/screenshot.png",
   x: "",
   github: "",
-  logo: "",
-} as const
+  logo: ""
+}
 
 type ConfigStatus = {
   value: string

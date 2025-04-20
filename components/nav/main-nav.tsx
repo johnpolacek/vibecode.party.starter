@@ -18,7 +18,7 @@ export function MainNav({ isAdmin }: MainNavProps) {
   return (
     <nav className="hidden md:flex md:gap-6 items-center">
       <Link href="/" className="mr-4">
-        {siteConfig.title === "Vibecode Party Starter" ? (
+        {siteConfig.title === ("Vibecode Party Starter" as string) ? (
           <LogoLockup />
         ) : (
           <div className="flex items-center gap-3">

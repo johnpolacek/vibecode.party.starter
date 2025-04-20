@@ -59,7 +59,7 @@ export function MobileNav() {
         <SheetTitle className="sr-only">Menu</SheetTitle>
         <div className="flex items-center justify-between border-b pb-4">
           <Link href="/" className="flex items-center space-x-2 pl-4 pt-4" onClick={() => setOpen(false)}>
-            {siteConfig.title === "Vibecode Party Starter" ? (
+            {siteConfig.title === ("Vibecode Party Starter" as string) ? (
               <LogoLockup />
             ) : (
               <div className="flex items-center gap-3">

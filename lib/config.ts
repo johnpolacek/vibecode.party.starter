@@ -4,7 +4,7 @@ export const siteConfig = {
   shortDescription: "Get the resources you need to learn how to vibecode",
   url: "vibecademy.vercel.app",
   shareImage: "https://starter.vibecode.party/screenshot.png",
-  x: "https://x.com/vibecodeparty",
+  x: "",
   github: "",
   logo: ""
 } as const
