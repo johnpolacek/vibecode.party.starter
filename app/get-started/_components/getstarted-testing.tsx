@@ -3,7 +3,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Heading } from "@/components/typography/heading"
 import { isClerkConfigured } from "@/lib/auth-utils"
 import { CopyOneliner } from "@/components/ui/copy-oneliner"
-import { CopyToClipboard } from "@/components/ui/copy-to-clipboard"
+import { CursorPrompt } from "./cursor-prompt"
+
 export default async function GetStartedTesting() {
   // Check for required configuration
   const hasClerk = isClerkConfigured()
@@ -71,22 +72,8 @@ export default async function GetStartedTesting() {
               </div>
             </div>
 
-            <div className="space-y-2 pt-8">
-              <Heading variant="h5">Don’t need test configuration?</Heading>
-              <div className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2 relative">
-                  <h4 className="font-semibold text-primary">Cursor Prompt</h4>
-                  <div className="absolute -top-4 -right-4 w-full">
-                    <CopyToClipboard position="top-right" hideContent={true}>
-                      {cursorPrompt}
-                    </CopyToClipboard>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground -mt-2 mb-4">Copy this prompt and paste it to Cursor to remove test configuration:</p>
-                <pre className="text-sm bg-muted p-3 rounded-md whitespace-pre-wrap">
-                  <code>{cursorPrompt}</code>
-                </pre>
-              </div>
+            <div className="pt-8">
+              <CursorPrompt prompt={cursorPrompt} />
             </div>
           </Card>
         </div>
