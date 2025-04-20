@@ -151,7 +151,6 @@ if [[ "$REPO_VISIBILITY" != "public" && "$REPO_VISIBILITY" != "private" ]]; then
   handle_error "User Input" "Invalid visibility '$REPO_VISIBILITY_INPUT'. Please enter 'public' or 'private'."
 fi
 
-
 # Get the GitHub username using the authenticated GH CLI
 GITHUB_USERNAME=$(gh api user --jq .login 2>/dev/null) || handle_error "gh api user" "Could not retrieve GitHub username. Is 'gh auth login' complete?"
 
@@ -257,28 +256,15 @@ if [ -n "$CURRENT_ORIGIN" ]; then
         handle_error "Git Remote Conflict" "Existing 'origin' remote found pointing elsewhere. Please resolve manually."
     fi
 else
-    # Use GH CLI to create the repo. This automatically adds the 'origin' remote.
+    # Create the repository and push in one command
     echo "Creating GitHub repository '$FULL_REPO_NAME' ($REPO_VISIBILITY)..."
     if [ "$REPO_VISIBILITY" == "private" ]; then
-        gh repo create "$FULL_REPO_NAME" --private || handle_error "gh repo create" "Failed to create private GitHub repository '$FULL_REPO_NAME'. Ensure the name is available and GH CLI is authenticated."
-    else # REPO_VISIBILITY is "public"
-        gh repo create "$FULL_REPO_NAME" --public || handle_error "gh repo create" "Failed to create public GitHub repository '$FULL_REPO_NAME'. Ensure the name is available and GH CLI is authenticated."
+        gh repo create "$REPO_NAME" --private --source=. --remote=origin --push || handle_error "gh repo create" "Failed to create and push to private GitHub repository '$FULL_REPO_NAME'."
+    else
+        gh repo create "$REPO_NAME" --public --source=. --remote=origin --push || handle_error "gh repo create" "Failed to create and push to public GitHub repository '$FULL_REPO_NAME'."
     fi
-    echo "GitHub repository '$FULL_REPO_NAME' created."
+    echo "GitHub repository created and code pushed successfully."
 fi
-
-# Push the local main branch to the new origin, set upstream
-echo "Pushing '$MAIN_BRANCH_NAME' branch to GitHub..."
-# Check if the branch exists locally before pushing
-if git rev-parse --verify $MAIN_BRANCH_NAME > /dev/null 2>&1; then
-    git push -u origin $MAIN_BRANCH_NAME || handle_error "git push -u origin $MAIN_BRANCH_NAME" "Failed to push '$MAIN_BRANCH_NAME' branch to GitHub. Check your SSH keys or GitHub auth."
-    echo "Branch '$MAIN_BRANCH_NAME' pushed to GitHub and upstream set."
-else
-     echo "Warning: Local branch '$MAIN_BRANCH_NAME' not found. Cannot push."
-     echo "Ensure you have created a commit on branch '$MAIN_BRANCH_NAME'."
-     ERRORS+=("Warning: Local branch '$MAIN_BRANCH_NAME' not found after commit step.")
-fi
-
 
 echo "GitHub setup and push complete."
 echo ""
