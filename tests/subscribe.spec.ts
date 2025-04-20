@@ -28,7 +28,6 @@ test('should be able to subscribe to the mailing list when signed in', async ({ 
   
   // Unsubscribe
   await page.goto('http://localhost:3000/mailing-list');
-  await page.pause();
   await page.getByRole('button', { name: 'Unsubscribe' }).click();
   await expect(page.getByText('Unsubscribed', { exact: true })).toBeVisible();
   await page.goto('http://localhost:3000/admin/mailing-list');

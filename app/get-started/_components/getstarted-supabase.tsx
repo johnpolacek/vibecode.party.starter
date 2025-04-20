@@ -83,7 +83,7 @@ After these changes, please run \`pnpm install\` to update the dependency tree.`
                   </ul>
                   <div className="mt-6 p-4 bg-blue-50 rounded-md">
                     <p className="text-blue-800 text-sm">
-                      <strong>Tip:</strong> You can find your project's database configuration and management tools in the{" "}
+                      <strong>Tip:</strong> You can find your project’s database configuration and management tools in the{" "}
                       <a href="https://supabase.com/dashboard" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                         Supabase Dashboard
                       </a>
