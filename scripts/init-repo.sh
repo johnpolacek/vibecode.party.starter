@@ -89,6 +89,25 @@ else
   echo "Existing Git repository found."
 fi
 
+# Update config.ts with GitHub URL before initial commit if public repo
+if [ "$REPO_VISIBILITY" == "public" ]; then
+    config_file="lib/config.ts"
+    if [ -f "$config_file" ]; then
+        # Use sed to update the github field in config.ts
+        # The pattern looks for the 'github: ""' line and replaces it with the new URL
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            # macOS requires an empty string after -i
+            sed -i '' "s|github: \".*\"|github: \"https://github.com/$FULL_REPO_NAME\"|" "$config_file"
+        else
+            # Linux version
+            sed -i "s|github: \".*\"|github: \"https://github.com/$FULL_REPO_NAME\"|" "$config_file"
+        fi
+        echo "Updated $config_file with GitHub repository URL"
+    else
+        ERRORS+=("Warning: Could not find $config_file to update GitHub URL")
+    fi
+fi
+
 # Add all current files and commit
 git add . || handle_error "git add ." "Failed to add files to staging."
 # Check if there are staged changes before committing
