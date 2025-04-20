@@ -95,7 +95,7 @@ deploy_env_to_vercel() {
     if [ ! -f "$env_file" ]; then
         echo "No .env file found. Skipping environment variable deployment."
         return
-    }
+    fi
 
     echo "Deploying environment variables to Vercel..."
     
@@ -131,8 +131,12 @@ deploy_env_to_vercel() {
 echo "🚀 Starting Project Initialization 🚀"
 echo ""
 
-# Prompt for the GitHub repository name
-read -p "Enter the desired GitHub repository name: " REPO_NAME
+# Get current directory name as default repo name
+DEFAULT_REPO_NAME=$(basename "$PWD")
+
+# Prompt for the GitHub repository name with default suggestion
+read -p "Enter the desired GitHub repository name [$DEFAULT_REPO_NAME]: " REPO_NAME
+REPO_NAME=${REPO_NAME:-$DEFAULT_REPO_NAME}
 
 if [ -z "$REPO_NAME" ]; then
   handle_error "User Input" "No repository name provided."
