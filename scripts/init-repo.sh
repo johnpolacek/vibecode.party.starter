@@ -34,6 +34,61 @@ handle_error() {
     exit 1
 }
 
+# Function to open URL in browser based on OS
+open_url() {
+    local url=$1
+    case "$OSTYPE" in
+        "darwin"*) # macOS
+            open "$url"
+            ;;
+        "linux"*) # Linux
+            if command -v xdg-open > /dev/null; then
+                xdg-open "$url"
+            elif command -v gnome-open > /dev/null; then
+                gnome-open "$url"
+            else
+                echo "Could not detect the web browser to use."
+            fi
+            ;;
+        *) # Other OS
+            echo "Could not detect the web browser to use."
+            ;;
+    esac
+}
+
+# Function to read value from .env file
+get_env_value() {
+    local key=$1
+    local value=""
+    if [ -f ".env" ]; then
+        value=$(grep "^${key}=" .env | cut -d '=' -f2)
+    fi
+    echo "$value"
+}
+
+# Function to add or update value in .env file
+update_env_file() {
+    local key=$1
+    local value=$2
+    local env_file=".env"
+    
+    # Create .env if it doesn't exist
+    if [ ! -f "$env_file" ]; then
+        touch "$env_file"
+    fi
+    
+    # Check if key exists and replace, otherwise add
+    if grep -q "^${key}=" "$env_file"; then
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            sed -i '' "s|^${key}=.*|${key}=${value}|" "$env_file"
+        else
+            sed -i "s|^${key}=.*|${key}=${value}|" "$env_file"
+        fi
+    else
+        echo "${key}=${value}" >> "$env_file"
+    fi
+}
+
 # --- Get User Input ---
 
 echo "🚀 Starting Project Initialization 🚀"
@@ -202,6 +257,48 @@ else
     echo "Project linked to Vercel and deployment initiated."
 fi
 
+# Set up Clerk environment variables
+echo ""
+echo "Setting up Clerk environment variables..."
+
+# Try to get values from .env first
+CLERK_PUB_KEY=$(get_env_value "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY")
+CLERK_SECRET_KEY=$(get_env_value "CLERK_SECRET_KEY")
+
+# Prompt for any missing values
+if [ -z "$CLERK_PUB_KEY" ]; then
+    echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY not found in .env"
+    read -p "Please enter your NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: " CLERK_PUB_KEY
+    if [ -n "$CLERK_PUB_KEY" ]; then
+        update_env_file "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" "$CLERK_PUB_KEY"
+    fi
+fi
+
+if [ -z "$CLERK_SECRET_KEY" ]; then
+    echo "CLERK_SECRET_KEY not found in .env"
+    read -p "Please enter your CLERK_SECRET_KEY: " CLERK_SECRET_KEY
+    if [ -n "$CLERK_SECRET_KEY" ]; then
+        update_env_file "CLERK_SECRET_KEY" "$CLERK_SECRET_KEY"
+    fi
+fi
+
+if [ -n "$CLERK_PUB_KEY" ] && [ -n "$CLERK_SECRET_KEY" ]; then
+    echo "Setting Clerk environment variables in Vercel..."
+    vercel env add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY production "$CLERK_PUB_KEY"
+    vercel env add CLERK_SECRET_KEY production "$CLERK_SECRET_KEY"
+    
+    # Also set for preview and development environments
+    vercel env add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY preview "$CLERK_PUB_KEY"
+    vercel env add CLERK_SECRET_KEY preview "$CLERK_SECRET_KEY"
+    vercel env add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY development "$CLERK_PUB_KEY"
+    vercel env add CLERK_SECRET_KEY development "$CLERK_SECRET_KEY"
+    
+    echo "Clerk environment variables have been set in Vercel."
+    echo "Clerk environment variables are also available in .env for local development."
+else
+    ERRORS+=("Warning: Clerk environment variables were not set. The application may not function correctly.")
+fi
+
 echo "Vercel linking complete."
 echo ""
 
@@ -229,6 +326,16 @@ echo "- GitHub repository created at https://github.com/$FULL_REPO_NAME"
 echo "- Code pushed to the '$MAIN_BRANCH_NAME' branch on GitHub."
 echo "- Vercel project linked to the GitHub repository."
 echo "- Vercel deployment triggered. Visit your Vercel dashboard to see the status."
+
+# Open Vercel project in browser
+echo ""
+echo "Opening Vercel project in browser..."
+VERCEL_PROJECT_URL=$(vercel project ls --json | grep -o '"url":"[^"]*"' | head -1 | cut -d'"' -f4)
+if [ -n "$VERCEL_PROJECT_URL" ]; then
+    open_url "https://$VERCEL_PROJECT_URL"
+else
+    echo "Could not determine Vercel project URL."
+fi
 
 if [ ${#ERRORS[@]} -gt 0 ]; then
     echo ""
