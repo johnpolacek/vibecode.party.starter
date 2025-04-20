@@ -89,6 +89,43 @@ update_env_file() {
     fi
 }
 
+# Function to deploy all env vars to Vercel
+deploy_env_to_vercel() {
+    local env_file=".env"
+    if [ ! -f "$env_file" ]; then
+        echo "No .env file found. Skipping environment variable deployment."
+        return
+    }
+
+    echo "Deploying environment variables to Vercel..."
+    
+    # Read each line from .env
+    while IFS= read -r line || [ -n "$line" ]; do
+        # Skip empty lines and comments
+        if [ -z "$line" ] || [[ $line == \#* ]]; then
+            continue
+        fi
+        
+        # Extract key and value
+        if [[ $line =~ ^([^=]+)=(.*)$ ]]; then
+            key="${BASH_REMATCH[1]}"
+            value="${BASH_REMATCH[2]}"
+            
+            # Remove any surrounding quotes from the value
+            value=$(echo "$value" | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//")
+            
+            echo "Setting $key in Vercel..."
+            
+            # Add to all environments (production, preview, development)
+            vercel env add "$key" production "$value" > /dev/null 2>&1
+            vercel env add "$key" preview "$value" > /dev/null 2>&1
+            vercel env add "$key" development "$value" > /dev/null 2>&1
+        fi
+    done < "$env_file"
+    
+    echo "✅ Environment variables deployed to Vercel"
+}
+
 # --- Get User Input ---
 
 echo "🚀 Starting Project Initialization 🚀"
@@ -257,7 +294,7 @@ else
     echo "Project linked to Vercel and deployment initiated."
 fi
 
-# Set up Clerk environment variables
+# Set up Clerk environment variables if not in .env
 echo ""
 echo "Setting up Clerk environment variables..."
 
@@ -282,24 +319,14 @@ if [ -z "$CLERK_SECRET_KEY" ]; then
     fi
 fi
 
-if [ -n "$CLERK_PUB_KEY" ] && [ -n "$CLERK_SECRET_KEY" ]; then
-    echo "Setting Clerk environment variables in Vercel..."
-    vercel env add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY production "$CLERK_PUB_KEY"
-    vercel env add CLERK_SECRET_KEY production "$CLERK_SECRET_KEY"
-    
-    # Also set for preview and development environments
-    vercel env add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY preview "$CLERK_PUB_KEY"
-    vercel env add CLERK_SECRET_KEY preview "$CLERK_SECRET_KEY"
-    vercel env add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY development "$CLERK_PUB_KEY"
-    vercel env add CLERK_SECRET_KEY development "$CLERK_SECRET_KEY"
-    
-    echo "Clerk environment variables have been set in Vercel."
-    echo "Clerk environment variables are also available in .env for local development."
-else
+# Deploy all environment variables to Vercel
+deploy_env_to_vercel
+
+if [ -z "$CLERK_PUB_KEY" ] || [ -z "$CLERK_SECRET_KEY" ]; then
     ERRORS+=("Warning: Clerk environment variables were not set. The application may not function correctly.")
 fi
 
-echo "Vercel linking complete."
+echo "Vercel linking and environment setup complete."
 echo ""
 
 # --- Step 4: Final Vercel Deployment (if not already deployed by linking step) ---
