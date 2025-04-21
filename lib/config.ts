@@ -1,11 +1,11 @@
 export const siteConfig = {
-  title: "VibeCademy",
-  description: "Get the resources you need to learn how to vibecode",
-  shortDescription: "Get the resources you need to learn how to vibecode",
-  url: "vibecademy.vercel.app",
-  shareImage: "https://starter.vibecode.party/screenshot.png",
-  x: "",
-  github: "",
+  title: "Vibestarter Test9",
+  description: "Testing vibecode party starter",
+  shortDescription: "Testing vibecode party starter",
+  url: "vibestarter-test9.vercel.app",
+  shareImage: "",
+  x: "johnpolacek",
+  github: "johnpolacek/vibestarter-test9",
   logo: ""
 } as const
 

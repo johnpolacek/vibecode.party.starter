@@ -290,12 +290,17 @@ echo "--- 3/4: Linking project to Vercel and GitHub ---"
 if vercel status --connected 2>/dev/null; then
     echo "Vercel project is already linked."
 else
-    echo "Linking project to Vercel and connecting to GitHub repository..."
-    # Use vercel deploy with --git-connect to link during deployment
-    VERCEL_DEPLOY_COMMAND="vercel deploy --confirm --prebuilt --git-connect $GIT_REMOTE_URL"
-    echo "Running: $VERCEL_DEPLOY_COMMAND"
-    $VERCEL_DEPLOY_COMMAND || handle_error "$VERCEL_DEPLOY_COMMAND" "Failed to link and deploy to Vercel. Check your Vercel auth and ensure the repository link is correct."
-    echo "Project linked to Vercel and deployment initiated."
+    echo "Linking project to Vercel..."
+    # First link the project
+    echo "Running: vercel link"
+    vercel link || handle_error "vercel link" "Failed to link project to Vercel."
+    
+    # Then connect to GitHub
+    echo "Connecting to GitHub repository..."
+    echo "Running: vercel git connect"
+    vercel git connect || handle_error "vercel git connect" "Failed to connect GitHub repository to Vercel."
+    
+    echo "Project linked to Vercel and GitHub connection established."
 fi
 
 # Set up Clerk environment variables if not in .env
@@ -306,12 +311,16 @@ echo "Setting up Clerk environment variables..."
 CLERK_PUB_KEY=$(get_env_value "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY")
 CLERK_SECRET_KEY=$(get_env_value "CLERK_SECRET_KEY")
 
-# Prompt for any missing values
+# Prompt for any missing values and add to both .env and Vercel
 if [ -z "$CLERK_PUB_KEY" ]; then
     echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY not found in .env"
     read -p "Please enter your NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: " CLERK_PUB_KEY
     if [ -n "$CLERK_PUB_KEY" ]; then
         update_env_file "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" "$CLERK_PUB_KEY"
+        echo "Adding NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY to Vercel..."
+        vercel env add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY production "$CLERK_PUB_KEY" || handle_error "vercel env add" "Failed to add Clerk public key to Vercel."
+        vercel env add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY preview "$CLERK_PUB_KEY" || handle_error "vercel env add" "Failed to add Clerk public key to Vercel."
+        vercel env add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY development "$CLERK_PUB_KEY" || handle_error "vercel env add" "Failed to add Clerk public key to Vercel."
     fi
 fi
 
@@ -320,31 +329,26 @@ if [ -z "$CLERK_SECRET_KEY" ]; then
     read -p "Please enter your CLERK_SECRET_KEY: " CLERK_SECRET_KEY
     if [ -n "$CLERK_SECRET_KEY" ]; then
         update_env_file "CLERK_SECRET_KEY" "$CLERK_SECRET_KEY"
+        echo "Adding CLERK_SECRET_KEY to Vercel..."
+        vercel env add CLERK_SECRET_KEY production "$CLERK_SECRET_KEY" || handle_error "vercel env add" "Failed to add Clerk secret key to Vercel."
+        vercel env add CLERK_SECRET_KEY preview "$CLERK_SECRET_KEY" || handle_error "vercel env add" "Failed to add Clerk secret key to Vercel."
+        vercel env add CLERK_SECRET_KEY development "$CLERK_SECRET_KEY" || handle_error "vercel env add" "Failed to add Clerk secret key to Vercel."
     fi
 fi
-
-# Deploy all environment variables to Vercel
-deploy_env_to_vercel
 
 if [ -z "$CLERK_PUB_KEY" ] || [ -z "$CLERK_SECRET_KEY" ]; then
     ERRORS+=("Warning: Clerk environment variables were not set. The application may not function correctly.")
 fi
 
-echo "Vercel linking and environment setup complete."
+echo "Environment setup complete."
 echo ""
 
-# --- Step 4: Final Vercel Deployment (if not already deployed by linking step) ---
-echo "--- 4/4: Initiating final Vercel deployment ---"
+# --- Step 4: Final Vercel Deployment ---
+echo "--- 4/4: Initiating Vercel deployment ---"
 
-VERCEL_DEPLOY_COMMAND="vercel deploy"
-if [ "$AUTO_CONFIRM_VERCEL" == "true" ]; then
-    VERCEL_DEPLOY_COMMAND="vercel deploy --confirm" # Add --confirm if auto-confirming
-fi
-
+VERCEL_DEPLOY_COMMAND="vercel deploy --confirm"
 echo "Running: $VERCEL_DEPLOY_COMMAND"
-# Pipe yes to automatically answer prompts like "Link to project?" if needed
-# This is a safeguard; --confirm and --git-connect in the previous step should handle most
-yes | $VERCEL_DEPLOY_COMMAND || handle_error "$VERCEL_DEPLOY_COMMAND" "Failed to initiate final Vercel deployment."
+$VERCEL_DEPLOY_COMMAND || handle_error "$VERCEL_DEPLOY_COMMAND" "Failed to initiate Vercel deployment."
 echo "Vercel deployment initiated."
 echo ""
 
