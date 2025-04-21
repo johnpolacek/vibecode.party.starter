@@ -245,9 +245,11 @@ echo ""
 echo "--- 2/4: Creating GitHub repository and pushing ---"
 
 # Check if origin remote already exists and points to the correct repo
-CURRENT_ORIGIN=$(git remote get-url origin 2>/dev/null)
+echo "Checking for existing git remote..."
+CURRENT_ORIGIN=$(git remote get-url origin 2>/dev/null || echo "")
 
 if [ -n "$CURRENT_ORIGIN" ]; then
+    echo "Found existing remote: $CURRENT_ORIGIN"
     if [[ "$CURRENT_ORIGIN" == *"github.com/$FULL_REPO_NAME"* ]]; then
         echo "Git remote 'origin' already exists and points to $FULL_REPO_NAME."
     else
@@ -256,13 +258,24 @@ if [ -n "$CURRENT_ORIGIN" ]; then
         handle_error "Git Remote Conflict" "Existing 'origin' remote found pointing elsewhere. Please resolve manually."
     fi
 else
+    echo "No existing remote found. Creating new repository..."
+    
     # Create the repository and push in one command
     echo "Creating GitHub repository '$FULL_REPO_NAME' ($REPO_VISIBILITY)..."
+    
+    CREATE_COMMAND=""
     if [ "$REPO_VISIBILITY" == "private" ]; then
-        gh repo create "$REPO_NAME" --private --source=. --remote=origin --push || handle_error "gh repo create" "Failed to create and push to private GitHub repository '$FULL_REPO_NAME'."
+        CREATE_COMMAND="gh repo create \"$REPO_NAME\" --private --source=. --remote=origin --push"
     else
-        gh repo create "$REPO_NAME" --public --source=. --remote=origin --push || handle_error "gh repo create" "Failed to create and push to public GitHub repository '$FULL_REPO_NAME'."
+        CREATE_COMMAND="gh repo create \"$REPO_NAME\" --public --source=. --remote=origin --push"
     fi
+    
+    echo "Executing: $CREATE_COMMAND"
+    eval "$CREATE_COMMAND" || {
+        echo "Error occurred while creating repository. Exit code: $?"
+        handle_error "gh repo create" "Failed to create and push to $REPO_VISIBILITY GitHub repository '$FULL_REPO_NAME'."
+    }
+    
     echo "GitHub repository created and code pushed successfully."
 fi
 
