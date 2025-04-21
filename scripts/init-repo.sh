@@ -381,7 +381,7 @@ add_vercel_env() {
     
     echo "Adding $key to Vercel $env environment..."
     vercel env rm "$key" "$env" --yes > /dev/null 2>&1 || true
-    vercel env add "$key" "$value" --env="$env" --yes || handle_error "vercel env add" "Failed to add $key to Vercel $env environment"
+    vercel env add "$key" "$env" "$value" --yes || handle_error "vercel env add" "Failed to add $key to Vercel $env environment"
 }
 
 # Add variables to each environment
