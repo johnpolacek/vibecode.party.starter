@@ -336,37 +336,59 @@ validate_clerk_key() {
     return 0
 }
 
-# Keep prompting for public key until valid
-while ! validate_clerk_key "$CLERK_PUB_KEY" "public"; do
-    if [ -n "$CLERK_PUB_KEY" ]; then
-        echo "❌ Invalid Clerk publishable key format. It should start with pk_test_ or pk_live_"
-    fi
-    echo "Visit https://dashboard.clerk.com/last-active/api-keys to get your publishable key"
-    read -p "Enter your NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: " CLERK_PUB_KEY
+# Handle public key
+if validate_clerk_key "$CLERK_PUB_KEY" "public"; then
+    echo "✓ Using existing NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY from .env"
+else
+    while ! validate_clerk_key "$CLERK_PUB_KEY" "public"; do
+        if [ -n "$CLERK_PUB_KEY" ]; then
+            echo "❌ Invalid Clerk publishable key format. It should start with pk_test_ or pk_live_"
+        else
+            echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY not found in .env"
+        fi
+        echo "Visit https://dashboard.clerk.com/last-active/api-keys to get your publishable key"
+        read -p "Enter your NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: " CLERK_PUB_KEY
+    done
+    # Only update .env if we had to ask for a new value
+    update_env_file "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" "$CLERK_PUB_KEY"
+fi
+
+# Handle secret key
+if validate_clerk_key "$CLERK_SECRET_KEY" "secret"; then
+    echo "✓ Using existing CLERK_SECRET_KEY from .env"
+else
+    while ! validate_clerk_key "$CLERK_SECRET_KEY" "secret"; do
+        if [ -n "$CLERK_SECRET_KEY" ]; then
+            echo "❌ Invalid Clerk secret key format. It should start with sk_test_ or sk_live_"
+        else
+            echo "CLERK_SECRET_KEY not found in .env"
+        fi
+        echo "Visit https://dashboard.clerk.com/last-active/api-keys to get your secret key"
+        read -p "Enter your CLERK_SECRET_KEY: " CLERK_SECRET_KEY
+    done
+    # Only update .env if we had to ask for a new value
+    update_env_file "CLERK_SECRET_KEY" "$CLERK_SECRET_KEY"
+fi
+
+# Add environment variables to Vercel
+echo "Adding Clerk environment variables to Vercel..."
+
+# Function to add env var to Vercel for a specific environment
+add_vercel_env() {
+    local key=$1
+    local value=$2
+    local env=$3
+    
+    echo "Adding $key to Vercel $env environment..."
+    vercel env rm "$key" "$env" --yes > /dev/null 2>&1 || true
+    vercel env add "$key" "$value" --env="$env" --yes || handle_error "vercel env add" "Failed to add $key to Vercel $env environment"
+}
+
+# Add variables to each environment
+for env in "production" "preview" "development"; do
+    add_vercel_env "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" "$CLERK_PUB_KEY" "$env"
+    add_vercel_env "CLERK_SECRET_KEY" "$CLERK_SECRET_KEY" "$env"
 done
-
-# Add public key to both .env and Vercel
-update_env_file "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" "$CLERK_PUB_KEY"
-echo "Adding NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY to Vercel..."
-vercel env add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY production "$CLERK_PUB_KEY" || handle_error "vercel env add" "Failed to add Clerk public key to Vercel."
-vercel env add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY preview "$CLERK_PUB_KEY" || handle_error "vercel env add" "Failed to add Clerk public key to Vercel."
-vercel env add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY development "$CLERK_PUB_KEY" || handle_error "vercel env add" "Failed to add Clerk public key to Vercel."
-
-# Keep prompting for secret key until valid
-while ! validate_clerk_key "$CLERK_SECRET_KEY" "secret"; do
-    if [ -n "$CLERK_SECRET_KEY" ]; then
-        echo "❌ Invalid Clerk secret key format. It should start with sk_test_ or sk_live_"
-    fi
-    echo "Visit https://dashboard.clerk.com/last-active/api-keys to get your secret key"
-    read -p "Enter your CLERK_SECRET_KEY: " CLERK_SECRET_KEY
-done
-
-# Add secret key to both .env and Vercel
-update_env_file "CLERK_SECRET_KEY" "$CLERK_SECRET_KEY"
-echo "Adding CLERK_SECRET_KEY to Vercel..."
-vercel env add CLERK_SECRET_KEY production "$CLERK_SECRET_KEY" || handle_error "vercel env add" "Failed to add Clerk secret key to Vercel."
-vercel env add CLERK_SECRET_KEY preview "$CLERK_SECRET_KEY" || handle_error "vercel env add" "Failed to add Clerk secret key to Vercel."
-vercel env add CLERK_SECRET_KEY development "$CLERK_SECRET_KEY" || handle_error "vercel env add" "Failed to add Clerk secret key to Vercel."
 
 echo "✅ Clerk environment variables have been set up successfully."
 echo ""
