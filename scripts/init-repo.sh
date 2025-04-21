@@ -142,11 +142,12 @@ if [ -z "$REPO_NAME" ]; then
   handle_error "User Input" "No repository name provided."
 fi
 
-# Prompt for repository visibility
-read -p "Enter repository visibility (public/private): " REPO_VISIBILITY_INPUT
+# Prompt for repository visibility with public as default
+read -p "Enter repository visibility [public/private]: " REPO_VISIBILITY_INPUT
+REPO_VISIBILITY=${REPO_VISIBILITY_INPUT:-"public"}
 
 # Validate repository visibility input
-REPO_VISIBILITY=$(echo "$REPO_VISIBILITY_INPUT" | tr '[:upper:]' '[:lower:]') # Convert to lowercase
+REPO_VISIBILITY=$(echo "$REPO_VISIBILITY" | tr '[:upper:]' '[:lower:]') # Convert to lowercase
 if [[ "$REPO_VISIBILITY" != "public" && "$REPO_VISIBILITY" != "private" ]]; then
   handle_error "User Input" "Invalid visibility '$REPO_VISIBILITY_INPUT'. Please enter 'public' or 'private'."
 fi
@@ -165,8 +166,8 @@ echo "Vercel Linking Git URL: $GIT_REMOTE_URL"
 echo "Main Branch: $MAIN_BRANCH_NAME"
 echo "-----------------------"
 echo ""
-read -p "Does this look correct? (y/N): " confirm
-if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+read -p "Does this look correct? [Y/n]: " confirm
+if [[ "$confirm" =~ ^[Nn]$ ]]; then
     echo "Setup cancelled by user."
     exit 1
 fi
