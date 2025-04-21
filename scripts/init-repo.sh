@@ -331,7 +331,7 @@ validate_clerk_key() {
     # Secret key should start with sk_test_ or sk_live_
     if [ "$key_type" = "secret" ] && ! [[ $key =~ ^sk_(test|live)_ ]]; then
         return 1
-    }
+    fi
     
     return 0
 }
