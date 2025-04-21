@@ -370,26 +370,46 @@ else
     update_env_file "CLERK_SECRET_KEY" "$CLERK_SECRET_KEY"
 fi
 
-# Add environment variables to Vercel
-echo "Adding Clerk environment variables to Vercel..."
-
 # Function to add env var to Vercel for a specific environment
 add_vercel_env() {
     local key=$1
     local value=$2
     local env=$3
     
-    echo "Adding $key to Vercel $env environment..."
-    vercel env rm "$key" "$env" --yes > /dev/null 2>&1 || true
-    vercel env add "$key" "$env" "$value" --yes || handle_error "vercel env add" "Failed to add $key to Vercel $env environment"
+    echo "----------------------------------------"
+    echo "🔄 Setting up $key for $env environment"
+    
+    # First try to remove any existing value
+    echo "Removing existing $key from $env environment if it exists..."
+    vercel env rm "$key" "$env" || {
+        echo "Note: No existing variable to remove or removal failed (this is usually ok)"
+    }
+    
+    # Add the new value
+    echo "Adding $key to $env environment..."
+    echo "Running: vercel env add \"$key\" \"$env\" \"$value\""
+    if vercel env add "$key" "$env" "$value"; then
+        echo "✅ Successfully added $key to $env environment"
+    else
+        local exit_code=$?
+        echo "❌ Failed to add environment variable"
+        echo "Exit code: $exit_code"
+        echo "Command: vercel env add \"$key\" \"$env\" \"$value\""
+        handle_error "vercel env add" "Failed to add $key to Vercel $env environment (exit code: $exit_code)"
+    fi
+    echo "----------------------------------------"
 }
 
 # Add variables to each environment
+echo "🔐 Setting up Clerk environment variables in Vercel..."
 for env in "production" "preview" "development"; do
+    echo ""
+    echo "Setting up environment: $env"
     add_vercel_env "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" "$CLERK_PUB_KEY" "$env"
     add_vercel_env "CLERK_SECRET_KEY" "$CLERK_SECRET_KEY" "$env"
 done
 
+echo ""
 echo "✅ Clerk environment variables have been set up successfully."
 echo ""
 
