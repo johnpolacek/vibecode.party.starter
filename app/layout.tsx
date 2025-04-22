@@ -79,7 +79,7 @@ export default async function RootLayout({
                   <div className="flex items-center gap-2">
                     <div className="flex items-center pr-2 gap-2">
                       {siteConfig.x && (
-                        <Link href={siteConfig.x} target="_blank" className="text-muted-foreground hover:text-primary">
+                        <Link href={`https://x.com/${siteConfig.x}`} target="_blank" className="text-muted-foreground hover:text-primary">
                           <span className="text-xl font-extrabold px-2 mx-1">𝕏</span>
                         </Link>
                       )}

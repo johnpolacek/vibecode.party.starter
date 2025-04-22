@@ -249,12 +249,16 @@ CURRENT_ORIGIN=$(git remote get-url origin 2>/dev/null || echo "")
 
 if [ -n "$CURRENT_ORIGIN" ]; then
     echo "Found existing remote: $CURRENT_ORIGIN"
-    if [[ "$CURRENT_ORIGIN" == *"github.com/$FULL_REPO_NAME"* ]]; then
-        echo "Git remote 'origin' already exists and points to $FULL_REPO_NAME."
+    # Normalize the URLs for comparison (both SSH format)
+    EXPECTED_URL="git@github.com:$FULL_REPO_NAME.git"
+    if [ "$CURRENT_ORIGIN" = "$EXPECTED_URL" ]; then
+        echo "✓ Git remote 'origin' already exists and points to correct repository"
+        echo "Continuing with existing remote..."
     else
-        echo "Warning: Git remote 'origin' already exists and points to $CURRENT_ORIGIN."
-        echo "This script expects no existing 'origin' remote."
-        handle_error "Git Remote Conflict" "Existing 'origin' remote found pointing elsewhere. Please resolve manually."
+        echo "Warning: Git remote 'origin' exists but points to unexpected repository"
+        echo "Current:  $CURRENT_ORIGIN"
+        echo "Expected: $EXPECTED_URL"
+        handle_error "Git Remote Conflict" "Existing 'origin' remote points to unexpected repository. Please resolve manually."
     fi
 else
     echo "No existing remote found. Creating new repository..."
@@ -292,14 +296,29 @@ else
     # First link the project
     echo "Running: vercel link"
     vercel link || handle_error "vercel link" "Failed to link project to Vercel."
-    
-    # Then connect to GitHub
+fi
+
+# Check if Git is already connected
+echo "Checking Git connection status..."
+if vercel git ls 2>&1 | grep -q "$FULL_REPO_NAME"; then
+    echo "✓ GitHub repository $FULL_REPO_NAME is already connected to Vercel"
+else
+    # Connect to GitHub
     echo "Connecting to GitHub repository..."
     echo "Running: vercel git connect"
-    vercel git connect || handle_error "vercel git connect" "Failed to connect GitHub repository to Vercel."
-    
-    echo "Project linked to Vercel and GitHub connection established."
+    if ! output=$(vercel git connect 2>&1); then
+        # Check if the error is just that it's already connected
+        if echo "$output" | grep -q "is already connected to your project"; then
+            echo "✓ GitHub repository is already connected to Vercel"
+        else
+            echo "$output"
+            handle_error "vercel git connect" "Failed to connect GitHub repository to Vercel."
+        fi
+    fi
 fi
+
+echo "Project linked to Vercel and GitHub connection established."
+echo ""
 
 # Set up Clerk environment variables if not in .env
 echo ""
@@ -382,19 +401,22 @@ add_vercel_env() {
         echo "Note: No existing variable to remove or removal failed (this is usually ok)"
     }
     
+    # Create a temporary file
+    local tmp_file
+    tmp_file=$(mktemp)
+    echo "$value" > "$tmp_file"
+    
     # Add the new value
     echo "Adding $key to production environment..."
-    local add_command="vercel env add $key <<EOF
-$value
-EOF"
-    
     echo "Running environment variable add command..."
-    if eval "$add_command"; then
+    if vercel env add "$key" production < "$tmp_file"; then
         echo "✅ Successfully added $key to production environment"
+        rm "$tmp_file"
     else
         local exit_code=$?
         echo "❌ Failed to add environment variable"
         echo "Exit code: $exit_code"
+        rm "$tmp_file"
         handle_error "vercel env add" "Failed to add $key to Vercel production environment (exit code: $exit_code)"
     fi
     echo "----------------------------------------"
