@@ -56,3 +56,6 @@ supabase/.temp/*
 
 # Database backups
 /backups/
+
+# LLM context
+llm_context.txt
