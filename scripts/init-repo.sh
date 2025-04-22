@@ -116,6 +116,7 @@ deploy_env_to_vercel() {
             
             echo "Setting $key in Vercel..."
             
+            # Add to environment
             vercel env add "$key" production "$value" > /dev/null 2>&1
         fi
     done < "$env_file"
@@ -367,39 +368,46 @@ else
     update_env_file "CLERK_SECRET_KEY" "$CLERK_SECRET_KEY"
 fi
 
-# Function to add env var to Vercel
+# Function to add env var to Vercel for production
 add_vercel_env() {
     local key=$1
     local value=$2
     
     echo "----------------------------------------"
-    echo "🔄 Setting up $key"
+    echo "🔄 Setting up $key for production environment"
+    
+    # First try to remove any existing value
+    echo "Removing existing $key from production environment if it exists..."
+    vercel env rm "$key" production || {
+        echo "Note: No existing variable to remove or removal failed (this is usually ok)"
+    }
     
     # Add the new value
-    echo "Adding $key to Vercel..."
-    echo "Running: vercel env add \"$key\" \"$value\""
+    echo "Adding $key to production environment..."
+    local add_command="vercel env add $key <<EOF
+$value
+EOF"
     
-    if vercel env add "$key" "$value"; then
-        echo "✅ Successfully added $key to Vercel"
+    echo "Running environment variable add command..."
+    if eval "$add_command"; then
+        echo "✅ Successfully added $key to production environment"
     else
         local exit_code=$?
         echo "❌ Failed to add environment variable"
         echo "Exit code: $exit_code"
-        echo "Command: vercel env add \"$key\" \"$value\""
-        handle_error "vercel env add" "Failed to add $key to Vercel (exit code: $exit_code)"
+        handle_error "vercel env add" "Failed to add $key to Vercel production environment (exit code: $exit_code)"
     fi
     echo "----------------------------------------"
 }
 
-# Add variables to Vercel
+# Add variables to production environment
 echo "🔐 Setting up Clerk environment variables in Vercel..."
 echo ""
-
 add_vercel_env "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" "$CLERK_PUB_KEY"
 add_vercel_env "CLERK_SECRET_KEY" "$CLERK_SECRET_KEY"
 
 echo ""
-echo "✅ Clerk environment variables have been set up successfully in vercel."
+echo "✅ Clerk environment variables have been set up successfully."
 echo ""
 
 # --- Step 4: Final Vercel Deployment ---
