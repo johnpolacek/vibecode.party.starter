@@ -2,7 +2,7 @@
   "name": "vibecode-party-starter",
   "version": "0.3.9",
   "license": "MIT",
-  "description": "A Next.js starter template for vibecoding SaaS apps",
+  "description": "A Next.js starter project for vibecoding full stack SaaS apps with auth, backend, payments, email, and more",
   "keywords": [
     "nextjs",
     "template",
