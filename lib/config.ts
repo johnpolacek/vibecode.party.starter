@@ -1,11 +1,11 @@
 export const siteConfig = {
-  title: "Vibestarter Test9",
-  description: "Testing vibecode party starter",
-  shortDescription: "Testing vibecode party starter",
-  url: "vibestarter-test9.vercel.app",
-  shareImage: "",
+  title: "Vibecode Party Starter",
+  description: "The full stack Next.js starter project for vibe coding.",
+  shortDescription: "The full stack Next.js starter project for vibe coding.",
+  url: "https://starter.vibecode.party",
+  shareImage: "https://starter.vibecode.party/screenshot.png",
   x: "johnpolacek",
-  github: "johnpolacek/vibestarter-test9",
+  github: "https://github.com/johnpolacek/vibecode.party.starter",
   logo: ""
 } as const
 
