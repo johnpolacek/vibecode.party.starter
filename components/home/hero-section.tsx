@@ -63,7 +63,7 @@ export function HeroSection({ gettingStarted, title }: { gettingStarted?: boolea
           {!gettingStarted && (
             <>
               <Heading variant="h2" className="mb-8 text-lg md:text-xl font-medium text-balance">
-                The Next.js starter project for vibe coding SaaS apps.
+                The Next.js starter project for vibe coding full stack web apps.
               </Heading>
               <div className="pt-4 pb-8 max-w-lg mx-auto">
                 <CopyOneliner

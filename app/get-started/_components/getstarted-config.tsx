@@ -111,13 +111,9 @@ export default async function GetStartedConfig() {
                 </div>
                 <div className="text-xs text-muted-foreground truncate">{status.value || "(none provided)"}</div>
               </div>
-              {status.isDefault ? (
+              {status.isDefault && (
                 <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-4 shrink-0 ${status.required ? "text-yellow-600 border-yellow-600" : "text-muted-foreground border-muted"}`}>
                   {status.required ? "Needs Update" : "Default"}
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 text-green-600 border-green-600 shrink-0">
-                  Customized
                 </Badge>
               )}
             </div>
