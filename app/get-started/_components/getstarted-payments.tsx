@@ -26,7 +26,7 @@ export default async function GetStartedPayments() {
    - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
    - STRIPE_SECRET_KEY
 
-4. And remove GetStartedPayments from the get-started page
+4. And remove getstarted-payments from the get-started page
 
 After these changes, please run \`pnpm install\` to update the dependency tree.`
 
@@ -96,7 +96,7 @@ After these changes, please run \`pnpm install\` to update the dependency tree.`
             </div>
 
             <div className="pt-8">
-              <CursorPrompt prompt={cursorPrompt} />
+              <CursorPrompt prompt={cursorPrompt} heading="Don’t need payments?" />
             </div>
           </Card>
         </div>

@@ -31,7 +31,7 @@ export default async function GetStartedEmail() {
    - CONTACT_EMAIL
    - UNSUBSCRIBE_SECRET
 
-4. And remove GetStartedEmail from the get-started page
+4. And remove getstarted-email from the get-started page
 
 After these changes, please run \`pnpm install\` to update the dependency tree.`
 
@@ -105,7 +105,7 @@ After these changes, please run \`pnpm install\` to update the dependency tree.`
             </div>
 
             <div className="pt-8">
-              <CursorPrompt prompt={cursorPrompt} />
+              <CursorPrompt prompt={cursorPrompt} heading="Don’t need email functionality?" />
             </div>
           </Card>
         </div>

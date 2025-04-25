@@ -17,9 +17,24 @@ export default async function GetStartedTesting() {
    - TEST_USER_PASSWORD
    - TEST_USER_ID
 
-2. Removing any test-specific code that uses these variables
+2. Removing test-specific code and files:
+   - Delete all files in /tests directory:
+     - /tests/utils/auth-helpers.ts
+     - /tests/utils/test-helpers.ts
+     - /tests/utils/db-reset.ts
+     - /tests/global-setup.ts
+     - /tests/auth.spec.ts
+     - /tests/admin.spec.ts
+     - /tests/subscribe.spec.ts
+     - /tests/contact.spec.ts
+   - Delete /app/get-started/_components/getstarted-testing.tsx
+   - Remove test user section from components/home/content-section.tsx
 
-3. And remove GetStartedTesting from the get-started page`
+3. Remove test-related packages:
+   - Uninstall @clerk/testing and @playwright/test
+   - Remove test-related scripts from package.json
+
+4. Remove test user section from .env and .example-env files`
 
   return (
     <>
@@ -73,7 +88,7 @@ export default async function GetStartedTesting() {
             </div>
 
             <div className="pt-8">
-              <CursorPrompt prompt={cursorPrompt} />
+              <CursorPrompt prompt={cursorPrompt} heading="Don't need test user configuration?" />
             </div>
           </Card>
         </div>

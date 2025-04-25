@@ -38,6 +38,8 @@ export default async function GetStartedFirebase() {
    - Visit java.com to download and install Java
    - Verify installation with \`java -version\`
 
+6. Remove the getstarted-firebase section from the get-started page
+
 After these changes, you can start the Firebase emulator with \`pnpm db:emulator:start\`.`
 
   return (
@@ -90,7 +92,7 @@ After these changes, you can start the Firebase emulator with \`pnpm db:emulator
             </ol>
 
             <div className="pt-8">
-              <CursorPrompt prompt={cursorPrompt} />
+              <CursorPrompt prompt={cursorPrompt} heading="Don’t need Firebase?" />
             </div>
           </Card>
         </div>

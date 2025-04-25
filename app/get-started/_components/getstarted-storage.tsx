@@ -32,7 +32,7 @@ export default async function GetStartedStorage() {
 
 4. Updating next.config.ts by removing *.s3.amazonaws.com entries from images.remotePatterns
 
-5. And remove GetStartedStorage from the get-started page
+5. And remove getstarted-storage from the get-started page
 
 After these changes, please run \`pnpm install\` to update the dependency tree.`
 
@@ -83,7 +83,7 @@ After these changes, please run \`pnpm install\` to update the dependency tree.`
             </div>
 
             <div className="pt-8">
-              <CursorPrompt prompt={cursorPrompt} />
+              <CursorPrompt prompt={cursorPrompt} heading="Don’t need file storage?" />
             </div>
           </Card>
         </div>

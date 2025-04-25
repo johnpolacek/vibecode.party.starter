@@ -26,7 +26,6 @@ function getClientFirestoreInstance() {
 
     // Connect to emulator in development or test
     if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
-      console.log('Connecting to Firestore emulator...');
       try {
         connectFirestoreEmulator(clientDb, '127.0.0.1', 8080);
       } catch (error) {

@@ -21,7 +21,7 @@
     "boot:vercel": "pnpm i -g vercel && vercel link",
     "boot:repo": "chmod +x ./scripts/init-repo.sh && ./scripts/init-repo.sh",
     "boot": "pnpm boot:github && pnpm boot:vercel && pnpm boot:repo",
-    "go": "pnpm generate:routes && git add . && aicommits && git push origin main",
+    "go": "pnpm generate:routes && pnpm generate:llm && git add . && aicommits && git push origin main",
     "test": "playwright test",
     "test:clean": "rm -rf ~/.cache/ms-playwright-tests test-results/ playwright-report/",
     "pw": "playwright test --ui --debug",
@@ -31,9 +31,9 @@
     "db:local:restart": "pnpm db:local:stop || true && pnpm db:local:start",
     "db:admin": "open http://localhost:4000/firestore/default/data",
     "generate:routes": "tsx scripts/generate-routes.ts",
+    "generate:llm": "tsx scripts/bundle-code.ts . llm.txt",
     "test:setup": "pnpm db:local:restart",
-    "test:full": "pnpm test:setup && pnpm test",
-    "bundle:llm": "tsx scripts/bundle-code.ts . llm_context.txt"
+    "test:full": "pnpm test:setup && pnpm test"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.16",

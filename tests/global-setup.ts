@@ -1,4 +1,4 @@
-import { resetDatabase, verifyDatabaseReset, seedTestData } from './utils/db-reset';
+import { resetDatabase, verifyDatabaseReset, seedTestData } from "./utils/db-reset";
 
 /**
  * Global setup function that runs before all tests

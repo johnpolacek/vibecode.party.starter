@@ -14,22 +14,30 @@ export default async function GetStartedAI() {
   const cursorPrompt = `Please help me remove AI functionality from my project by:
 
 1. Deleting these files:
-   - app/api/ai/text/route.ts
-   - app/api/ai/image/route.ts
-   - lib/ai.ts
-   - components/ai/text-generation.tsx
-   - components/ai/image-generation.tsx
+   - app/api/ai/generate/text/route.ts
+   - app/api/ai/generate/image/route.ts
+   - app/api/ai/generate/object/route.ts
+   - app/api/ai/generate/strings/route.ts
+   - app/_hooks/useGenerateText.ts
+   - app/_hooks/useGenerateImage.ts
+   - app/_hooks/useGenerateObject.ts
+   - app/_hooks/useGenerateStrings.ts
+   - app/demo/ai/page.tsx
+   - components/demo/ai-demo-client.tsx
+   - app/get-started/_components/getstarted-ai.tsx
 
 2. Removing these dependencies from package.json:
-   - openai
-   - replicate
+   - @ai-sdk/openai
+   - @ai-sdk/react
+   - @ai-sdk/replicate
+   - ai
 
 3. Removing these environment variables from .env:
    - OPENAI_API_KEY
    - REPLICATE_API_TOKEN
    - REPLICATE_MODEL
 
-4. And remove GetStartedAI from the get-started page
+4. And remove getstarted-ai from the get-started page
 
 After these changes, please run \`pnpm install\` to update the dependency tree.`
 
@@ -103,7 +111,7 @@ After these changes, please run \`pnpm install\` to update the dependency tree.`
             </div>
 
             <div className="pt-8">
-              <CursorPrompt prompt={cursorPrompt} />
+              <CursorPrompt prompt={cursorPrompt} heading="Don't need AI integration?" />
             </div>
           </Card>
         </div>

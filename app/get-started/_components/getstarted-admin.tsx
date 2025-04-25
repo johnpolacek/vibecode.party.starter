@@ -31,7 +31,7 @@ export default async function GetStartedAdmin() {
 
 3. Removing any admin-related Firestore collections and security rules
 
-4. And remove GetStartedAdmin from the get-started page`
+4. And remove getstarted-admin from the get-started page`
 
   return (
     <>
@@ -84,7 +84,7 @@ export default async function GetStartedAdmin() {
             </div>
 
             <div className="pt-8">
-              <CursorPrompt prompt={cursorPrompt} />
+              <CursorPrompt prompt={cursorPrompt} heading="Don’t need admin functionality?" />
             </div>
           </Card>
         </div>

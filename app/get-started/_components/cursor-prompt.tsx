@@ -8,15 +8,16 @@ import { ChevronsDown, ChevronsUp } from "lucide-react"
 
 interface CursorPromptProps {
   prompt: string
+  heading: string
 }
 
-export function CursorPrompt({ prompt }: CursorPromptProps) {
+export function CursorPrompt({ prompt, heading }: CursorPromptProps) {
   const [isVisible, setIsVisible] = useState(false)
 
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-4 sm:gap-8">
-        <Heading variant="h5">Don&apos;t need admin functionality?</Heading>
+        <Heading variant="h5">{heading}</Heading>
         <Button className="text-primary hover:text-primary" variant="outline" onClick={() => setIsVisible(!isVisible)}>
           {isVisible ? <ChevronsUp className="w-4 h-4" /> : <ChevronsDown className="w-4 h-4" />}
           {isVisible ? "Hide Cursor Prompt" : "Show Cursor Prompt"}
