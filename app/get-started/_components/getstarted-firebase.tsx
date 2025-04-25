@@ -65,7 +65,7 @@ After these changes, you can start the Firebase emulator with \`pnpm db:emulator
                     NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id{"\n"}
                     NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key{"\n"}
                     FIREBASE_CLIENT_EMAIL=your_service_account_email{"\n"}
-                    FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour Private Key\n-----END PRIVATE KEY-----\n"
+                    FIREBASE_PRIVATE_KEY=&quot;-----BEGIN PRIVATE KEY-----\nYour Private Key\n-----END PRIVATE KEY-----\n&quot;
                   </code>
                 </pre>
               </li>

@@ -16,21 +16,41 @@ let clientDb: Firestore | undefined;
 function getClientFirestoreInstance() {
   if (clientDb) return clientDb;
 
-  // Initialize Firebase if not already initialized
-  const apps = getApps();
-  const app = apps.length ? apps[0] : initializeApp(firebaseConfig);
+  try {
+    // Initialize Firebase if not already initialized
+    const apps = getApps();
+    const app = apps.length ? apps[0] : initializeApp(firebaseConfig);
 
-  // Initialize Firestore
-  clientDb = getFirestore(app);
+    // Initialize Firestore
+    clientDb = getFirestore(app);
 
-  // Connect to emulator in development or test
-  if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
-    console.log('Connecting to Firestore emulator...');
-    connectFirestoreEmulator(clientDb, '127.0.0.1', 8080);
+    // Connect to emulator in development or test
+    if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
+      console.log('Connecting to Firestore emulator...');
+      try {
+        connectFirestoreEmulator(clientDb, '127.0.0.1', 8080);
+      } catch (error) {
+        // Ignore if already connected to emulator
+        if (!(error instanceof Error) || !error.message.includes('already')) {
+          throw error;
+        }
+      }
+    }
+
+    return clientDb;
+  } catch (error) {
+    console.error('Error initializing client Firestore:', error);
+    throw error;
   }
-
-  return clientDb;
 }
 
-// Export the singleton getter
-export const db = getClientFirestoreInstance(); 
+// Export a getter function instead of the instance directly
+let dbInstance: Firestore | undefined;
+export const db = new Proxy({} as Firestore, {
+  get: (target, prop: keyof Firestore | string | symbol) => {
+    if (!dbInstance) {
+      dbInstance = getClientFirestoreInstance();
+    }
+    return (dbInstance as any)[prop];
+  }
+}); 

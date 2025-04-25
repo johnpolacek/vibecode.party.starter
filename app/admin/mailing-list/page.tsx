@@ -6,15 +6,21 @@ import { getMailingListSubscriptions } from "@/lib/services/mailing-list"
 import { Timestamp } from "firebase-admin/firestore"
 import { ClientMailingListSubscription, MailingListSubscription } from "@/types/firebase"
 
+interface TimestampLike {
+  _seconds: number
+  _nanoseconds: number
+}
+
 // Helper to serialize timestamps
 function serializeSubscriber(subscriber: MailingListSubscription): ClientMailingListSubscription {
-  const serializeTimestamp = (timestamp: any) => {
+  const serializeTimestamp = (timestamp: Timestamp | null) => {
     if (!timestamp) return null
     if (timestamp instanceof Timestamp) {
       return timestamp.toDate().toISOString()
     }
-    if (timestamp._seconds !== undefined) {
-      return new Date(timestamp._seconds * 1000).toISOString()
+    if (typeof timestamp === "object" && "_seconds" in timestamp) {
+      const timestampLike = timestamp as TimestampLike
+      return new Date(timestampLike._seconds * 1000).toISOString()
     }
     return null
   }

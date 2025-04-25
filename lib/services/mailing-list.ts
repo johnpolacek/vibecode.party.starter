@@ -1,6 +1,6 @@
 import { db } from '@/lib/firebase/admin'
 import { MailingListSubscription } from '@/types/firebase'
-import { Timestamp } from 'firebase-admin/firestore'
+import { Timestamp, QueryDocumentSnapshot, DocumentData } from 'firebase-admin/firestore'
 
 /**
  * Retrieves all mailing list subscriptions from Firebase
@@ -8,7 +8,7 @@ import { Timestamp } from 'firebase-admin/firestore'
 export async function getMailingListSubscriptions(): Promise<MailingListSubscription[]> {
   try {
     const querySnapshot = await db.collection('mailing_list_subscriptions').get()
-    return querySnapshot.docs.map(doc => {
+    return querySnapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => {
       const data = doc.data()
       return {
         id: doc.id,

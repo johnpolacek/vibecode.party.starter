@@ -73,7 +73,7 @@ export default async function GetStartedAdmin() {
             <div className="mt-6 space-y-4">
               <div className="p-4 bg-amber-50 rounded-md">
                 <p className="text-amber-800 text-sm">
-                  <strong>Security Note:</strong> Only add trusted user IDs to the admin list. These users will have full access to your application's admin features.
+                  <strong>Security Note:</strong> Only add trusted user IDs to the admin list. These users will have full access to your application’s admin features.
                 </p>
               </div>
               <div className="p-4 bg-blue-50 rounded-md">

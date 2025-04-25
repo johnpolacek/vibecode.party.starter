@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getApps, getApp } from "firebase/app"
-import { getFirestore, collection, getDocs } from "firebase/firestore"
+import { collection, getDocs } from "firebase/firestore"
+import { db } from "@/lib/firebase/config"
 
 export async function GET() {
   try {
@@ -22,8 +23,7 @@ export async function GET() {
       })
     }
 
-    // Try to connect to Firestore
-    const db = getFirestore(app)
+    // Try to connect to Firestore using singleton instance
     const testCollection = collection(db, "_test_connection")
     await getDocs(testCollection)
 

@@ -1,128 +1,93 @@
-import dotenv from 'dotenv';
-import { clerkClient } from "@/lib/clerk"
-import { TEST_USER } from "./auth-helpers"
-import { db } from "@/lib/firebase/admin"
+import { db } from '@/lib/firebase/admin'
+import { QueryDocumentSnapshot, DocumentData } from 'firebase-admin/firestore'
+import { clerkClient } from '@clerk/clerk-sdk-node'
+import dotenv from 'dotenv'
 
-function isClerkError(error: unknown): error is { status: number; message: string } {
-  return typeof error === 'object' && error !== null && 'status' in error;
-}
+dotenv.config()
 
-// Load environment variables from .env
-dotenv.config();
-
-// Define collections to reset
-const COLLECTIONS_TO_RESET = [
-  'mailing_list_subscriptions',
-  'user_visits'
-] as const;
+const COLLECTIONS_TO_RESET = ['mailing_list_subscriptions', 'user_visits']
 
 /**
  * Delete all documents in a collection
  */
-async function deleteCollection(collectionPath: string) {
+export async function deleteCollection(collectionName: string): Promise<void> {
   try {
-    // First check if collection exists by trying to get a single document
-    const checkDoc = await db.collection(collectionPath).limit(1).get();
-    
-    // If collection doesn't exist or is empty, log and return
-    if (checkDoc.empty) {
-      console.log(`Collection ${collectionPath} is empty or doesn't exist - skipping`);
-      return;
+    const collectionRef = db.collection(collectionName)
+    const snapshot = await collectionRef.get()
+
+    if (snapshot.empty) {
+      console.log(`Collection ${collectionName} is empty or does not exist. Skipping...`)
+      return
     }
 
-    // Collection exists and has documents, proceed with deletion
-    const snapshot = await db.collection(collectionPath).get();
-    const batch = db.batch();
-    
-    snapshot.docs.forEach((doc) => {
-      batch.delete(doc.ref);
-    });
+    const batch = db.batch()
+    snapshot.docs.forEach((doc: QueryDocumentSnapshot<DocumentData>) => {
+      batch.delete(doc.ref)
+    })
 
-    await batch.commit();
-    console.log(`Deleted ${snapshot.size} documents from ${collectionPath}`);
+    await batch.commit()
+    console.log(`Deleted ${snapshot.size} documents from ${collectionName}`)
   } catch (error) {
-    console.warn(`Warning: Could not delete collection ${collectionPath}:`, error);
-    // Don't throw error to allow other collections to be processed
+    console.warn(`Warning: Failed to delete collection ${collectionName}:`, error)
   }
 }
 
 /**
- * Reset test data
+ * Reset database for testing
  */
-export async function resetDatabase() {
-  try {
-    // Delete all documents from each collection
-    await Promise.all(COLLECTIONS_TO_RESET.map(deleteCollection));
-    console.log('Database reset complete');
-  } catch (error: unknown) {
-    console.error("Error resetting database:", error);
-    // Don't throw error to allow tests to continue
+export async function resetDatabase(): Promise<void> {
+  console.log('Resetting database...')
+
+  for (const collection of COLLECTIONS_TO_RESET) {
+    await deleteCollection(collection)
   }
+
+  console.log('Database reset complete')
 }
 
 /**
- * Insert basic seed data for testing - placeholder for future seeding logic
+ * Verify that all collections are empty
  */
-export async function seedTestData() {
-  try {
-    // Only attempt to reset Clerk user if CLERK_SECRET_KEY is present
-    if (process.env.CLERK_SECRET_KEY) {
-      try {
-        // Check if user exists first
-        const user = await clerkClient.users.getUser(TEST_USER.userId);
-        if (user) {
-          await clerkClient.users.updateUser(TEST_USER.userId, {
-            firstName: "",
-            lastName: "",
-            unsafeMetadata: {
-              bio: "",
-            },
-          });
-        }
-      } catch (error: unknown) {
-        if (isClerkError(error) && error.status === 404) {
-        } else {
-          console.warn('Warning: Could not reset test user profile:', error instanceof Error ? error.message : String(error));
-        }
-        // Don't throw error to allow tests to continue
-      }
-    } else {
-      console.log('CLERK_SECRET_KEY not found - skipping user reset');
+export async function verifyDatabaseReset(): Promise<boolean> {
+  for (const collection of COLLECTIONS_TO_RESET) {
+    const snapshot = await db.collection(collection).get()
+    if (!snapshot.empty) {
+      console.error(`Collection ${collection} is not empty`)
+      return false
     }
-    
-    // Placeholder for future test data seeding
-    console.log('Test data seeding complete');
-  } catch (error) {
-    console.error('Error seeding test data:', error);
-    // Don't throw error to allow tests to continue
   }
+  return true
 }
 
 /**
- * Verify database reset
+ * Reset database for testing
  */
-export async function verifyDatabaseReset() {
-  try {
-    // Check that all collections are empty
-    const results = await Promise.all(
-      COLLECTIONS_TO_RESET.map(async (collection) => {
-        const snapshot = await db.collection(collection).get();
-        if (!snapshot.empty) {
-          console.error(`Collection ${collection} is not empty after reset`);
-          return false;
-        }
-        return true;
-      })
-    );
-    
-    const allEmpty = results.every(Boolean);
-    if (allEmpty) {
-      console.log('Database reset verification successful - All collections are empty');
-    }
-    return allEmpty;
-  } catch (error) {
-    console.warn('Warning: Could not verify database reset:', error);
-    // Return true to allow tests to continue
-    return true;
+export async function setupTestDatabase(): Promise<void> {
+  await resetDatabase()
+}
+
+/**
+ * Seed test data
+ */
+export async function seedTestData(): Promise<void> {
+  console.log('Seeding test data...')
+
+  if (!process.env.CLERK_SECRET_KEY) {
+    throw new Error('CLERK_SECRET_KEY is required')
   }
+
+  try {
+    // Create a new test user
+    const user = await clerkClient.users.createUser({
+      emailAddress: ['test@example.com'],
+      firstName: 'Test',
+      lastName: 'User',
+      password: 'test-password-123'
+    })
+    console.log('Created test user:', user.id)
+  } catch (error) {
+    console.warn('Warning: Failed to create test user:', error)
+  }
+
+  console.log('Test data seeding complete')
 } 

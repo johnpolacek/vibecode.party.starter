@@ -106,7 +106,7 @@ Please implement this following the project's architecture patterns and using ex
 
       <section className="flex flex-col gap-8 pb-32 max-w-4xl mx-auto px-4 w-full">
         <Heading variant="h2" className="text-center">
-          What's Next?
+          What&apos;s Next?
         </Heading>
         <p className="text-center text-muted-foreground max-w-2xl mx-auto">
           Once you have your starter configured, here are some example features you can build. Click a card to copy the Cursor prompt and get started!
