@@ -11,7 +11,8 @@
   ],
   "author": "John Polacek",
   "scripts": {
-    "dev": "concurrently \"pnpm db:local:start\" \"next dev -p ${PORT:-3000}\" --kill-others --names \"firebase,next\" --prefix-colors \"yellow.bold,cyan.bold\"",
+    "kill:ports": "kill-port 3000 4000 4400 4500 5001 8080 8085 9000 9099 9199 || true",
+    "dev": "pnpm kill:ports && concurrently \"pnpm db:local:start\" \"next dev -p ${PORT:-3000}\" --kill-others --names \"firebase,next\" --prefix-colors \"yellow.bold,cyan.bold\"",
     "restart:dev": "pnpm db:local:restart && pnpm dev",
     "build": "pnpm generate:routes && next build",
     "start": "next start",
@@ -117,6 +118,7 @@
     "tailwindcss": "^4.1.4",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "kill-port": "^2.0.1"
   }
 }
