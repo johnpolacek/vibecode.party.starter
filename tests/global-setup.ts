@@ -4,8 +4,6 @@ import { resetDatabase, verifyDatabaseReset, seedTestData } from './utils/db-res
  * Global setup function that runs before all tests
  */
 async function globalSetup() {
-  console.log('Starting global setup...');
-  
   try {
     // Reset the database (clear all tables)
     await resetDatabase();
@@ -18,8 +16,6 @@ async function globalSetup() {
     
     // Seed with test data
     await seedTestData();
-    
-    console.log('Global setup completed successfully');
   } catch (error) {
     console.error('Error during global setup:', error);
     throw error;

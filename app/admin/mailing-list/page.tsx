@@ -43,7 +43,6 @@ export default async function AdminMailingListPage() {
 
   // Serialize the data for client components
   const serializedSubscribers = subscribers.map(serializeSubscriber)
-  console.log("Admin page subscribers:", JSON.stringify(serializedSubscribers, null, 2))
 
   return (
     <div className="container py-8">

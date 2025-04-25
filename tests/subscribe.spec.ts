@@ -51,7 +51,7 @@ test('should be able to subscribe to the mailing list when signed in', async ({ 
   // Navigate to admin and check list
   await page.goto('http://localhost:3000/admin/mailing-list');
   await page.waitForLoadState('networkidle');
-  
+
   // Wait for page to load and data to be fetched
   await expect(page.getByRole('heading', { name: 'Mailing List Subscribers' })).toBeVisible();
   
@@ -73,6 +73,5 @@ test('should be able to subscribe to the mailing list when signed in', async ({ 
   const unsubSnapshot = await subscriptionsRef.where('email', '==', 'john.polacek@gmail.com').get();
   expect(unsubSnapshot.empty).toBe(false);
   const unsubDoc = unsubSnapshot.docs[0];
-  console.log('Firebase document after unsubscribe:', unsubDoc.data());
   expect(unsubDoc.data().unsubscribed_at).toBeTruthy();
 });

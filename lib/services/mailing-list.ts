@@ -47,7 +47,6 @@ export async function addMailingListSubscription(data: {
       .get()
     
     if (!snapshot.empty) {
-      console.log('Email already subscribed:', data.email)
       return null
     }
 
