@@ -160,7 +160,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Supabase that&apos;s super-powered! Store your data with style. 🗄️</p>
+              <p className="text-sm text-muted-foreground">Keep the party going with Firebase! Our database setup lets you vibe with real-time data and automatic scaling. 🔥</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -234,7 +234,7 @@ export function ContentSection() {
               <Sparkles className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">Use AI to generate text, structured data and images.</p>
+              <p className="text-muted-foreground">Use AI to generate text, structured data, and images.</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
@@ -260,26 +260,27 @@ export function ContentSection() {
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium">Analytics</CardTitle>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-4 w-4 text-primary"
-              >
-                <path d="M3 3v18h18"></path>
-                <path d="M18 17V9"></path>
-                <path d="M13 17V5"></path>
-                <path d="M8 17v-3"></path>
-              </svg>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-4 w-4 text-primary"
+                >
+                  <path d="M3 3v18h18"></path>
+                  <path d="M18 17V9"></path>
+                  <path d="M13 17V5"></path>
+                  <path d="M8 17v-3"></path>
+                </svg>
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Built-in visit tracking and route analytics with Supabase! 📊</p>
+              <p className="text-sm text-muted-foreground">Built-in visit tracking and route analytics with Firebase! 📊</p>
             </CardContent>
           </Card>
         </div>
@@ -368,15 +369,17 @@ export function ContentSection() {
                   </div>
                   <div className="rounded-md bg-muted p-4">
                     <div className="flex items-center space-x-2">
-                      <p className="font-mono text-sm">🔥 Supabase Database</p>
+                      <p className="font-mono text-sm">🔥 Firebase Database</p>
                     </div>
                     <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
                       <code className="text-sm font-mono">
-                        NEXT_PUBLIC_SUPABASE_URL=
+                        NEXT_PUBLIC_FIREBASE_PROJECT_ID=
                         <br />
-                        SUPABASE_SERVICE_ROLE_KEY=
+                        NEXT_PUBLIC_FIREBASE_API_KEY=
                         <br />
-                        SUPABASE_PROD_URL=
+                        FIREBASE_CLIENT_EMAIL=
+                        <br />
+                        FIREBASE_PRIVATE_KEY=
                       </code>
                     </pre>
                   </div>
@@ -701,7 +704,7 @@ export function ContentSection() {
 
           <FeatureCard
             title="Cloud Database"
-            description="A complete database management interface with Supabase integration, including table views, data editing, and backup management."
+            description="A complete database management interface with Firebase integration, including table views, data editing, and backup management."
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 mr-1">
                 <path d="M12 2C6.5 2 2 4 2 7v10c0 3 4.5 5 10 5s10-2 10-5V7c0-3-4.5-5-10-5z"></path>
@@ -710,8 +713,8 @@ export function ContentSection() {
               </svg>
             }
             badgeText="Cloud DB"
-            features={["Easy Local development database setup", "Local and production migration workflows", "Backup and restore functionality", "Basic user analytics tracking"]}
-            envVars={["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"]}
+            features={["Easy local development database setup", "Basic user analytics tracking"]}
+            envVars={["NEXT_PUBLIC_FIREBASE_API_KEY", "NEXT_PUBLIC_FIREBASE_PROJECT_ID", "FIREBASE_CLIENT_EMAIL", "FIREBASE_PRIVATE_KEY"]}
             preview={
               <div className="bg-background/80 backdrop-blur-sm rounded-lg border border-violet-500/20 shadow-xl w-full max-w-md p-6">
                 <div className="space-y-4">

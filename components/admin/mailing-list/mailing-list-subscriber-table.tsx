@@ -1,14 +1,19 @@
 "use client"
 
-import { MailingListSubscription } from "@/lib/services/mailing-list"
+import { ClientMailingListSubscription } from "@/types/firebase"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 interface MailingListSubscriberTableProps {
-  subscribers: MailingListSubscription[]
+  subscribers: ClientMailingListSubscription[]
 }
 
 export function MailingListSubscriberTable({ subscribers }: MailingListSubscriberTableProps) {
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "-"
+    return new Date(dateString).toLocaleDateString()
+  }
+
   return (
     <Table>
       <TableHeader>
@@ -26,8 +31,8 @@ export function MailingListSubscriberTable({ subscribers }: MailingListSubscribe
             <TableRow key={subscriber.id}>
               <TableCell>{subscriber.email}</TableCell>
               <TableCell>{subscriber.name || "-"}</TableCell>
-              <TableCell>{new Date(subscriber.subscribedAt).toLocaleDateString()}</TableCell>
-              <TableCell>{subscriber.unsubscribedAt ? <Badge variant="destructive">Unsubscribed</Badge> : <Badge variant="default">Active</Badge>}</TableCell>
+              <TableCell>{formatDate(subscriber.subscribed_at)}</TableCell>
+              <TableCell>{subscriber.unsubscribed_at ? <Badge variant="destructive">Unsubscribed</Badge> : <Badge variant="default">Active</Badge>}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
                   {subscriber.preferences.marketing && <Badge variant="outline">Marketing</Badge>}

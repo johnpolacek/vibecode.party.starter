@@ -40,21 +40,39 @@ Admin users are created by adding Clerk User Ids into an environment variable on
 ADMIN_USER_IDS=user_1234567890,user_0987654321
 ```
 
-### Supabase for Cloud Database
+### Firebase for Cloud Database
 
-If using a database, create a new project in [Supabase](https://supabase.com/dashboard/projects) then add the environment variables to `.env`
+If using a database, create a new project in [Firebase Console](https://console.firebase.google.com/) then:
+
+1. Enable Firestore in your project
+2. Go to Project Settings → Service accounts
+3. Generate a new service account key
+4. Add the following environment variables to `.env`:
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=
-SUPABASE_SERVICE_ROLE_KEY=
-SUPABASE_PROD_URL
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_API_KEY=
+FIREBASE_CLIENT_EMAIL=
+FIREBASE_PRIVATE_KEY=
 ```
 
-You can find the `NEXT_PUBLIC_SUPABASE_URL` and the `SUPABASE_SERVICE_ROLE_KEY` under Configuration > DATA API > Project API Keys.
+#### Local Development with Firebase
 
-`SUPABASE_PROD_URL` is in the format of:
-postgresql://postgres:YOUR_DATABASE_PASSWORD@db.YOUR_PROJECT_ID.supabase.co:5432/postgres
+To use Firebase locally, you'll need:
 
+1. Java Runtime Environment (JRE) installed
+   - Download from [java.com](https://www.java.com)
+   - Verify installation with `java -version`
+
+2. Initialize Firebase:
+```bash
+pnpm db:local:init
+```
+
+3. Start the Firebase emulator:
+```bash
+pnpm db:emulator:start
+```
 
 ### AWS S3 for File Storage
 
@@ -129,6 +147,22 @@ To start the app:
 pnpm dev
 ```
 
+### Firebase Emulator
+
+The Firebase emulator requires Java to be installed. To verify your Java installation:
+
+```bash
+java -version
+```
+
+If Java is not installed, download it from [java.com](https://www.java.com).
+
+Start the Firebase emulator with:
+
+```bash
+pnpm db:emulator:start
+```
+
 ### Linting
 
 The starter project has been set up with eslint and prettier, and is set to automatically format your code with every save and every copy/paste.
@@ -145,7 +179,7 @@ As vibe-coding projects grow, it becomes increasingly likely that AI will make b
 
 To start using tests with party starter, you will need to create a test user. After you have completed the steps for setting up Clerk and have added the environment variables to your project, run your application on localhost and sign up for an account with an email address you own, and a new password for the project. Use the email confirmation code to complete the signup process.
 
-If using a database, run a local version with init and teardown scripts to start with a clean version of the data on every run. Create seed scripts that populate the database for your various test cases.
+If using Firebase, run the emulator with init and teardown scripts to start with a clean version of the data on every run. Create seed scripts that populate the database for your various test cases.
 
 We use playwright for testing in the starter project. It has a built-in UI mode where you can pause the debugger and record your interactions that will auto-generate test code as you go.
 
@@ -167,7 +201,7 @@ In the `.cursor/rules` there are a number of MDC rules that help with keeping Cu
 
 - `003-openai` - Sets preferred OpenAI model. Only need if using the OpenAI API.
 - `101-project-structure` - Guidelines when creating new files to maintain consistent project organization
-- `200-*` - Supabase rules. Only need if using Supabase
+- `200-*` - Firebase rules. Only need if using Firebase
 - `300-*` - Auth rules for Clerk. Only need if using Auth
 
 ## Deployment

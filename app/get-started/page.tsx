@@ -4,7 +4,7 @@ import { Heading } from "@/components/typography/heading"
 import { redirect } from "next/navigation"
 import { headers } from "next/headers"
 import GetStartedClerk from "./_components/getstarted-clerk"
-import GetStartedSupabase from "./_components/getstarted-supabase"
+import GetStartedFirebase from "./_components/getstarted-firebase"
 import GetStartedStorage from "./_components/getstarted-storage"
 import GetStartedEmail from "./_components/getstarted-email"
 import GetStartedAI from "./_components/getstarted-ai"
@@ -30,7 +30,7 @@ export default async function GetStartedPage() {
   const isDescriptionCustomized = siteConfig.description !== ("A modern Next.js starter with authentication, database, storage, AI, and more." as string)
   const additionalInstructions = `
 
-Please come up with an implementation plan that follows the project’s architecture patterns and uses existing components where possible. Do NOT make any code changes yet, just plan the implementation.
+Please come up with an implementation plan that follows the project's architecture patterns and uses existing components where possible. Do NOT make any code changes yet, just plan the implementation.
   `
 
   const examplePrompts = {
@@ -43,11 +43,11 @@ Please come up with an implementation plan that follows the project’s architec
 5. Community showcase with likes and comments
 6. Export options with watermarking
 
-Please implement this following the project’s architecture patterns and using:
+Please implement this following the project's architecture patterns and using:
 - Replicate for text-to-image models
 - OpenAI for variations and text
 - AWS S3 for storage
-- Supabase for collections and social features
+- Firebase for collections and social features
 - Clerk for user authentication`,
 
     marketplace: `Please help me create a marketplace feature with:
@@ -59,7 +59,7 @@ Please implement this following the project’s architecture patterns and using:
 5. Seller profiles and ratings
 6. Inventory tracking
 
-Please implement this following the project’s architecture patterns and existing payment integration.`,
+Please implement this following the project's architecture patterns and existing payment integration.`,
 
     community: `Please help me create a community feature with:
 
@@ -70,7 +70,7 @@ Please implement this following the project’s architecture patterns and existi
 5. Reputation system
 6. Content moderation tools
 
-Please implement this following the project’s architecture patterns and using existing auth and storage systems.`,
+Please implement this following the project's architecture patterns and using existing auth and storage systems.`,
   }
 
   const customPrompt = `I am building a new project starting from a Next.js starter template (see the project README and package.json for more info). Please help me come up with a plan for building ${siteConfig.title} - ${siteConfig.description}`
@@ -94,7 +94,7 @@ Please implement this following the project’s architecture patterns and using 
         <div>
           <GetStartedConfig />
           <GetStartedClerk />
-          <GetStartedSupabase />
+          <GetStartedFirebase />
           <GetStartedStorage />
           <GetStartedEmail />
           <GetStartedAI />
@@ -106,7 +106,7 @@ Please implement this following the project’s architecture patterns and using 
 
       <section className="flex flex-col gap-8 pb-32 max-w-4xl mx-auto px-4 w-full">
         <Heading variant="h2" className="text-center">
-          What’s Next?
+          What's Next?
         </Heading>
         <p className="text-center text-muted-foreground max-w-2xl mx-auto">
           Once you have your starter configured, here are some example features you can build. Click a card to copy the Cursor prompt and get started!

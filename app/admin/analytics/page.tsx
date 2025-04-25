@@ -1,23 +1,35 @@
 import { requireAdmin } from "@/lib/auth-utils"
 import { AdminBreadcrumb } from "@/components/nav/admin-breadcrumb"
-import { supabaseAdmin } from "@/lib/supabase"
 import { Heading } from "@/components/typography/heading"
 import { Card, CardHeader } from "@/components/ui/card"
+import { getDocs } from "@/lib/firebase/utils"
+import { Timestamp } from "firebase-admin/firestore"
+import { UserVisit } from "@/types/firebase"
 
-async function getAnalyticsData() {
+async function getAnalyticsData(): Promise<UserVisit[]> {
   // Get visits from the last 30 days
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-  // Try using timestamp column first, fall back to created_at if timestamp doesn't exist
-  const { data: visits, error } = await supabaseAdmin.from("user_visits").select("*").gte("created_at", thirtyDaysAgo.toISOString()).order("created_at", { ascending: false })
+  const result = await getDocs<UserVisit>(
+    "user_visits",
+    [
+      {
+        field: "created_at",
+        operator: ">=",
+        value: Timestamp.fromDate(thirtyDaysAgo),
+      },
+    ],
+    undefined, // no limit since we want all visits
+    { field: "created_at", direction: "desc" }
+  )
 
-  if (error) {
-    console.error("Error fetching analytics data:", error)
+  if (!result.success || !result.data) {
+    console.error("Error fetching analytics data:", result.error)
     return []
   }
 
-  return visits
+  return result.data
 }
 
 export default async function AdminAnalyticsPage() {
@@ -68,10 +80,10 @@ export default async function AdminAnalyticsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {analyticsData.slice(0, 10).map((visit, index) => (
-                    <tr key={index} className="border-b text-sm">
+                  {analyticsData.slice(0, 10).map((visit) => (
+                    <tr key={visit.id} className="border-b text-sm">
                       <td className="p-2">{visit.path}</td>
-                      <td className="p-2">{new Date(visit.created_at).toLocaleString()}</td>
+                      <td className="p-2">{visit.created_at.toDate().toLocaleString()}</td>
                       <td className="p-2">{visit.user_id || "Anonymous"}</td>
                       <td className="p-2">{visit.referrer || "-"}</td>
                     </tr>

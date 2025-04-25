@@ -2,8 +2,8 @@
 
 import { auth } from "@clerk/nextjs/server"
 import { headers } from "next/headers"
-import { supabaseAdmin } from "@/lib/supabase"
 import { validRoutes } from "@/lib/generated/routes"
+import { addDoc } from "@/lib/firebase/utils"
 
 // Check if the user agent is from a common legitimate browser
 function isValidBrowser(userAgent: string | null): boolean {
@@ -77,18 +77,17 @@ export async function trackVisit(path: string) {
       return { success: true }
     }
 
-    // Insert the visit into the database
-    const { error } = await supabaseAdmin
-      .from('user_visits')
-      .insert({
+    // Insert the visit into Firestore
+    const result = await addDoc('user_visits', {
         user_id: userId || null,
         path,
         user_agent: userAgent || null,
         referrer: referrer || null,
+      timestamp: new Date().toISOString(), // Keep timestamp for consistency with previous schema
       })
 
-    if (error) {
-      return { success: false, error: error.message }
+    if (!result.success) {
+      return { success: false, error: result.error }
     }
 
     return { success: true }

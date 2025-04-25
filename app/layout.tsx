@@ -17,6 +17,7 @@ import { RouteTracker } from "@/components/analytics/route-tracker"
 import { siteConfig } from "@/lib/config"
 import "./globals.css"
 import { Github } from "lucide-react"
+import "@/lib/firebase/config.dev"
 
 const rethinkSans = Rethink_Sans({
   subsets: ["latin"],
@@ -51,9 +52,21 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const { userId } = await auth()
-  const adminUserIds = process.env.ADMIN_USER_IDS?.split(",") || []
-  const isAdmin = userId ? adminUserIds.includes(userId) : false
+  let userId: string | null = null
+  let isAdmin = false
+
+  try {
+    const authResult = await auth()
+    userId = authResult.userId
+    const adminUserIds = process.env.ADMIN_USER_IDS?.split(",") || []
+    isAdmin = userId ? adminUserIds.includes(userId) : false
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      // Clerk auth initialization skipped in dev
+    } else {
+      throw error // Re-throw in production
+    }
+  }
 
   // Track the visit
   const headersList = await headers()

@@ -1,5 +1,5 @@
 ---
-description: Database: Use supabaseAdmin for server-side write operations
+description: Component location rules
 globs: **/*.ts, **/*.tsx
 alwaysApply: false
 ---

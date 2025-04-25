@@ -5,39 +5,39 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button"
 import { Database, RefreshCw } from "lucide-react"
 
-interface SupabaseStatus {
+interface FirebaseStatus {
   success: boolean
   connection: {
     success: boolean
     message: string
     details?: {
       error?: unknown
-      tables?: string[]
+      collections?: string[]
       count?: number
     }
   }
   environment: {
     nodeEnv: string
-    supabaseUrl: string
+    projectId: string
     hasServiceKey: boolean
   }
 }
 
-export function SupabaseStatusCard() {
-  const [status, setStatus] = useState<SupabaseStatus | null>(null)
+export function FirebaseStatusCard() {
+  const [status, setStatus] = useState<FirebaseStatus | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   const checkStatus = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch("/api/supabase-status")
+      const response = await fetch("/api/firebase-status")
       if (!response.ok) {
         throw new Error("Failed to fetch status")
       }
       const data = await response.json()
       setStatus(data)
     } catch (error) {
-      console.error("Error checking Supabase status:", error)
+      console.error("Error checking Firebase status:", error)
     } finally {
       setIsLoading(false)
     }
@@ -52,18 +52,18 @@ export function SupabaseStatusCard() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Database className="h-5 w-5 text-primary" />
-          Supabase Status
+          Firebase Status
         </CardTitle>
       </CardHeader>
       <CardContent>
         {status ? (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-2 items-start">
+            <div className="grid grid-cols-2 gap-2 items-start font-medium">
               <div className="flex items-center gap-2">
-                <div className={`h-2 w-2 rounded-full ${status.connection.success ? "bg-green-500" : "bg-destructive"}`} />
-                <span className="font-medium">Status</span>
+                <div className={`h-2 w-2 rounded-full ${status.connection.success ? "bg-green-600" : "bg-destructive"}`} />
+                <span>Status</span>
               </div>
-              <span className={status.connection.success ? "text-green-500 text-sm" : "text-destructive text-sm"}>{status.connection.message}</span>
+              <span className={status.connection.success ? "text-green-600 text-sm" : "text-destructive text-sm"}>{status.connection.message}</span>
             </div>
             <div className="grid grid-cols-2 gap-2 items-start">
               <span className="font-medium">Environment</span>

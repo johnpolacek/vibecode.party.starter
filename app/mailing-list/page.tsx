@@ -17,30 +17,36 @@ export default async function MailingListPage() {
   // Check if required environment variables are configured
   const missingEnvVars = [
     {
-      key: "NEXT_PUBLIC_SUPABASE_URL",
-      description: "Your Supabase project URL",
-      isMissing: !process.env.NEXT_PUBLIC_SUPABASE_URL,
+      key: "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+      description: "Your Firebase project ID",
+      isMissing: !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
     },
     {
-      key: "SUPABASE_SERVICE_ROLE_KEY",
-      description: "Your Supabase service role key",
-      isMissing: !process.env.SUPABASE_SERVICE_ROLE_KEY,
+      key: "NEXT_PUBLIC_FIREBASE_API_KEY",
+      description: "Your Firebase API key",
+      isMissing: !process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    },
+    {
+      key: "FIREBASE_CLIENT_EMAIL",
+      description: "Your Firebase service account email",
+      isMissing: !process.env.FIREBASE_CLIENT_EMAIL,
+    },
+    {
+      key: "FIREBASE_PRIVATE_KEY",
+      description: "Your Firebase service account private key",
+      isMissing: !process.env.FIREBASE_PRIVATE_KEY,
     },
     {
       key: "SENDGRID_API_KEY",
       description: "Your SendGrid API key",
       isMissing: !process.env.SENDGRID_API_KEY,
     },
-  ].filter(item => item.isMissing)
+  ].filter((item) => item.isMissing)
 
   if (missingEnvVars.length > 0) {
     return (
       <div className="container max-w-2xl py-8 md:py-12">
-        <ConfigCard
-          title="Mailing List Setup Required"
-          description="The mailing list feature needs configuration before it can be used."
-          configItems={missingEnvVars}
-        />
+        <ConfigCard title="Mailing List Setup Required" description="The mailing list feature needs configuration before it can be used." configItems={missingEnvVars} />
       </div>
     )
   }

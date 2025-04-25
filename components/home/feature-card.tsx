@@ -58,9 +58,9 @@ export function FeatureCard({
           </ul>
           <div className="space-y-4">
             {envVars && envVars.length > 0 && (
-              <div className="text-sm text-muted-foreground">
+              <div className="flex flex-wrap gap-x-2 gap-y-1 justify-start text-sm text-muted-foreground">
                 {envVars.map((envVar, index) => (
-                  <code key={envVar} className={`rounded-md bg-muted px-1.5 py-0.5 text-xs ${index > 0 ? "ml-1" : ""}`}>
+                  <code key={envVar} className={`rounded-md bg-muted px-1.5 py-0.5 text-xs`}>
                     {envVar}
                   </code>
                 ))}

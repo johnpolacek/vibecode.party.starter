@@ -50,9 +50,13 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 
-# Supabase
-supabase/.temp/
-supabase/.temp/*
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+*.cache
+.runtimeconfig.json
 
 # Database backups
 /backups/

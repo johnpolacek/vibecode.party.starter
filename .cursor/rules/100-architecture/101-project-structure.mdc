@@ -24,13 +24,11 @@ Follow these guidelines when creating new files to maintain consistent project o
 ├── lib/                   # Utility functions and services
 │   ├── services/         # Business logic and data services
 │   ├── validations/      # Form and data validation
+│   ├── firebase/        # Firebase configuration and utilities
 │   └── config/           # Configuration files
 ├── types/                # TypeScript type definitions
-├── public/               # Static assets
-└── supabase/            # Database configuration and migrations
-    ├── migrations/      # Database migrations (timestamped SQL files)
-    │   └── YYYYMMDDHHMMSS_descriptive_name.sql
-    └── config.toml      # Supabase configuration
+└── public/              # Static assets
+
 ```
 
 ## File Location Guidelines
@@ -45,6 +43,7 @@ Follow these guidelines when creating new files to maintain consistent project o
    - Utility functions → `/lib/utils.ts`
    - Type definitions → `/types/`
    - Form validation → `/lib/validations/`
+   - Firebase config → `/lib/firebase/`
 
 3. **Server Actions**
    - Private actions → `/app/_actions/`
@@ -53,12 +52,6 @@ Follow these guidelines when creating new files to maintain consistent project o
 4. **API Routes**
    - All API routes → `/app/api/`
 
-5. **Database**
-   - Migrations → `/supabase/migrations/`
-     - Use timestamp format: `YYYYMMDDHHMMSS_descriptive_name.sql`
-     - Example: `20240324000000_add_payment_fields_to_sponsors.sql`
-   - Supabase config → `/supabase/config.toml`
-
 ## Naming Conventions
 
 1. **Files**
@@ -66,7 +59,6 @@ Follow these guidelines when creating new files to maintain consistent project o
    - Pages: `page.tsx`
    - Layouts: `layout.tsx`
    - Server actions: kebab-case (e.g., `create-sponsor.ts`)
-   - Database migrations: timestamp_kebab-case.sql (e.g., `20240324000000_add-payment-fields.sql`)
 
 2. **Directories**
    - Route directories: kebab-case
@@ -106,9 +98,11 @@ export const sponsorSchema = { ... }
 export async function createSponsor() { ... }
 ```
 
-### Good: New Migration Location
-```sql
--- ✅ /supabase/migrations/20240324000000_add_payment_fields_to_sponsors.sql
-ALTER TABLE hackathon_sponsors
-ADD COLUMN stripe_session_id TEXT;
+### Good: New Firebase Config Location
+```typescript
+// ✅ /lib/firebase/config.ts
+export const firebaseConfig = { ... }
+
+// ✅ /lib/firebase/admin.ts
+export const adminDb = getFirestore(adminApp)
 ```

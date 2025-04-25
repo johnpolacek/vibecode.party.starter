@@ -1,188 +1,96 @@
-import { supabaseAdmin } from '@/lib/supabase'
-import { toCamelCase } from '@/lib/utils/case-transforms'
-
-// Database types
-interface DatabaseMailingListSubscription {
-  id: string
-  user_id: string
-  email: string
-  name: string | null
-  subscribed_at: string
-  unsubscribed_at: string | null
-  preferences: {
-    marketing: boolean
-    updates: boolean
-  }
-  created_at: string
-  updated_at: string
-}
-
-// Frontend types
-export interface MailingListSubscription {
-  id: string
-  userId: string
-  email: string
-  name: string | null
-  subscribedAt: string
-  unsubscribedAt: string | null
-  preferences: {
-    marketing: boolean
-    updates: boolean
-  }
-  createdAt: string
-  updatedAt: string
-}
-
-export interface CreateMailingListSubscription {
-  userId: string
-  email: string
-  name?: string | null
-  preferences?: {
-    marketing: boolean
-    updates: boolean
-  }
-}
-
-export interface UpdateMailingListSubscription {
-  email?: string
-  name?: string | null
-  unsubscribedAt?: string | null
-  preferences?: {
-    marketing: boolean
-    updates: boolean
-  }
-}
+import { db } from '@/lib/firebase/admin'
+import { MailingListSubscription } from '@/types/firebase'
+import { Timestamp } from 'firebase-admin/firestore'
 
 /**
- * Get all mailing list subscriptions
+ * Retrieves all mailing list subscriptions from Firebase
  */
 export async function getMailingListSubscriptions(): Promise<MailingListSubscription[]> {
   try {
-    const { data, error } = await supabaseAdmin
-      .from('mailing_list_subscriptions')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    if (error) throw error
-
-    return toCamelCase<DatabaseMailingListSubscription[]>(data || []) as unknown as MailingListSubscription[]
+    const querySnapshot = await db.collection('mailing_list_subscriptions').get()
+    return querySnapshot.docs.map(doc => {
+      const data = doc.data()
+      return {
+        id: doc.id,
+        user_id: data.user_id,
+        email: data.email,
+        name: data.name,
+        preferences: data.preferences,
+        subscribed_at: data.subscribed_at,
+        unsubscribed_at: data.unsubscribed_at,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      } as MailingListSubscription
+    })
   } catch (error) {
-    console.error('Error fetching mailing list subscriptions:', error)
-    throw new Error('Failed to fetch mailing list subscriptions')
+    console.error('Error getting mailing list subscriptions:', error)
+    return []
   }
 }
 
 /**
- * Get a single mailing list subscription by ID
+ * Adds a new email subscription to the mailing list
  */
-export async function getMailingListSubscription(id: string): Promise<MailingListSubscription | null> {
+export async function addMailingListSubscription(data: { 
+  user_id: string, 
+  email: string, 
+  name: string | null,
+  preferences: {
+    marketing: boolean,
+    updates: boolean
+  }
+}): Promise<MailingListSubscription | null> {
   try {
-    const { data, error } = await supabaseAdmin
-      .from('mailing_list_subscriptions')
-      .select('*')
-      .eq('id', id)
-      .single()
+    // Check if email already exists
+    const snapshot = await db.collection('mailing_list_subscriptions')
+      .where('email', '==', data.email)
+      .get()
+    
+    if (!snapshot.empty) {
+      console.log('Email already subscribed:', data.email)
+      return null
+    }
 
-    if (error) throw error
-    if (!data) return null
+    const timestamp = Timestamp.now()
+    const docRef = await db.collection('mailing_list_subscriptions').add({
+      user_id: data.user_id,
+      email: data.email,
+      name: data.name,
+      preferences: data.preferences,
+      subscribed_at: timestamp,
+      unsubscribed_at: null,
+      created_at: timestamp,
+      updated_at: timestamp
+    })
 
-    return toCamelCase<DatabaseMailingListSubscription>(data) as unknown as MailingListSubscription
+    const doc = await docRef.get()
+    const docData = doc.data()
+    return {
+      id: doc.id,
+      user_id: docData?.user_id,
+      email: docData?.email,
+      name: docData?.name,
+      preferences: docData?.preferences,
+      subscribed_at: docData?.subscribed_at,
+      unsubscribed_at: docData?.unsubscribed_at,
+      created_at: docData?.created_at,
+      updated_at: docData?.updated_at
+    } as MailingListSubscription
   } catch (error) {
-    console.error(`Error fetching mailing list subscription ${id}:`, error)
-    throw new Error('Failed to fetch mailing list subscription')
+    console.error('Error adding mailing list subscription:', error)
+    return null
   }
 }
 
 /**
- * Get a single mailing list subscription by user ID
+ * Removes an email subscription from the mailing list
  */
-export async function getMailingListSubscriptionByUserId(userId: string): Promise<MailingListSubscription | null> {
+export async function removeMailingListSubscription(id: string): Promise<boolean> {
   try {
-    const { data, error } = await supabaseAdmin
-      .from('mailing_list_subscriptions')
-      .select('*')
-      .eq('user_id', userId)
-      .single()
-
-    if (error) throw error
-    if (!data) return null
-
-    return toCamelCase<DatabaseMailingListSubscription>(data) as unknown as MailingListSubscription
+    await db.collection('mailing_list_subscriptions').doc(id).delete()
+    return true
   } catch (error) {
-    console.error(`Error fetching mailing list subscription for user ${userId}:`, error)
-    throw new Error('Failed to fetch mailing list subscription')
-  }
-}
-
-/**
- * Create a new mailing list subscription
- */
-export async function createMailingListSubscription(
-  subscription: CreateMailingListSubscription
-): Promise<MailingListSubscription> {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from('mailing_list_subscriptions')
-      .insert({
-        user_id: subscription.userId,
-        email: subscription.email,
-        name: subscription.name,
-        preferences: subscription.preferences,
-        subscribed_at: new Date().toISOString(),
-      })
-      .select()
-      .single()
-
-    if (error) throw error
-
-    return toCamelCase<DatabaseMailingListSubscription>(data) as unknown as MailingListSubscription
-  } catch (error) {
-    console.error('Error creating mailing list subscription:', error)
-    throw new Error('Failed to create mailing list subscription')
-  }
-}
-
-/**
- * Update a mailing list subscription
- */
-export async function updateMailingListSubscription(
-  id: string,
-  subscription: UpdateMailingListSubscription
-): Promise<MailingListSubscription> {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from('mailing_list_subscriptions')
-      .update({
-        name: subscription.name,
-        unsubscribed_at: subscription.unsubscribedAt,
-        preferences: subscription.preferences,
-      })
-      .eq('id', id)
-      .select()
-      .single()
-
-    if (error) throw error
-
-    return toCamelCase<DatabaseMailingListSubscription>(data) as unknown as MailingListSubscription
-  } catch (error) {
-    console.error(`Error updating mailing list subscription ${id}:`, error)
-    throw new Error('Failed to update mailing list subscription')
-  }
-}
-
-/**
- * Delete a mailing list subscription
- */
-export async function deleteMailingListSubscription(id: string): Promise<void> {
-  try {
-    const { error } = await supabaseAdmin
-      .from('mailing_list_subscriptions')
-      .delete()
-      .eq('id', id)
-
-    if (error) throw error
-  } catch (error) {
-    console.error(`Error deleting mailing list subscription ${id}:`, error)
-    throw new Error('Failed to delete mailing list subscription')
+    console.error('Error removing mailing list subscription:', error)
+    return false
   }
 } 
