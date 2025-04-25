@@ -51,6 +51,7 @@ export const db = new Proxy({} as Firestore, {
     if (!dbInstance) {
       dbInstance = getClientFirestoreInstance();
     }
-    return (dbInstance as any)[prop];
+    // Type assertion is safe here because we know dbInstance is Firestore after initialization
+    return dbInstance ? dbInstance[prop as keyof Firestore] : undefined;
   }
-}); 
+}) as Firestore; 
