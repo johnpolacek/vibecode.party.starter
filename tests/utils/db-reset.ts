@@ -71,23 +71,5 @@ export async function setupTestDatabase(): Promise<void> {
  */
 export async function seedTestData(): Promise<void> {
   console.log('Seeding test data...')
-
-  if (!process.env.CLERK_SECRET_KEY) {
-    throw new Error('CLERK_SECRET_KEY is required')
-  }
-
-  try {
-    // Create a new test user
-    const user = await clerkClient.users.createUser({
-      emailAddress: ['test@example.com'],
-      firstName: 'Test',
-      lastName: 'User',
-      password: 'test-password-123'
-    })
-    console.log('Created test user:', user.id)
-  } catch (error) {
-    console.warn('Warning: Failed to create test user:', error)
-  }
-
   console.log('Test data seeding complete')
 } 

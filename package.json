@@ -22,9 +22,13 @@
     "boot:repo": "chmod +x ./scripts/init-repo.sh && ./scripts/init-repo.sh",
     "boot": "pnpm boot:github && pnpm boot:vercel && pnpm boot:repo",
     "go": "pnpm generate:routes && pnpm generate:llm && git add . && aicommits && git push origin main",
-    "test": "playwright test",
+    "test:run": "playwright test",
+    "test:wait": "wait-on tcp:3000 tcp:4000 && pnpm test:run",
+    "test": "pnpm build && concurrently \"pnpm dev\" \"pnpm test:wait\" --success first --kill-others --names \"dev,test\" --prefix-colors \"yellow.bold,cyan.bold\"",
+    "ship": "pnpm test && pnpm go",
     "test:clean": "rm -rf ~/.cache/ms-playwright-tests test-results/ playwright-report/",
     "pw": "playwright test --ui --debug",
+    "pw:headless": "playwright test",
     "db:local:init": "./scripts/init-firebase.sh",
     "db:local:start": "firebase emulators:start",
     "db:local:stop": "pkill -f \"firebase emulators\"",
@@ -115,10 +119,11 @@
     "eslint": "^9.25.0",
     "eslint-config-next": "15.3.1",
     "firebase-tools": "^14.2.1",
+    "kill-port": "^2.0.1",
     "tailwindcss": "^4.1.4",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3",
-    "kill-port": "^2.0.1"
+    "wait-on": "^8.0.3"
   }
 }

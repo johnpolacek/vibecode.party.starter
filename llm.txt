@@ -3070,15 +3070,16 @@ After these changes, please run \`pnpm install\` to update the dependency tree.`
 import { Card } from "@/components/ui/card"
 import { Heading } from "@/components/typography/heading"
 import { useState } from "react"
-import { Copy, Check } from "lucide-react"
+import { Copy, Check, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface GetStartedExampleProps {
   title: string
   prompt: string
   children?: React.ReactNode
+  isCommand?: boolean
 }
-export default function GetStartedExample({ title, prompt, children }: GetStartedExampleProps) {
+export default function GetStartedExample({ title, prompt, children, isCommand }: GetStartedExampleProps) {
   const [copied, setCopied] = useState(false)
 
   const copyToClipboard = async () => {
@@ -3106,7 +3107,10 @@ export default function GetStartedExample({ title, prompt, children }: GetStarte
       </Button>
       <Heading variant="h6">{title}</Heading>
       {children}
-      <pre className="bg-muted/50 border p-4 rounded-md text-xs sm:text-sm font-mono whitespace-pre-wrap -mt-2">{prompt}</pre>
+      <pre className="bg-muted/50 border p-4 rounded-md text-xs sm:text-sm font-mono whitespace-pre-wrap -mt-2 flex items-center">
+        {isCommand && <ChevronRight className="w-4 h-4 scale-125 text-primary mr-2" />}
+        {prompt}
+      </pre>
     </Card>
   )
 }
@@ -3679,7 +3683,6 @@ import GetStartedTesting from "./_components/getstarted-testing"
 import GetStartedExample from "./_components/getstarted-example"
 import GetStartedConfig from "./_components/getstarted-config"
 import { siteConfig } from "@/lib/config"
-import { Card } from "@/components/ui/card"
 
 export default async function GetStartedPage() {
   // Check if localhost
@@ -3770,7 +3773,7 @@ Please implement this following the project's architecture patterns and using ex
         </div>
       </section>
 
-      <section className="flex flex-col gap-8 pb-32 max-w-4xl mx-auto px-4 w-full">
+      <section className="flex flex-col gap-8 pb-16 max-w-4xl mx-auto px-4 w-full">
         <Heading variant="h2" className="text-center">
           What&apos;s Next?
         </Heading>
@@ -3791,7 +3794,7 @@ Please implement this following the project's architecture patterns and using ex
               <GetStartedExample title="Community Platform" prompt={examplePrompts.community + additionalInstructions} />
             </>
           )}
-          <GetStartedExample title="Generate llm.txt" prompt={`pnpm generate:llm`}>
+          <GetStartedExample isCommand={true} title="Generate llm.txt" prompt={`pnpm generate:llm`}>
             <p>
               Generate llm.txt so you can provide the entire codebase to an AI agent with a large context window like{" "}
               <a className="text-primary" href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">
@@ -3801,6 +3804,24 @@ Please implement this following the project's architecture patterns and using ex
             </p>
           </GetStartedExample>
         </div>
+      </section>
+
+      <section className="flex flex-col gap-8 pb-32 max-w-4xl mx-auto px-4 w-full">
+        <Heading variant="h2" className="text-center">
+          Ship It!
+        </Heading>
+        <p className="text-center text-muted-foreground max-w-2xl mx-auto">
+          Once you have your starter configured, we have a collection of npm scripts that can help you deploy your project with Github and Vercel (requires Github and Vercel CLI).
+        </p>
+        <GetStartedExample isCommand={true} title="Boot Project" prompt={`pnpm boot`}>
+          <p>This will install the Github and Vercel CLI, login, and link your project.</p>
+        </GetStartedExample>
+        <GetStartedExample isCommand={true} title="Ship It" prompt={`pnpm ship`}>
+          <p>Lint and build the project, run the tests then generate a commit message and push your code to Github and Vercel.</p>
+        </GetStartedExample>
+        <GetStartedExample isCommand={true} title="YOLO Deploy" prompt={`pnpm go`}>
+          <p>Skip the tests and deploy straight to production.</p>
+        </GetStartedExample>
       </section>
     </div>
   )
@@ -11720,9 +11741,13 @@ export default nextConfig;
     "boot:repo": "chmod +x ./scripts/init-repo.sh && ./scripts/init-repo.sh",
     "boot": "pnpm boot:github && pnpm boot:vercel && pnpm boot:repo",
     "go": "pnpm generate:routes && pnpm generate:llm && git add . && aicommits && git push origin main",
-    "test": "playwright test",
+    "test:run": "playwright test",
+    "test:wait": "wait-on tcp:3000 tcp:4000 && pnpm test:run",
+    "test": "pnpm build && concurrently \"pnpm dev\" \"pnpm test:wait\" --success first --kill-others --names \"dev,test\" --prefix-colors \"yellow.bold,cyan.bold\"",
+    "ship": "pnpm test && pnpm go",
     "test:clean": "rm -rf ~/.cache/ms-playwright-tests test-results/ playwright-report/",
     "pw": "playwright test --ui --debug",
+    "pw:headless": "playwright test",
     "db:local:init": "./scripts/init-firebase.sh",
     "db:local:start": "firebase emulators:start",
     "db:local:stop": "pkill -f \"firebase emulators\"",
@@ -11813,11 +11838,12 @@ export default nextConfig;
     "eslint": "^9.25.0",
     "eslint-config-next": "15.3.1",
     "firebase-tools": "^14.2.1",
+    "kill-port": "^2.0.1",
     "tailwindcss": "^4.1.4",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3",
-    "kill-port": "^2.0.1"
+    "wait-on": "^8.0.3"
   }
 }
 
@@ -13107,11 +13133,6 @@ test('should be able to subscribe to the mailing list when signed in', async ({ 
   
   // Wait for the form to be ready
   await page.waitForSelector('button:has-text("Subscribe")');
-  
-  // Add console listener before clicking
-  page.on('console', msg => {
-    console.log(`Browser console: ${msg.type()}: ${msg.text()}`);
-  });
 
   // Click subscribe and wait for navigation/refresh
   await page.getByRole('button', { name: 'Subscribe' }).click();
@@ -13130,7 +13151,6 @@ test('should be able to subscribe to the mailing list when signed in', async ({ 
   const snapshot = await subscriptionsRef.where('email', '==', 'john.polacek@gmail.com').get();
   expect(snapshot.empty).toBe(false);
   const doc = snapshot.docs[0];
-  console.log('Firebase document:', doc.data());
   expect(doc.data().email).toBe('john.polacek@gmail.com');
   expect(doc.data().subscribed_at).toBeTruthy();
   expect(doc.data().unsubscribed_at).toBeNull();
@@ -13307,24 +13327,6 @@ export async function setupTestDatabase(): Promise<void> {
  */
 export async function seedTestData(): Promise<void> {
   console.log('Seeding test data...')
-
-  if (!process.env.CLERK_SECRET_KEY) {
-    throw new Error('CLERK_SECRET_KEY is required')
-  }
-
-  try {
-    // Create a new test user
-    const user = await clerkClient.users.createUser({
-      emailAddress: ['test@example.com'],
-      firstName: 'Test',
-      lastName: 'User',
-      password: 'test-password-123'
-    })
-    console.log('Created test user:', user.id)
-  } catch (error) {
-    console.warn('Warning: Failed to create test user:', error)
-  }
-
   console.log('Test data seeding complete')
 } 
 

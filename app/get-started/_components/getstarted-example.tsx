@@ -2,15 +2,16 @@
 import { Card } from "@/components/ui/card"
 import { Heading } from "@/components/typography/heading"
 import { useState } from "react"
-import { Copy, Check } from "lucide-react"
+import { Copy, Check, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface GetStartedExampleProps {
   title: string
   prompt: string
   children?: React.ReactNode
+  isCommand?: boolean
 }
-export default function GetStartedExample({ title, prompt, children }: GetStartedExampleProps) {
+export default function GetStartedExample({ title, prompt, children, isCommand }: GetStartedExampleProps) {
   const [copied, setCopied] = useState(false)
 
   const copyToClipboard = async () => {
@@ -38,7 +39,10 @@ export default function GetStartedExample({ title, prompt, children }: GetStarte
       </Button>
       <Heading variant="h6">{title}</Heading>
       {children}
-      <pre className="bg-muted/50 border p-4 rounded-md text-xs sm:text-sm font-mono whitespace-pre-wrap -mt-2">{prompt}</pre>
+      <pre className="bg-muted/50 border p-4 rounded-md text-xs sm:text-sm font-mono whitespace-pre-wrap -mt-2 flex items-center">
+        {isCommand && <ChevronRight className="w-4 h-4 scale-125 text-primary mr-2" />}
+        {prompt}
+      </pre>
     </Card>
   )
 }

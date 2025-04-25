@@ -14,7 +14,6 @@ import GetStartedTesting from "./_components/getstarted-testing"
 import GetStartedExample from "./_components/getstarted-example"
 import GetStartedConfig from "./_components/getstarted-config"
 import { siteConfig } from "@/lib/config"
-import { Card } from "@/components/ui/card"
 
 export default async function GetStartedPage() {
   // Check if localhost
@@ -105,7 +104,7 @@ Please implement this following the project's architecture patterns and using ex
         </div>
       </section>
 
-      <section className="flex flex-col gap-8 pb-32 max-w-4xl mx-auto px-4 w-full">
+      <section className="flex flex-col gap-8 pb-16 max-w-4xl mx-auto px-4 w-full">
         <Heading variant="h2" className="text-center">
           What&apos;s Next?
         </Heading>
@@ -126,7 +125,7 @@ Please implement this following the project's architecture patterns and using ex
               <GetStartedExample title="Community Platform" prompt={examplePrompts.community + additionalInstructions} />
             </>
           )}
-          <GetStartedExample title="Generate llm.txt" prompt={`pnpm generate:llm`}>
+          <GetStartedExample isCommand={true} title="Generate llm.txt" prompt={`pnpm generate:llm`}>
             <p>
               Generate llm.txt so you can provide the entire codebase to an AI agent with a large context window like{" "}
               <a className="text-primary" href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">
@@ -136,6 +135,24 @@ Please implement this following the project's architecture patterns and using ex
             </p>
           </GetStartedExample>
         </div>
+      </section>
+
+      <section className="flex flex-col gap-8 pb-32 max-w-4xl mx-auto px-4 w-full">
+        <Heading variant="h2" className="text-center">
+          Ship It!
+        </Heading>
+        <p className="text-center text-muted-foreground max-w-2xl mx-auto">
+          Once you have your starter configured, we have a collection of npm scripts that can help you deploy your project with Github and Vercel (requires Github and Vercel CLI).
+        </p>
+        <GetStartedExample isCommand={true} title="Boot Project" prompt={`pnpm boot`}>
+          <p>This will install the Github and Vercel CLI, login, and link your project.</p>
+        </GetStartedExample>
+        <GetStartedExample isCommand={true} title="Ship It" prompt={`pnpm ship`}>
+          <p>Lint and build the project, run the tests then generate a commit message and push your code to Github and Vercel.</p>
+        </GetStartedExample>
+        <GetStartedExample isCommand={true} title="YOLO Deploy" prompt={`pnpm go`}>
+          <p>Skip the tests and deploy straight to production.</p>
+        </GetStartedExample>
       </section>
     </div>
   )

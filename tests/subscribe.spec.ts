@@ -20,11 +20,6 @@ test('should be able to subscribe to the mailing list when signed in', async ({ 
   
   // Wait for the form to be ready
   await page.waitForSelector('button:has-text("Subscribe")');
-  
-  // Add console listener before clicking
-  page.on('console', msg => {
-    console.log(`Browser console: ${msg.type()}: ${msg.text()}`);
-  });
 
   // Click subscribe and wait for navigation/refresh
   await page.getByRole('button', { name: 'Subscribe' }).click();
@@ -43,7 +38,6 @@ test('should be able to subscribe to the mailing list when signed in', async ({ 
   const snapshot = await subscriptionsRef.where('email', '==', 'john.polacek@gmail.com').get();
   expect(snapshot.empty).toBe(false);
   const doc = snapshot.docs[0];
-  console.log('Firebase document:', doc.data());
   expect(doc.data().email).toBe('john.polacek@gmail.com');
   expect(doc.data().subscribed_at).toBeTruthy();
   expect(doc.data().unsubscribed_at).toBeNull();
