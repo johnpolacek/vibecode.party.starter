@@ -14,6 +14,7 @@ import GetStartedTesting from "./_components/getstarted-testing"
 import GetStartedExample from "./_components/getstarted-example"
 import GetStartedConfig from "./_components/getstarted-config"
 import { siteConfig } from "@/lib/config"
+import { Card } from "@/components/ui/card"
 
 export default async function GetStartedPage() {
   // Check if localhost
@@ -125,6 +126,15 @@ Please implement this following the project's architecture patterns and using ex
               <GetStartedExample title="Community Platform" prompt={examplePrompts.community + additionalInstructions} />
             </>
           )}
+          <GetStartedExample title="Generate llm.txt" prompt={`pnpm generate:llm`}>
+            <p>
+              Generate llm.txt so you can provide the entire codebase to an AI agent with a large context window like{" "}
+              <a className="text-primary" href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">
+                Gemini
+              </a>
+              .
+            </p>
+          </GetStartedExample>
         </div>
       </section>
     </div>

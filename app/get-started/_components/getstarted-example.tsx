@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button"
 interface GetStartedExampleProps {
   title: string
   prompt: string
+  children?: React.ReactNode
 }
-
-export default function GetStartedExample({ title, prompt }: GetStartedExampleProps) {
+export default function GetStartedExample({ title, prompt, children }: GetStartedExampleProps) {
   const [copied, setCopied] = useState(false)
 
   const copyToClipboard = async () => {
@@ -37,6 +37,7 @@ export default function GetStartedExample({ title, prompt }: GetStartedExamplePr
         {copied ? <Check className="h-4 w-4 text-green-600 scale-125" /> : <Copy className="h-4 w-4" />}
       </Button>
       <Heading variant="h6">{title}</Heading>
+      {children}
       <pre className="bg-muted/50 border p-4 rounded-md text-xs sm:text-sm font-mono whitespace-pre-wrap -mt-2">{prompt}</pre>
     </Card>
   )
