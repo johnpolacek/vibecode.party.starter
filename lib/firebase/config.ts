@@ -2,9 +2,9 @@ import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, connectFirestoreEmulator, Firestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'test-api-key',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   authDomain: 'vibestarter.firebaseapp.com',
-  projectId: 'vibestarter',
   storageBucket: 'vibestarter.appspot.com',
   messagingSenderId: '123456789',
   appId: '1:123456789:web:abcdef123456789',

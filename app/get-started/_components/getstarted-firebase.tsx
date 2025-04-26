@@ -58,10 +58,13 @@ After these changes, you can start the Firebase emulator with \`pnpm db:emulator
                   Firebase Console
                 </a>
               </li>
-              <li>Enable Firestore in your project</li>
-              <li>Go to Project Settings → Service accounts to generate a new service account key</li>
+              <li>Enable Firestore in your project (for the web)</li>
               <li>
-                Create or update your <code className="px-2 py-1 bg-muted rounded">.env</code> file with the following variables:
+                Get your firebase config and update <code className="px-2 py-1 bg-muted rounded">lib/config.ts</code>
+              </li>
+              <li>
+                Go to Project Settings &gt; Service accounts then generate a new service account key and update your <code className="px-2 py-1 bg-muted rounded">.env</code> file with the following
+                variables:
                 <pre className="mt-2 p-4 bg-muted rounded-md max-w-xl overflow-x-auto">
                   <code>
                     NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id{"\n"}

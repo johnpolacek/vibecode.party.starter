@@ -175,3 +175,6 @@ html {
   text-wrap: pretty;
 }
 
+button {
+  cursor: pointer;
+}
