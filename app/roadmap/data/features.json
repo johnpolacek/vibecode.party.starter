@@ -36,10 +36,10 @@
   },
   {
     "id": "7",
-    "title": "Support other cloud databases",
+    "title": "Switch to Convex",
     "votes": 32,
-    "status": "planned",
-    "description": "Support for other cloud database providers like Convex"
+    "status": "completed",
+    "description": "Switch to Convex for better DX and support for more projects on the free tier"
   },
   {
     "id": "8",
@@ -54,5 +54,12 @@
     "votes": 22,
     "status": "backlog",
     "description": "Allow users to more easily customize the application theme"
+  },
+  {
+    "id": "10",
+    "title": "Better documentation",
+    "votes": 12,
+    "status": "in-progress",
+    "description": "Improve the documentation getting started quickly on new projects"
   }
 ]
