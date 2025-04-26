@@ -56,16 +56,13 @@ export default async function RootLayout({
   let isAdmin = false
 
   try {
-    const authResult = await auth()
-    userId = authResult.userId
+    const { userId: id } = await auth()
+    userId = id
     const adminUserIds = process.env.ADMIN_USER_IDS?.split(",") || []
     isAdmin = userId ? adminUserIds.includes(userId) : false
   } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      // Clerk auth initialization skipped in dev
-    } else {
-      throw error // Re-throw in production
-    }
+    // Silently handle auth initialization errors
+    console.warn("Auth initialization error during initialization (this can be expected in development):", error)
   }
 
   // Track the visit
