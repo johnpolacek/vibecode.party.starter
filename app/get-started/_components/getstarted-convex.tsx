@@ -31,6 +31,8 @@ posts: defineTable({
 })
 \`\`\`
 
+[ Describe the table you want to add here... ]
+
 Then run \`npx convex codegen\` to update your generated types.`
 
   if (dismissed) {

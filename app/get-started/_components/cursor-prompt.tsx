@@ -34,7 +34,7 @@ export function CursorPrompt({ prompt, heading }: CursorPromptProps) {
               </CopyToClipboard>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground -mt-2 mb-4">Copy this prompt and paste it to Cursor to automatically remove admin functionality:</p>
+          <p className="text-sm text-muted-foreground -mt-2 mb-4">Copy this prompt and paste it to Cursor:</p>
           <pre className="text-sm bg-muted p-3 rounded-md whitespace-pre-wrap">
             <code>{prompt}</code>
           </pre>
