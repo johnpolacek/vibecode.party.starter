@@ -1,118 +1,111 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Heading } from "@/components/typography/heading"
 import { CursorPrompt } from "./cursor-prompt"
+import { Button } from "@/components/ui/button"
 
-// Simple check for Convex configuration
-const isConvexConfigured = () => {
-  return Boolean(process.env.NEXT_PUBLIC_CONVEX_URL)
-}
+export default function GetStartedConvex() {
+  const [dismissed, setDismissed] = useState(false)
 
-export default async function GetStartedConvex() {
-  const hasConvexConfig = isConvexConfigured()
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setDismissed(localStorage.getItem("convexConfigured") === "true")
+    }
+  }, [])
 
-  const cursorPrompt = `Please help me set up Convex in my project by:
+  function handleDismiss() {
+    localStorage.setItem("convexConfigured", "true")
+    setDismissed(true)
+  }
 
-1. Installing dependencies:
-   \`\`\`bash
-   pnpm add convex
-   \`\`\`
+  const cursorPrompt = `Add a new table to convex/schema.ts. For example, to add a posts table:
 
-2. Initialize Convex:
-   \`\`\`bash
-   npx convex dev
-   \`\`\`
+\`\`\`typescript
+posts: defineTable({
+  title: v.string(),
+  content: v.string(),
+  createdAt: v.number(),
+})
+\`\`\`
 
-3. Setting up environment variables in .env:
-   - NEXT_PUBLIC_CONVEX_URL (from your Convex dashboard, e.g. https://your-app-name.convex.cloud)
+Then run \`npx convex codegen\` to update your generated types.`
 
-4. Create the schema in convex/schema.ts
-5. Create your first mutation and query in convex/visits.ts
-6. Remove the getstarted-convex section from the get-started page
-
-After these changes, you can start the development server with \`pnpm dev\`.
-
-**Vercel Deploy Note:**
-Add \`npx convex codegen\` before your build step (e.g. \`npx convex codegen && npm run build\`) in your Vercel build settings to ensure Convex client files are generated.`
+  if (dismissed) {
+    return (
+      <div className="mx-auto text-center max-w-2xl w-full">
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="features">
+            <AccordionTrigger className="text-green-600 font-semibold">✓ Convex is configured!</AccordionTrigger>
+            <AccordionContent>
+              <div className="text-left">
+                <p className="mb-4">Your database is ready to use. You can now:</p>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>
+                    Create and manage Convex tables through <code>schema.ts</code>
+                  </li>
+                  <li>Write queries and mutations in your Convex functions</li>
+                  <li>Set up real-time subscriptions</li>
+                  <li>Use optimistic updates for better UX</li>
+                </ul>
+                <div className="mt-6 p-4 bg-amber-50 rounded-md">
+                  <p className="text-amber-800 text-sm">
+                    <strong>Tip:</strong> You can manage your Convex project, monitor queries, and view your data in the{" "}
+                    <a href="https://dashboard.convex.dev" target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline">
+                      Convex Dashboard
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    )
+  }
 
   return (
-    <>
-      {!hasConvexConfig ? (
-        <div className="max-w-4xl mx-auto px-4 w-full">
-          <Card className="p-8 mt-8 w-full">
-            <Heading variant="h4" className="text-primary">
-              Setup Required: Convex Database
-            </Heading>
-            <p>To set up your database with Convex:</p>
-            <ol className="list-decimal pl-6 space-y-4">
-              <li>
-                Create a new project on{" "}
-                <a href="https://dashboard.convex.dev" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                  Convex Dashboard
-                </a>
-              </li>
-              <li>
-                Install the Convex CLI and initialize your project:
-                <pre className="mt-2 p-4 bg-muted rounded-md max-w-xl overflow-x-auto">
-                  <code>
-                    pnpm add convex{"\n"}
-                    npx convex dev
-                  </code>
-                </pre>
-              </li>
-              <li>
-                Get your Convex URL from the dashboard and update your <code className="px-2 py-1 bg-muted rounded">.env</code> file:
-                <pre className="mt-2 p-4 bg-muted rounded-md max-w-xl overflow-x-auto">
-                  <code>NEXT_PUBLIC_CONVEX_URL=https://your-app-name.convex.cloud</code>
-                </pre>
-                <div className="text-xs text-muted-foreground mt-2">
-                  Find this in your{" "}
-                  <a href="https://dashboard.convex.dev" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                    Convex dashboard
-                  </a>{" "}
-                  under “Deployment URL”.
-                </div>
-              </li>
-              <li>
-                <strong>Vercel Deploy:</strong> In your Vercel project settings, set your build command to <code>npx convex codegen && npm run build</code> (or <code>pnpm build</code> if you use pnpm)
-                to ensure Convex client files are generated.
-              </li>
-              <li>Restart your development server after adding the environment variables</li>
-            </ol>
-
-            <div className="pt-8">
-              <CursorPrompt prompt={cursorPrompt} heading="Need help setting up Convex?" />
-            </div>
-          </Card>
+    <div className="max-w-4xl mx-auto px-4 w-full">
+      <Card className="p-8 mt-8 w-full">
+        <Heading variant="h4" className="text-primary">
+          Setup Required: Convex Database
+        </Heading>
+        <p>
+          To finish setting up Convex, add your own table to <code className="px-2 py-1 bg-muted rounded">convex/schema.ts</code>:
+        </p>
+        <ol className="list-decimal pl-6 space-y-4 mt-4">
+          <li>
+            Open <code className="px-2 py-1 bg-muted rounded">convex/schema.ts</code> and add a new table. For example:
+            <pre className="mt-2 p-4 bg-muted rounded-md max-w-xl overflow-x-auto">
+              <code>{`posts: defineTable({
+  title: v.string(),
+  content: v.string(),
+  createdAt: v.number(),
+})`}</code>
+            </pre>
+          </li>
+          <li>
+            Run <code>npx convex codegen</code> to update your generated types.
+          </li>
+          <li>
+            (Optional) Use this prompt in Cursor or your LLM:
+            <pre className="mt-2 p-4 bg-muted rounded-md max-w-xl overflow-x-auto">
+              <code>{`Add a new table to convex/schema.ts for blog posts with fields: title (string), content (string), createdAt (number)`}</code>
+            </pre>
+          </li>
+          <li>When you are done, click Dismiss below to hide this card.</li>
+        </ol>
+        <div className="pt-8 flex flex-col gap-4">
+          <CursorPrompt prompt={cursorPrompt} heading="Need help setting up a Convex table?" />
+          <div className="flex justify-end pt-4">
+            <Button className="px-8" variant="outline" onClick={handleDismiss}>
+              Dismiss
+            </Button>
+          </div>
         </div>
-      ) : (
-        <div className="mx-auto text-center max-w-2xl w-full">
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="features">
-              <AccordionTrigger className="text-green-600 font-semibold">✓ Convex is configured!</AccordionTrigger>
-              <AccordionContent>
-                <div className="text-left">
-                  <p className="mb-4">Your database is ready to use. You can now:</p>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li>Create and manage Convex tables through schema.ts</li>
-                    <li>Write queries and mutations in your Convex functions</li>
-                    <li>Set up real-time subscriptions</li>
-                    <li>Use optimistic updates for better UX</li>
-                  </ul>
-                  <div className="mt-6 p-4 bg-amber-50 rounded-md">
-                    <p className="text-amber-800 text-sm">
-                      <strong>Tip:</strong> You can manage your Convex project, monitor queries, and view your data in the{" "}
-                      <a href="https://dashboard.convex.dev" target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline">
-                        Convex Dashboard
-                      </a>
-                    </p>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
-      )}
-    </>
+      </Card>
+    </div>
   )
 }

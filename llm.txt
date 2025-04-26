@@ -2303,7 +2303,7 @@ export default function GetStartedAdmin() {
             <div className="mt-6 space-y-4">
               <div className="p-4 bg-amber-50 rounded-md">
                 <p className="text-amber-800 text-sm">
-                  <strong>Security Note:</strong> Only add trusted user IDs to the admin list. These users will have full access to your application's admin features.
+                  <strong>Security Note:</strong> Only add trusted user IDs to the admin list. These users will have full access to your application’s admin features.
                 </p>
               </div>
               <div className="p-4 bg-blue-50 rounded-md">
@@ -2738,122 +2738,115 @@ export default async function GetStartedConfig() {
 
 --- File: app/get-started/_components/getstarted-convex.tsx ---
 
+"use client"
+
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Heading } from "@/components/typography/heading"
 import { CursorPrompt } from "./cursor-prompt"
+import { Button } from "@/components/ui/button"
 
-// Simple check for Convex configuration
-const isConvexConfigured = () => {
-  return Boolean(process.env.NEXT_PUBLIC_CONVEX_URL)
-}
+export default function GetStartedConvex() {
+  const [dismissed, setDismissed] = useState(false)
 
-export default async function GetStartedConvex() {
-  const hasConvexConfig = isConvexConfigured()
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setDismissed(localStorage.getItem("convexConfigured") === "true")
+    }
+  }, [])
 
-  const cursorPrompt = `Please help me set up Convex in my project by:
+  function handleDismiss() {
+    localStorage.setItem("convexConfigured", "true")
+    setDismissed(true)
+  }
 
-1. Installing dependencies:
-   \`\`\`bash
-   pnpm add convex
-   \`\`\`
+  const cursorPrompt = `Add a new table to convex/schema.ts. For example, to add a posts table:
 
-2. Initialize Convex:
-   \`\`\`bash
-   npx convex dev
-   \`\`\`
+\`\`\`typescript
+posts: defineTable({
+  title: v.string(),
+  content: v.string(),
+  createdAt: v.number(),
+})
+\`\`\`
 
-3. Setting up environment variables in .env:
-   - NEXT_PUBLIC_CONVEX_URL (from your Convex dashboard, e.g. https://your-app-name.convex.cloud)
+Then run \`npx convex codegen\` to update your generated types.`
 
-4. Create the schema in convex/schema.ts
-5. Create your first mutation and query in convex/visits.ts
-6. Remove the getstarted-convex section from the get-started page
-
-After these changes, you can start the development server with \`pnpm dev\`.
-
-**Vercel Deploy Note:**
-Add \`npx convex codegen\` before your build step (e.g. \`npx convex codegen && npm run build\`) in your Vercel build settings to ensure Convex client files are generated.`
+  if (dismissed) {
+    return (
+      <div className="mx-auto text-center max-w-2xl w-full">
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="features">
+            <AccordionTrigger className="text-green-600 font-semibold">✓ Convex is configured!</AccordionTrigger>
+            <AccordionContent>
+              <div className="text-left">
+                <p className="mb-4">Your database is ready to use. You can now:</p>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>
+                    Create and manage Convex tables through <code>schema.ts</code>
+                  </li>
+                  <li>Write queries and mutations in your Convex functions</li>
+                  <li>Set up real-time subscriptions</li>
+                  <li>Use optimistic updates for better UX</li>
+                </ul>
+                <div className="mt-6 p-4 bg-amber-50 rounded-md">
+                  <p className="text-amber-800 text-sm">
+                    <strong>Tip:</strong> You can manage your Convex project, monitor queries, and view your data in the{" "}
+                    <a href="https://dashboard.convex.dev" target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline">
+                      Convex Dashboard
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    )
+  }
 
   return (
-    <>
-      {!hasConvexConfig ? (
-        <div className="max-w-4xl mx-auto px-4 w-full">
-          <Card className="p-8 mt-8 w-full">
-            <Heading variant="h4" className="text-primary">
-              Setup Required: Convex Database
-            </Heading>
-            <p>To set up your database with Convex:</p>
-            <ol className="list-decimal pl-6 space-y-4">
-              <li>
-                Create a new project on{" "}
-                <a href="https://dashboard.convex.dev" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                  Convex Dashboard
-                </a>
-              </li>
-              <li>
-                Install the Convex CLI and initialize your project:
-                <pre className="mt-2 p-4 bg-muted rounded-md max-w-xl overflow-x-auto">
-                  <code>
-                    pnpm add convex{"\n"}
-                    npx convex dev
-                  </code>
-                </pre>
-              </li>
-              <li>
-                Get your Convex URL from the dashboard and update your <code className="px-2 py-1 bg-muted rounded">.env</code> file:
-                <pre className="mt-2 p-4 bg-muted rounded-md max-w-xl overflow-x-auto">
-                  <code>NEXT_PUBLIC_CONVEX_URL=https://your-app-name.convex.cloud</code>
-                </pre>
-                <div className="text-xs text-muted-foreground mt-2">
-                  Find this in your{" "}
-                  <a href="https://dashboard.convex.dev" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                    Convex dashboard
-                  </a>{" "}
-                  under "Deployment URL".
-                </div>
-              </li>
-              <li>
-                <strong>Vercel Deploy:</strong> In your Vercel project settings, set your build command to <code>npx convex codegen && npm run build</code> (or <code>pnpm build</code> if you use pnpm)
-                to ensure Convex client files are generated.
-              </li>
-              <li>Restart your development server after adding the environment variables</li>
-            </ol>
-
-            <div className="pt-8">
-              <CursorPrompt prompt={cursorPrompt} heading="Need help setting up Convex?" />
-            </div>
-          </Card>
+    <div className="max-w-4xl mx-auto px-4 w-full">
+      <Card className="p-8 mt-8 w-full">
+        <Heading variant="h4" className="text-primary">
+          Setup Required: Convex Database
+        </Heading>
+        <p>
+          To finish setting up Convex, add your own table to <code className="px-2 py-1 bg-muted rounded">convex/schema.ts</code>:
+        </p>
+        <ol className="list-decimal pl-6 space-y-4 mt-4">
+          <li>
+            Open <code className="px-2 py-1 bg-muted rounded">convex/schema.ts</code> and add a new table. For example:
+            <pre className="mt-2 p-4 bg-muted rounded-md max-w-xl overflow-x-auto">
+              <code>{`posts: defineTable({
+  title: v.string(),
+  content: v.string(),
+  createdAt: v.number(),
+})`}</code>
+            </pre>
+          </li>
+          <li>
+            Run <code>npx convex codegen</code> to update your generated types.
+          </li>
+          <li>
+            (Optional) Use this prompt in Cursor or your LLM:
+            <pre className="mt-2 p-4 bg-muted rounded-md max-w-xl overflow-x-auto">
+              <code>{`Add a new table to convex/schema.ts for blog posts with fields: title (string), content (string), createdAt (number)`}</code>
+            </pre>
+          </li>
+          <li>When you are done, click Dismiss below to hide this card.</li>
+        </ol>
+        <div className="pt-8 flex flex-col gap-4">
+          <CursorPrompt prompt={cursorPrompt} heading="Need help setting up a Convex table?" />
+          <div className="flex justify-end pt-4">
+            <Button className="px-8" variant="outline" onClick={handleDismiss}>
+              Dismiss
+            </Button>
+          </div>
         </div>
-      ) : (
-        <div className="mx-auto text-center max-w-2xl w-full">
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="features">
-              <AccordionTrigger className="text-green-600 font-semibold">✓ Convex is configured!</AccordionTrigger>
-              <AccordionContent>
-                <div className="text-left">
-                  <p className="mb-4">Your database is ready to use. You can now:</p>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li>Create and manage Convex tables through schema.ts</li>
-                    <li>Write queries and mutations in your Convex functions</li>
-                    <li>Set up real-time subscriptions</li>
-                    <li>Use optimistic updates for better UX</li>
-                  </ul>
-                  <div className="mt-6 p-4 bg-amber-50 rounded-md">
-                    <p className="text-amber-800 text-sm">
-                      <strong>Tip:</strong> You can manage your Convex project, monitor queries, and view your data in the{" "}
-                      <a href="https://dashboard.convex.dev" target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline">
-                        Convex Dashboard
-                      </a>
-                    </p>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
-      )}
-    </>
+      </Card>
+    </div>
   )
 }
 
@@ -3928,7 +3921,6 @@ import { Heading } from "@/components/typography/heading"
 import { getSubscription, unsubscribe } from "@/app/_actions/mailing-list"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { auth } from "@clerk/nextjs/server"
 import { ConfigCard } from "@/components/admin/config-card"
 
 async function handleUnsubscribe() {
@@ -4233,10 +4225,10 @@ export function Providers({ children }: PropsWithChildren) {
   },
   {
     "id": "7",
-    "title": "Support other cloud databases",
+    "title": "Switch to Convex",
     "votes": 32,
-    "status": "planned",
-    "description": "Support for other cloud database providers like Convex"
+    "status": "completed",
+    "description": "Switch to Convex for better DX and support for more projects on the free tier"
   },
   {
     "id": "8",
@@ -4251,6 +4243,13 @@ export function Providers({ children }: PropsWithChildren) {
     "votes": 22,
     "status": "backlog",
     "description": "Allow users to more easily customize the application theme"
+  },
+  {
+    "id": "10",
+    "title": "Better documentation",
+    "votes": 12,
+    "status": "in-progress",
+    "description": "Improve the documentation getting started quickly on new projects"
   }
 ]
 
@@ -4292,13 +4291,39 @@ export default function TermsPage() {
 
 --- File: app/unsubscribe/page.tsx ---
 
-import { useState } from "react"
-import { unsubscribe } from "@/app/_actions/mailing-list"
 import { Heading } from "@/components/typography/heading"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import UnsubscribeForm from "./unsubscribe-form"
 
 export default function UnsubscribePage() {
+  return (
+    <div className="container max-w-md py-12 flex flex-col items-center justify-center min-h-[60vh]">
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle>
+            <Heading variant="h2" className="text-center">
+              Unsubscribe from Mailing List
+            </Heading>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <UnsubscribeForm />
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+
+--- File: app/unsubscribe/unsubscribe-form.tsx ---
+
+"use client"
+
+import { useState } from "react"
+import { unsubscribe } from "@/app/_actions/mailing-list"
+import { Button } from "@/components/ui/button"
+
+export default function UnsubscribeForm() {
   const [email, setEmail] = useState("")
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle")
   const [error, setError] = useState<string | null>(null)
@@ -4315,42 +4340,31 @@ export default function UnsubscribePage() {
         setStatus("error")
         setError(result.error || "Could not unsubscribe. Please check your email.")
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setStatus("error")
-      setError(err?.message || "Could not unsubscribe. Please try again.")
+      setError(err instanceof Error ? err.message : "Could not unsubscribe. Please try again.")
     }
   }
 
   return (
-    <div className="container max-w-md py-12 flex flex-col items-center justify-center min-h-[60vh]">
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>
-            <Heading variant="h2" className="text-center">
-              Unsubscribe from Mailing List
-            </Heading>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {status === "success" ? (
-            <div className="text-center text-green-600 font-semibold py-6">You have been unsubscribed from our mailing list.</div>
-          ) : (
-            <form onSubmit={handleUnsubscribe} className="space-y-6">
-              <div>
-                <label htmlFor="email" className="block mb-2 font-medium">
-                  Email address
-                </label>
-                <input id="email" type="email" className="w-full border rounded px-3 py-2" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />
-              </div>
-              <Button type="submit" className="w-full" size="lg" variant="destructive">
-                Unsubscribe
-              </Button>
-              {status === "error" && <div className="text-red-600 text-sm text-center mt-2">{error}</div>}
-            </form>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+    <>
+      {status === "success" ? (
+        <div className="text-center text-green-600 font-semibold py-6">You have been unsubscribed from our mailing list.</div>
+      ) : (
+        <form onSubmit={handleUnsubscribe} className="space-y-6">
+          <div>
+            <label htmlFor="email" className="block mb-2 font-medium">
+              Email address
+            </label>
+            <input id="email" type="email" className="w-full border rounded px-3 py-2" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />
+          </div>
+          <Button type="submit" className="w-full" size="lg" variant="destructive">
+            Unsubscribe
+          </Button>
+          {status === "error" && <div className="text-red-600 text-sm text-center mt-2">{error}</div>}
+        </form>
+      )}
+    </>
   )
 }
 
@@ -11254,7 +11268,7 @@ import { convex, api } from "@/lib/convex/server";
 export async function recordVisit(data: {
   path: string;
   userId: string | null;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
 }) {
   return await convex.mutation(api.visits.recordVisit, data);
 }
@@ -11635,7 +11649,7 @@ export default nextConfig;
 
 {
   "name": "vibecode-party-starter",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "license": "MIT",
   "description": "A Next.js starter project for vibecoding full stack web apps with auth, backend, payments, email, and more",
   "keywords": [
