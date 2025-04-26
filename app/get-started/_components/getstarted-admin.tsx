@@ -7,15 +7,8 @@ import { isClerkConfigured, isAdminConfigured } from "@/lib/auth-utils"
 import { ShieldUser } from "lucide-react"
 import { CursorPrompt } from "./cursor-prompt"
 
-// Simple check for Firebase configuration
-const isFirebaseConfigured = () => {
-  return Boolean(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_API_KEY && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY)
-}
-
-export default async function GetStartedAdmin() {
-  // Check for required configuration
+export default function GetStartedAdmin() {
   const hasClerk = isClerkConfigured()
-  const hasFirebase = isFirebaseConfigured()
   const hasAdminConfig = isAdminConfigured()
 
   const cursorPrompt = `Please help me remove admin functionality from my project by:
@@ -29,13 +22,11 @@ export default async function GetStartedAdmin() {
 2. Removing these environment variables from .env:
    - ADMIN_USER_IDS
 
-3. Removing any admin-related Firestore collections and security rules
-
-4. And remove getstarted-admin from the get-started page`
+3. And remove getstarted-admin from the get-started page`
 
   return (
     <>
-      {!hasClerk || !hasFirebase || !hasAdminConfig ? (
+      {!hasClerk || !hasAdminConfig ? (
         <div className="max-w-4xl mx-auto px-4 w-full">
           <Card className="p-8 mt-8 w-full">
             <Heading variant="h4" className="text-primary">
@@ -44,7 +35,6 @@ export default async function GetStartedAdmin() {
             <p>To set up the admin dashboard functionality:</p>
             <ol className="list-decimal pl-6 space-y-4">
               {!hasClerk && <li className="text-muted-foreground">First, set up Clerk authentication (see above)</li>}
-              {!hasFirebase && <li className="text-muted-foreground">Set up Firebase database (see above)</li>}
               <li>
                 <strong>Configure Admin Access:</strong>
                 <ul className="list-disc pl-6 mt-2 space-y-2">
@@ -84,7 +74,7 @@ export default async function GetStartedAdmin() {
             </div>
 
             <div className="pt-8">
-              <CursorPrompt prompt={cursorPrompt} heading="Don’t need admin functionality?" />
+              <CursorPrompt prompt={cursorPrompt} heading="Don't need admin functionality?" />
             </div>
           </Card>
         </div>

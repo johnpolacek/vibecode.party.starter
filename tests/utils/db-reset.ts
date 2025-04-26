@@ -1,34 +1,30 @@
-import { db } from '@/lib/firebase/admin'
-import { QueryDocumentSnapshot, DocumentData } from 'firebase-admin/firestore'
-import { clerkClient } from '@clerk/clerk-sdk-node'
+import { ConvexHttpClient } from "convex/browser"
+import { api } from "@/convex/_generated/api"
 import dotenv from 'dotenv'
 
 dotenv.config()
 
-const COLLECTIONS_TO_RESET = ['mailing_list_subscriptions', 'user_visits']
+// Ensure we're in test environment
+if (process.env.NODE_ENV !== 'test') {
+  throw new Error('Database reset utilities should only be used in test environment')
+}
+
+// Initialize Convex client
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+
+const TABLES_TO_RESET = ['mailing_list_subscriptions', 'visits'] as const
+// Restrict to allowed table names for type safety
+type TableName = typeof TABLES_TO_RESET[number]
 
 /**
- * Delete all documents in a collection
+ * Delete all documents in a table
  */
-export async function deleteCollection(collectionName: string): Promise<void> {
+export async function deleteCollection(tableName: TableName): Promise<void> {
   try {
-    const collectionRef = db.collection(collectionName)
-    const snapshot = await collectionRef.get()
-
-    if (snapshot.empty) {
-      console.log(`Collection ${collectionName} is empty or does not exist. Skipping...`)
-      return
-    }
-
-    const batch = db.batch()
-    snapshot.docs.forEach((doc: QueryDocumentSnapshot<DocumentData>) => {
-      batch.delete(doc.ref)
-    })
-
-    await batch.commit()
-    console.log(`Deleted ${snapshot.size} documents from ${collectionName}`)
+    await convex.mutation(api.testing.deleteAll, { tableName })
+    console.log(`Deleted all documents from ${tableName}`)
   } catch (error) {
-    console.warn(`Warning: Failed to delete collection ${collectionName}:`, error)
+    console.warn(`Warning: Failed to delete table ${tableName}:`, error)
   }
 }
 
@@ -37,26 +33,38 @@ export async function deleteCollection(collectionName: string): Promise<void> {
  */
 export async function resetDatabase(): Promise<void> {
   console.log('Resetting database...')
-
-  for (const collection of COLLECTIONS_TO_RESET) {
-    await deleteCollection(collection)
+  for (const table of TABLES_TO_RESET) {
+    await deleteCollection(table)
   }
-
   console.log('Database reset complete')
 }
 
 /**
- * Verify that all collections are empty
+ * Seed test data using Convex test mutation
+ */
+export async function seedTestData(): Promise<void> {
+  console.log('Seeding test data...')
+  await convex.mutation(api.testing.seedTestData, {})
+  console.log('Test data seeding complete')
+}
+
+/**
+ * Verify that all tables are empty
  */
 export async function verifyDatabaseReset(): Promise<boolean> {
-  for (const collection of COLLECTIONS_TO_RESET) {
-    const snapshot = await db.collection(collection).get()
-    if (!snapshot.empty) {
-      console.error(`Collection ${collection} is not empty`)
-      return false
+  try {
+    for (const table of TABLES_TO_RESET) {
+      const count = await convex.query(api.testing.countDocuments, { tableName: table })
+      if (count > 0) {
+        console.error(`Table ${table} is not empty`)
+        return false
+      }
     }
+    return true
+  } catch (error) {
+    console.error('Error verifying database reset:', error)
+    return false
   }
-  return true
 }
 
 /**
@@ -64,12 +72,8 @@ export async function verifyDatabaseReset(): Promise<boolean> {
  */
 export async function setupTestDatabase(): Promise<void> {
   await resetDatabase()
-}
-
-/**
- * Seed test data
- */
-export async function seedTestData(): Promise<void> {
-  console.log('Seeding test data...')
-  console.log('Test data seeding complete')
+  const isReset = await verifyDatabaseReset()
+  if (!isReset) {
+    throw new Error('Failed to reset database')
+  }
 } 

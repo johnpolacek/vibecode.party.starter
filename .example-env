@@ -2,14 +2,6 @@ NEXT_PUBLIC_APP_URL=https://starter.vibecode.party
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
 
-# Firebase
-NEXT_PUBLIC_FIREBASE_API_KEY=
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-
-# Firebase Admin SDK
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-abcd@your-app.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nlongencodedstring=\n-----END PRIVATE KEY-----\n"
-
 # AI Keys
 OPENAI_API_KEY=
 REPLICATE_API_TOKEN=

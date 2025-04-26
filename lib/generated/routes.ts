@@ -18,5 +18,6 @@ export const validRoutes = new Set([
   'pay',
   'privacy',
   'roadmap',
-  'terms'
+  'terms',
+  'unsubscribe'
 ])

@@ -33,7 +33,7 @@ export function MailingListForm({ initialEmail }: { initialEmail?: string }) {
     try {
       setIsLoading(true)
       await subscribe({
-        user_id: user.id,
+        userId: user.id,
         email: initialEmail || user.emailAddresses[0].emailAddress,
         name: user.fullName || user.firstName || null,
         preferences,

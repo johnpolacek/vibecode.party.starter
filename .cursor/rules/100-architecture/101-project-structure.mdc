@@ -21,10 +21,11 @@ Follow these guidelines when creating new files to maintain consistent project o
 ├── components/            # Shared UI components
 │   ├── ui/               # Basic UI components
 │   └── [feature]/        # Feature-specific components
+├── convex/                # Convex schema, functions, and backend logic
 ├── lib/                   # Utility functions and services
-│   ├── services/         # Business logic and data services
+│   ├── services/         # Business logic and data services (Convex client wrappers)
 │   ├── validations/      # Form and data validation
-│   ├── firebase/        # Firebase configuration and utilities
+│   ├── convex/           # Convex client configuration and utilities
 │   └── config/           # Configuration files
 ├── types/                # TypeScript type definitions
 └── public/              # Static assets
@@ -39,11 +40,12 @@ Follow these guidelines when creating new files to maintain consistent project o
    - Route-specific components → `/app/[route]/components/`
 
 2. **Business Logic**
-   - Database services → `/lib/services/`
+   - Convex backend logic → `/convex/`
+   - Database services (Convex client wrappers) → `/lib/services/`
    - Utility functions → `/lib/utils.ts`
    - Type definitions → `/types/`
    - Form validation → `/lib/validations/`
-   - Firebase config → `/lib/firebase/`
+   - Convex client config → `/lib/convex/`
 
 3. **Server Actions**
    - Private actions → `/app/_actions/`
@@ -59,11 +61,13 @@ Follow these guidelines when creating new files to maintain consistent project o
    - Pages: `page.tsx`
    - Layouts: `layout.tsx`
    - Server actions: kebab-case (e.g., `create-sponsor.ts`)
+   - Convex functions: kebab-case (e.g., `record-visit.ts`)
 
 2. **Directories**
    - Route directories: kebab-case
    - Component directories: kebab-case
    - Feature directories: kebab-case
+   - Convex modules: kebab-case
 
 ## File Sizes
 
@@ -85,8 +89,8 @@ export function TierSelector() { ... }
 
 ### Good: New Service Location
 ```typescript
-// ✅ /lib/services/sponsor-service.ts
-export class SponsorService { ... }
+// ✅ /lib/services/visit-service.ts
+export async function recordVisit(args) { ... }
 
 // ✅ /lib/validations/sponsor-schema.ts
 export const sponsorSchema = { ... }
@@ -98,11 +102,53 @@ export const sponsorSchema = { ... }
 export async function createSponsor() { ... }
 ```
 
-### Good: New Firebase Config Location
+### Good: New Convex Function Location
 ```typescript
-// ✅ /lib/firebase/config.ts
-export const firebaseConfig = { ... }
+// ✅ /convex/visits.ts
+export const recordVisit = mutation({ ... })
+```
 
-// ✅ /lib/firebase/admin.ts
-export const adminDb = getFirestore(adminApp)
+### Good: New Convex Client Config Location
+```typescript
+// ✅ /lib/convex/client.ts
+import { ConvexClient } from "convex/browser";
+export const convex = new ConvexClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+```
+
+## Convex + Clerk Access Control Pattern
+
+When using Convex as your backend database and Clerk for authentication:
+
+- **All access control and identity validation should be handled by Clerk in your Next.js server** (API routes, server actions, or server components).
+- **Convex should only be called from the server for any protected/private data.**
+- **The client should never call Convex directly for private or user-specific data.**
+- For public data, you may expose Convex queries directly to the client if desired.
+
+**Recommended Flow:**
+
+1. Client makes a request to your Next.js API route or server action.
+2. The server validates the user/session using Clerk.
+3. If authorized, the server calls Convex using the Convex Node client.
+4. The server returns the result to the client.
+
+**Benefits:**
+- Single source of truth for authentication and access control (Clerk)
+- No need to configure JWT templates for Convex in Clerk
+- Maximum security: only your server can access private Convex data
+
+**Example:**
+```typescript
+// app/api/secure-data/route.ts
+import { auth } from "@clerk/nextjs/server";
+import { convexClient } from "@/lib/convex"; // Your Convex Node client
+
+export async function POST(req: Request) {
+  const { userId } = await auth();
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+  // Now you can safely call Convex with trusted userId
+  const result = await convexClient.mutation("secureFunction", { userId, ... });
+  return Response.json(result);
+}
 ```

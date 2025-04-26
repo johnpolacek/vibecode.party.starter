@@ -4,9 +4,12 @@ import { auth } from "@clerk/nextjs/server"
 import { MailingListPreferences } from "@/types/mailing-list"
 import sgMail from "@sendgrid/mail"
 import { revalidatePath } from "next/cache"
-import { addDoc, getDocs, updateDoc } from "@/lib/firebase/utils"
-import { MailingListSubscription } from "@/types/firebase"
-import { Timestamp } from "firebase-admin/firestore"
+import {
+  addMailingListSubscription,
+  removeMailingListSubscription,
+  updateMailingListPreferences,
+  getMailingListSubscriptions
+} from "@/lib/services/mailing-list"
 
 // Configure SendGrid and track availability
 let isEmailServiceConfigured = false
@@ -24,62 +27,19 @@ function isEmailServiceAvailable() {
 }
 
 export async function subscribe(data: {
-  user_id: string
+  userId: string
   email: string
   name: string | null
   preferences: MailingListPreferences
 }) {
   try {
-    // First try to find any existing subscription for this user or email
-    const existingResult = await getDocs<MailingListSubscription>(
-      'mailing_list_subscriptions',
-      [
-        {
-          field: 'email',
-          operator: '==',
-          value: data.email
-        }
-      ]
-    )
-
-    const existingSub = existingResult.success && existingResult.data?.[0]
-
-    if (existingSub) {
-      // Update existing subscription
-      const result = await updateDoc<MailingListSubscription>(
-        'mailing_list_subscriptions',
-        existingSub.id,
-        {
-          user_id: data.user_id,
-          email: data.email,
-          name: data.name,
-          preferences: data.preferences,
-          subscribed_at: Timestamp.now(),
-          unsubscribed_at: null,
-        }
-      )
-
-      if (!result.success) throw new Error(result.error)
-    } else {
-      // Insert new subscription
-      const result = await addDoc<MailingListSubscription>(
-        'mailing_list_subscriptions',
-        {
-          user_id: data.user_id,
-          email: data.email,
-          name: data.name,
-          preferences: data.preferences,
-          subscribed_at: Timestamp.now(),
-          unsubscribed_at: null,
-        }
-      )
-
-      if (!result.success) throw new Error(result.error)
-    }
-    
+    const result = await addMailingListSubscription({
+      ...data,
+      name: data.name ?? undefined,
+    })
     revalidatePath("/mailing-list")
-    return { 
-      success: true,
+    return {
+      success: !!result,
       emailServiceAvailable: isEmailServiceAvailable()
     }
   } catch (error) {
@@ -92,37 +52,12 @@ export async function subscribe(data: {
   }
 }
 
-export async function unsubscribe(userId: string) {
+export async function unsubscribe(email: string) {
   try {
-    // Find the subscription for this user
-    const existingResult = await getDocs<MailingListSubscription>(
-      'mailing_list_subscriptions',
-      [
-        {
-          field: 'user_id',
-          operator: '==',
-          value: userId
-        }
-      ]
-    )
-
-    if (!existingResult.success || !existingResult.data?.[0]) {
-      throw new Error('Subscription not found')
-    }
-
-    const result = await updateDoc<MailingListSubscription>(
-      'mailing_list_subscriptions',
-      existingResult.data[0].id,
-      {
-        unsubscribed_at: Timestamp.now()
-      }
-    )
-
-    if (!result.success) throw new Error(result.error)
-    
+    const result = await removeMailingListSubscription(email)
     revalidatePath("/mailing-list")
-    return { 
-      success: true,
+    return {
+      success: result,
       emailServiceAvailable: isEmailServiceAvailable()
     }
   } catch (error) {
@@ -137,43 +72,12 @@ export async function unsubscribe(userId: string) {
 
 export async function updatePreferences({ preferences }: { preferences: MailingListPreferences }) {
   try {
-    // Get current user's subscription
     const { userId } = await auth()
     if (!userId) throw new Error('Not authenticated')
-
-    const existingResult = await getDocs<MailingListSubscription>(
-      'mailing_list_subscriptions',
-      [
-        {
-          field: 'user_id',
-          operator: '==',
-          value: userId
-        },
-        {
-          field: 'unsubscribed_at',
-          operator: '==',
-          value: null
-        }
-      ]
-    )
-
-    if (!existingResult.success || !existingResult.data?.[0]) {
-      throw new Error('Active subscription not found')
-    }
-
-    const result = await updateDoc<MailingListSubscription>(
-      'mailing_list_subscriptions',
-      existingResult.data[0].id,
-      {
-        preferences
-      }
-    )
-
-    if (!result.success) throw new Error(result.error)
-    
+    const result = await updateMailingListPreferences(userId, preferences)
     revalidatePath("/mailing-list")
-    return { 
-      success: true,
+    return {
+      success: result,
       emailServiceAvailable: isEmailServiceAvailable()
     }
   } catch (error) {
@@ -195,25 +99,11 @@ export async function getSubscription() {
         data: null,
       }
     }
-
-    const result = await getDocs<MailingListSubscription>(
-      'mailing_list_subscriptions',
-      [
-        {
-          field: 'user_id',
-          operator: '==',
-          value: userId
-        }
-      ]
-    )
-
-    if (!result.success) {
-      throw new Error(result.error)
-    }
-
+    const subscriptions = await getMailingListSubscriptions()
+    const sub = subscriptions.find(s => s.userId === userId && s.unsubscribedAt === null)
     return {
       success: true as const,
-      data: result.data?.[0] || null,
+      data: sub || null,
     }
   } catch (error) {
     console.error("Error in getSubscription:", error)

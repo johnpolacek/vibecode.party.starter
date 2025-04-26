@@ -50,16 +50,13 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 
-# Firebase
-.firebase/
-firebase-debug.log
-firestore-debug.log
-ui-debug.log
-*.cache
-.runtimeconfig.json
-
 # Database backups
 /backups/
 
-# LLM context
-llm_context.txt
+# LLM contexts for third party tools
+llm-convex.txt
+
+# Convex
+.convex/
+convex/_generated/
+.env.local

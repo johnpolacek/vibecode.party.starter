@@ -1,7 +1,19 @@
 import { test, expect } from '@playwright/test';
 import { setupAuthenticatedUser, setupCleanDatabase } from './utils/test-helpers';
-import { getFirestore } from 'firebase-admin/firestore';
-import { db } from '@/lib/firebase/admin';
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "@/convex/_generated/api";
+import { Doc } from "@/convex/_generated/dataModel";
+
+type MailingListSubscription = Doc<"mailing_list_subscriptions">;
+
+// Initialize Convex client for test verification
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+
+// Helper function to safely cast Convex response
+async function getSubscriptions() {
+  const response = await convex.query(api.mailingList.getSubscriptions);
+  return response as unknown as MailingListSubscription[];
+}
 
 test('should have to sign in to subscribe', async ({ page }) => {
   await page.goto('http://localhost:3000/mailing-list');
@@ -33,14 +45,13 @@ test('should be able to subscribe to the mailing list when signed in', async ({ 
   const statusText = await page.getByText('You are currently subscribed').textContent();
   console.log('Status message:', statusText);
 
-  // Verify the document in Firebase
-  const subscriptionsRef = db.collection('mailing_list_subscriptions');
-  const snapshot = await subscriptionsRef.where('email', '==', 'john.polacek@gmail.com').get();
-  expect(snapshot.empty).toBe(false);
-  const doc = snapshot.docs[0];
-  expect(doc.data().email).toBe('john.polacek@gmail.com');
-  expect(doc.data().subscribed_at).toBeTruthy();
-  expect(doc.data().unsubscribed_at).toBeNull();
+  // Verify the document in Convex
+  const subscriptions = await getSubscriptions();
+  const subscription = subscriptions.find(s => s.email === 'john.polacek@gmail.com');
+  expect(subscription).toBeTruthy();
+  expect(subscription?.email).toBe('john.polacek@gmail.com');
+  expect(subscription?.subscribedAt).toBeTruthy();
+  expect(subscription?.unsubscribedAt).toBeNull();
 
   // Navigate to admin and check list
   await page.goto('http://localhost:3000/admin/mailing-list');
@@ -58,14 +69,14 @@ test('should be able to subscribe to the mailing list when signed in', async ({ 
   // Unsubscribe
   await page.goto('http://localhost:3000/mailing-list');
   await page.getByRole('button', { name: 'Unsubscribe' }).click();
-  await expect(page.getByText('Unsubscribed', { exact: true })).toBeVisible();
+  await expect(page.getByText('Subscribe to Our Mailing List')).toBeVisible();
   await page.goto('http://localhost:3000/admin/mailing-list');
   await expect(page.getByRole('cell', { name: 'john.polacek@gmail.com' })).toBeVisible();
   await expect(page.getByText('Unsubscribed')).toBeVisible();
 
-  // Verify unsubscribe in Firebase
-  const unsubSnapshot = await subscriptionsRef.where('email', '==', 'john.polacek@gmail.com').get();
-  expect(unsubSnapshot.empty).toBe(false);
-  const unsubDoc = unsubSnapshot.docs[0];
-  expect(unsubDoc.data().unsubscribed_at).toBeTruthy();
+  // Verify unsubscribe in Convex
+  const updatedSubscriptions = await getSubscriptions();
+  const unsubscription = updatedSubscriptions.find(s => s.email === 'john.polacek@gmail.com');
+  expect(unsubscription).toBeTruthy();
+  expect(unsubscription?.unsubscribedAt).toBeTruthy();
 });

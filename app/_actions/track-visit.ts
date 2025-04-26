@@ -3,7 +3,11 @@
 import { auth } from "@clerk/nextjs/server"
 import { headers } from "next/headers"
 import { validRoutes } from "@/lib/generated/routes"
-import { addDoc } from "@/lib/firebase/utils"
+import { ConvexHttpClient } from "convex/browser"
+import { api } from "@/convex/_generated/api"
+
+// Initialize Convex HTTP client
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
 
 // Check if the user agent is from a common legitimate browser
 function isValidBrowser(userAgent: string | null): boolean {
@@ -77,21 +81,19 @@ export async function trackVisit(path: string) {
       return { success: true }
     }
 
-    // Insert the visit into Firestore
-    const result = await addDoc('user_visits', {
-        user_id: userId || null,
-        path,
-        user_agent: userAgent || null,
+    // Record the visit using Convex
+    await convex.mutation(api.visits.recordVisit, {
+      path,
+      userId: userId || null,
+      metadata: {
+        userAgent: userAgent || null,
         referrer: referrer || null,
-      timestamp: new Date().toISOString(), // Keep timestamp for consistency with previous schema
-      })
-
-    if (!result.success) {
-      return { success: false, error: result.error }
-    }
+      }
+    })
 
     return { success: true }
   } catch (error) {
+    console.error('Error tracking visit:', error)
     return { success: false, error: (error as Error).message }
   }
 } 

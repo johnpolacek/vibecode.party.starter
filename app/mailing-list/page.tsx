@@ -3,39 +3,19 @@ import { Heading } from "@/components/typography/heading"
 import { getSubscription, unsubscribe } from "@/app/_actions/mailing-list"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { auth } from "@clerk/nextjs/server"
 import { ConfigCard } from "@/components/admin/config-card"
 
 async function handleUnsubscribe() {
   "use server"
-  const { userId } = await auth()
-  if (!userId) return
-  await unsubscribe(userId)
+  const result = await getSubscription()
+  const subscription = result.success ? result.data : null
+  if (!subscription?.email) return
+  await unsubscribe(subscription.email)
 }
 
 export default async function MailingListPage() {
   // Check if required environment variables are configured
   const missingEnvVars = [
-    {
-      key: "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
-      description: "Your Firebase project ID",
-      isMissing: !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    },
-    {
-      key: "NEXT_PUBLIC_FIREBASE_API_KEY",
-      description: "Your Firebase API key",
-      isMissing: !process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    },
-    {
-      key: "FIREBASE_CLIENT_EMAIL",
-      description: "Your Firebase service account email",
-      isMissing: !process.env.FIREBASE_CLIENT_EMAIL,
-    },
-    {
-      key: "FIREBASE_PRIVATE_KEY",
-      description: "Your Firebase service account private key",
-      isMissing: !process.env.FIREBASE_PRIVATE_KEY,
-    },
     {
       key: "SENDGRID_API_KEY",
       description: "Your SendGrid API key",
@@ -60,7 +40,7 @@ export default async function MailingListPage() {
         <Heading variant="h2" className="text-center leading-tight">
           {subscription ? (
             <>
-              {subscription.unsubscribed_at ? (
+              {subscription.unsubscribedAt ? (
                 <>
                   <span className="text-primary">Unsubscribed</span> <span className="text-muted-foreground">from our mailing list.</span>
                 </>
@@ -83,7 +63,7 @@ export default async function MailingListPage() {
               <CardTitle>Subscription Status</CardTitle>
             </CardHeader>
             <CardContent className="md:pb-4">
-              {subscription.unsubscribed_at ? (
+              {subscription.unsubscribedAt ? (
                 <div className="space-y-4">
                   <p>You are currently unsubscribed. Your previous email was {subscription.email}.</p>
                   <MailingListForm initialEmail={subscription.email} />

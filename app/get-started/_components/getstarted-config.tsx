@@ -9,7 +9,7 @@ import { CheckCircle2, AlertCircle } from "lucide-react"
 const defaultSiteConfig = {
   title: "Vibecode Party Starter",
   description: "A modern Next.js starter with authentication, database, storage, AI, and more.",
-  shortDescription: "Next.js Starter with Clerk, Firebase, AWS & AI",
+  shortDescription: "Next.js Starter with Clerk, Convex, AWS & AI",
   url: "https://starter.vibecode.party",
   shareImage: "https://starter.vibecode.party/screenshot.png",
   x: "",

@@ -2,42 +2,24 @@ import { requireAdmin } from "@/lib/auth-utils"
 import { AdminBreadcrumb } from "@/components/nav/admin-breadcrumb"
 import { Heading } from "@/components/typography/heading"
 import { Card, CardHeader } from "@/components/ui/card"
-import { getDocs } from "@/lib/firebase/utils"
-import { Timestamp } from "firebase-admin/firestore"
-import { UserVisit } from "@/types/firebase"
+import { getAllVisits } from "@/lib/services/visits"
 
-async function getAnalyticsData(): Promise<UserVisit[]> {
-  // Get visits from the last 30 days
-  const thirtyDaysAgo = new Date()
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-
-  const result = await getDocs<UserVisit>(
-    "user_visits",
-    [
-      {
-        field: "created_at",
-        operator: ">=",
-        value: Timestamp.fromDate(thirtyDaysAgo),
-      },
-    ],
-    undefined, // no limit since we want all visits
-    { field: "created_at", direction: "desc" }
-  )
-
-  if (!result.success || !result.data) {
-    console.error("Error fetching analytics data:", result.error)
-    return []
-  }
-
-  return result.data
+function getThirtyDaysAgo() {
+  const date = new Date()
+  date.setDate(date.getDate() - 30)
+  return date
 }
 
 export default async function AdminAnalyticsPage() {
   // Check if the user is an admin
   await requireAdmin()
 
-  // Fetch analytics data
-  const analyticsData = await getAnalyticsData()
+  // Fetch all visits (or use a Convex query to filter by date if available)
+  const allVisits = await getAllVisits()
+  const thirtyDaysAgo = getThirtyDaysAgo().getTime()
+
+  // Filter visits from the last 30 days
+  const analyticsData = allVisits.filter((visit) => visit.createdAt >= thirtyDaysAgo)
 
   return (
     <div className="container py-8">
@@ -81,11 +63,11 @@ export default async function AdminAnalyticsPage() {
                 </thead>
                 <tbody>
                   {analyticsData.slice(0, 10).map((visit) => (
-                    <tr key={visit.id} className="border-b text-sm">
+                    <tr key={visit._id} className="border-b text-sm">
                       <td className="p-2">{visit.path}</td>
-                      <td className="p-2">{visit.created_at.toDate().toLocaleString()}</td>
-                      <td className="p-2">{visit.user_id || "Anonymous"}</td>
-                      <td className="p-2">{visit.referrer || "-"}</td>
+                      <td className="p-2">{new Date(visit.createdAt).toLocaleString()}</td>
+                      <td className="p-2">{visit.userId || "Anonymous"}</td>
+                      <td className="p-2">{visit.metadata?.referrer || "-"}</td>
                     </tr>
                   ))}
                 </tbody>

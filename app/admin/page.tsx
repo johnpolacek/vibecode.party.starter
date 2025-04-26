@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { requireAdmin } from "@/lib/auth-utils"
 import { AdminConfigMessage } from "@/components/admin/admin-config-message"
 import { DevEnvNotice } from "@/components/admin/dev-env-notice"
-import { FirebaseStatusCard } from "@/components/admin/firebase-status-card"
 import { Heading } from "@/components/typography/heading"
 
 export const metadata: Metadata = {
@@ -88,7 +87,6 @@ export default async function AdminPage() {
               </Link>
             </CardFooter>
           </Card>
-          <FirebaseStatusCard />
         </div>
       </div>
     </div>

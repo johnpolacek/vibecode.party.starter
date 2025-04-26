@@ -3,34 +3,21 @@ import { AdminBreadcrumb } from "@/components/nav/admin-breadcrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MailingListSubscriberTable } from "@/components/admin/mailing-list/mailing-list-subscriber-table"
 import { getMailingListSubscriptions } from "@/lib/services/mailing-list"
-import { Timestamp } from "firebase-admin/firestore"
-import { ClientMailingListSubscription, MailingListSubscription } from "@/types/firebase"
+import { Doc } from "@/convex/_generated/dataModel"
 
-interface TimestampLike {
-  _seconds: number
-  _nanoseconds: number
-}
+type ConvexSubscription = Doc<"mailing_list_subscriptions">
 
-// Helper to serialize timestamps
-function serializeSubscriber(subscriber: MailingListSubscription): ClientMailingListSubscription {
-  const serializeTimestamp = (timestamp: Timestamp | null) => {
-    if (!timestamp) return null
-    if (timestamp instanceof Timestamp) {
-      return timestamp.toDate().toISOString()
-    }
-    if (typeof timestamp === "object" && "_seconds" in timestamp) {
-      const timestampLike = timestamp as TimestampLike
-      return new Date(timestampLike._seconds * 1000).toISOString()
-    }
-    return null
-  }
-
+function serializeForClient(subscriber: ConvexSubscription) {
   return {
-    ...subscriber,
-    subscribed_at: serializeTimestamp(subscriber.subscribed_at) || new Date().toISOString(),
-    unsubscribed_at: serializeTimestamp(subscriber.unsubscribed_at),
-    created_at: serializeTimestamp(subscriber.created_at) || new Date().toISOString(),
-    updated_at: serializeTimestamp(subscriber.updated_at) || new Date().toISOString(),
+    id: subscriber._id,
+    userId: subscriber.userId,
+    email: subscriber.email,
+    name: subscriber.name ?? null,
+    preferences: subscriber.preferences,
+    subscribedAt: new Date(subscriber.subscribedAt).toISOString(),
+    unsubscribedAt: subscriber.unsubscribedAt ? new Date(subscriber.unsubscribedAt).toISOString() : null,
+    createdAt: new Date(subscriber.createdAt).toISOString(),
+    updatedAt: new Date(subscriber.updatedAt).toISOString(),
   }
 }
 
@@ -42,7 +29,7 @@ export default async function AdminMailingListPage() {
   const subscribers = await getMailingListSubscriptions()
 
   // Serialize the data for client components
-  const serializedSubscribers = subscribers.map(serializeSubscriber)
+  const serializedSubscribers = subscribers.map(serializeForClient)
 
   return (
     <div className="container py-8">

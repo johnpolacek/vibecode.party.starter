@@ -1,0 +1,159 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Convex Implementation Guide
+
+## Setup & Configuration
+
+### Convex Project Initialization
+
+1. **Install Convex CLI**
+   ```bash
+   pnpm add convex
+   pnpm dlx convex dev
+   ```
+2. **Initialize Convex**
+   ```bash
+   pnpm dlx convex init
+   ```
+3. **Configure Convex URL**
+   - Add `NEXT_PUBLIC_CONVEX_URL` to your `.env` file.
+
+### Directory Structure
+
+- Place Convex schema and functions in `/convex/`
+- Place Convex client config in `/lib/convex/`
+- Place service wrappers in `/lib/services/`
+
+## Implementation Patterns
+
+### Convex Schema & Functions
+
+Define your schema and backend logic in `/convex/schema.ts` and `/convex/[module].ts`:
+
+```typescript
+// convex/schema.ts
+import { defineSchema, v } from "convex/schema";
+
+export default defineSchema({
+  visits: {
+    path: v.string(),
+    userId: v.optional(v.string()),
+    metadata: v.any(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    indexes: [
+      { fields: ["userId", "_creationTime"] },
+      { fields: ["path", "_creationTime"] },
+      { fields: ["createdAt", "_creationTime"] },
+    ],
+  },
+});
+```
+
+```typescript
+// convex/visits.ts
+import { mutation, query } from "convex/server";
+import { v } from "convex/values";
+
+export const recordVisit = mutation({
+  args: {
+    path: v.string(),
+    userId: v.optional(v.string()),
+    metadata: v.any(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("visits", args);
+  },
+});
+
+export const getVisitsByUser = query({
+  args: { userId: v.string(), limit: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("visits")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .take(args.limit ?? 10);
+  },
+});
+```
+
+### Service Layer Pattern
+
+Create service functions to wrap Convex client calls:
+
+```typescript
+// lib/services/visits.ts
+import { api } from "@/convex/_generated/api";
+import { ConvexReactClient } from "convex/react";
+
+const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+
+export async function recordVisit(args) {
+  return convex.mutation(api.visits.recordVisit, args);
+}
+
+export async function getVisitsByUser(userId, limit = 10) {
+  return convex.query(api.visits.getVisitsByUser, { userId, limit });
+}
+```
+
+### Server Actions Pattern
+
+Use Clerk for authentication and call Convex from server actions:
+
+```typescript
+// app/_actions/visits.ts
+'use server'
+import { auth } from "@clerk/nextjs/server";
+import { recordVisit } from "@/lib/services/visits";
+
+export async function createVisit(input) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+  return recordVisit({ ...input, userId });
+}
+```
+
+### Client Component Pattern
+
+Import server actions as a module in client components:
+
+```typescript
+// components/some-component.tsx
+"use client"
+import * as actions from "@/app/_actions/visits";
+
+export function SomeComponent() {
+  // ...
+  await actions.createVisit({ path: "/", metadata: {} });
+}
+```
+
+## Best Practices
+
+1. **Server vs Client**
+   - Keep all Convex operations for protected data server-side
+   - Use server actions for client-server communication
+   - Import server actions as a module in client components
+2. **Authentication**
+   - Use Clerk's `auth()` in server actions
+   - Handle authentication errors appropriately
+   - Include proper TypeScript types
+3. **Error Handling**
+   - Use try/catch blocks in server actions
+   - Return appropriate error messages
+   - Log errors server-side
+4. **TypeScript**
+   - Use proper types for documents and collections
+   - Type server action parameters and returns
+
+## Migration Notes
+
+- All Firebase-specific code, config, and patterns have been replaced by Convex equivalents.
+- See [Convex Docs](mdc:https:/docs.convex.dev) for more details and advanced usage.

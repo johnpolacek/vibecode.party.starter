@@ -40,38 +40,44 @@ Admin users are created by adding Clerk User Ids into an environment variable on
 ADMIN_USER_IDS=user_1234567890,user_0987654321
 ```
 
-### Firebase for Cloud Database
+*Why use Clerk for Auth*
 
-If using a database, create a new project in [Firebase Console](https://console.firebase.google.com/) then:
+- Convex Auth is only in beta (as on 4/26/2025)
+- Using Clerk for Auth makes it easier to switch to a different Cloud DB
 
-1. Enable Firestore in your project
-2. Go to Project Settings → Service accounts
-3. Generate a new service account key
-4. Add the following environment variables to `.env`:
+### Convex for Cloud Database
+
+For the database, create a new project in [Convex Console](https://dashboard.convex.dev) then:
+
+1. Create a new project
+2. Get your deployment URL from the dashboard
+3. Add the following environment variable to `.env`:
+
+When you are ready to deploy, you will need to add a deploy key and public convex url - `https://<your-project>.convex.cloud` - to your environment variables. See more at [docs.convex.dev](https://docs.convex.dev/production/hosting/)
 
 ```
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=
-NEXT_PUBLIC_FIREBASE_API_KEY=
-FIREBASE_CLIENT_EMAIL=
-FIREBASE_PRIVATE_KEY=
+CONVEX_DEPLOY_KEY=
+NEXT_PUBLIC_CONVEX_URL=
 ```
 
-#### Local Development with Firebase
+*Why use Convex?*
 
-To use Firebase locally, you'll need:
+- Convex has great DX with easier setup than Supabase or Firebase.
+- Convex is very well interpreted by LLMs (better oneshotting than Supabase or Firebase)
+- Convex does not require running Docker or emulation for local development (avoiding excess CPU consumption)
 
-1. Java Runtime Environment (JRE) installed
-   - Download from [java.com](https://www.java.com)
-   - Verify installation with `java -version`
+#### Local Development with Convex
 
-2. Initialize Firebase:
+Convex is cloud-first and doesn't require local emulators. Your local development environment will automatically connect to your cloud deployment.
+
+To view your Convex dashboard:
 ```bash
-pnpm db:local:init
+pnpm db:convex
 ```
 
-3. Start the Firebase emulator:
+The development server will start both Next.js and Convex:
 ```bash
-pnpm db:emulator:start
+pnpm dev
 ```
 
 ### AWS S3 for File Storage
@@ -147,22 +153,6 @@ To start the app:
 pnpm dev
 ```
 
-### Firebase Emulator
-
-The Firebase emulator requires Java to be installed. To verify your Java installation:
-
-```bash
-java -version
-```
-
-If Java is not installed, download it from [java.com](https://www.java.com).
-
-Start the Firebase emulator with:
-
-```bash
-pnpm db:emulator:start
-```
-
 ### Linting
 
 The starter project has been set up with eslint and prettier, and is set to automatically format your code with every save and every copy/paste.
@@ -179,9 +169,27 @@ As vibe-coding projects grow, it becomes increasingly likely that AI will make b
 
 To start using tests with party starter, you will need to create a test user. After you have completed the steps for setting up Clerk and have added the environment variables to your project, run your application on localhost and sign up for an account with an email address you own, and a new password for the project. Use the email confirmation code to complete the signup process.
 
-If using Firebase, run the emulator with init and teardown scripts to start with a clean version of the data on every run. Create seed scripts that populate the database for your various test cases.
+#### Convex Database: Init, Teardown, and Seeding
 
-We use playwright for testing in the starter project. It has a built-in UI mode where you can pause the debugger and record your interactions that will auto-generate test code as you go.
+Convex is cloud-first and does not require a local emulator. For testing, you can use Convex mutations/queries or custom scripts to reset and seed your database before each test run.
+
+- **Init/Teardown:**  
+  Create test helpers or scripts that clear relevant Convex tables/collections before and/or after your test suite runs. This can be done by calling Convex mutations that delete all documents in a table, or by using the Convex dashboard to reset data manually for development.
+
+- **Seeding:**  
+  Write seed scripts or test helpers that populate your Convex database with the data needed for your test cases. You can call Convex mutations directly from your test setup code to insert the required documents.
+
+Example (using Playwright or your test runner):
+
+```typescript
+// Example test setup (pseudo-code)
+await convex.mutation("test.clearAllData", {});
+await convex.mutation("test.seedTestData", { users: [...], posts: [...] });
+```
+
+You can create a `test` module in your Convex functions for these helpers, and restrict them to run only in development or test environments.
+
+We use Playwright for testing in the starter project. It has a built-in UI mode where you can pause the debugger and record your interactions that will auto-generate test code as you go.
 
 To open the test console:
 

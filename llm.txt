@@ -52,19 +52,16 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 
-# Firebase
-.firebase/
-firebase-debug.log
-firestore-debug.log
-ui-debug.log
-*.cache
-.runtimeconfig.json
-
 # Database backups
 /backups/
 
-# LLM context
-llm_context.txt
+# LLM contexts for third party tools
+llm-convex.txt
+
+# Convex
+.convex/
+convex/_generated/
+.env.local
 
 --- File: .prettierrc ---
 
@@ -122,38 +119,44 @@ Admin users are created by adding Clerk User Ids into an environment variable on
 ADMIN_USER_IDS=user_1234567890,user_0987654321
 ```
 
-### Firebase for Cloud Database
+*Why use Clerk for Auth*
 
-If using a database, create a new project in [Firebase Console](https://console.firebase.google.com/) then:
+- Convex Auth is only in beta (as on 4/26/2025)
+- Using Clerk for Auth makes it easier to switch to a different Cloud DB
 
-1. Enable Firestore in your project
-2. Go to Project Settings → Service accounts
-3. Generate a new service account key
-4. Add the following environment variables to `.env`:
+### Convex for Cloud Database
+
+For the database, create a new project in [Convex Console](https://dashboard.convex.dev) then:
+
+1. Create a new project
+2. Get your deployment URL from the dashboard
+3. Add the following environment variable to `.env`:
+
+When you are ready to deploy, you will need to add a deploy key and public convex url - `https://<your-project>.convex.cloud` - to your environment variables. See more at [docs.convex.dev](https://docs.convex.dev/production/hosting/)
 
 ```
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=
-NEXT_PUBLIC_FIREBASE_API_KEY=
-FIREBASE_CLIENT_EMAIL=
-FIREBASE_PRIVATE_KEY=
+CONVEX_DEPLOY_KEY=
+NEXT_PUBLIC_CONVEX_URL=
 ```
 
-#### Local Development with Firebase
+*Why use Convex?*
 
-To use Firebase locally, you'll need:
+- Convex has great DX with easier setup than Supabase or Firebase.
+- Convex is very well interpreted by LLMs (better oneshotting than Supabase or Firebase)
+- Convex does not require running Docker or emulation for local development (avoiding excess CPU consumption)
 
-1. Java Runtime Environment (JRE) installed
-   - Download from [java.com](https://www.java.com)
-   - Verify installation with `java -version`
+#### Local Development with Convex
 
-2. Initialize Firebase:
+Convex is cloud-first and doesn't require local emulators. Your local development environment will automatically connect to your cloud deployment.
+
+To view your Convex dashboard:
 ```bash
-pnpm db:local:init
+pnpm db:convex
 ```
 
-3. Start the Firebase emulator:
+The development server will start both Next.js and Convex:
 ```bash
-pnpm db:emulator:start
+pnpm dev
 ```
 
 ### AWS S3 for File Storage
@@ -229,22 +232,6 @@ To start the app:
 pnpm dev
 ```
 
-### Firebase Emulator
-
-The Firebase emulator requires Java to be installed. To verify your Java installation:
-
-```bash
-java -version
-```
-
-If Java is not installed, download it from [java.com](https://www.java.com).
-
-Start the Firebase emulator with:
-
-```bash
-pnpm db:emulator:start
-```
-
 ### Linting
 
 The starter project has been set up with eslint and prettier, and is set to automatically format your code with every save and every copy/paste.
@@ -261,9 +248,27 @@ As vibe-coding projects grow, it becomes increasingly likely that AI will make b
 
 To start using tests with party starter, you will need to create a test user. After you have completed the steps for setting up Clerk and have added the environment variables to your project, run your application on localhost and sign up for an account with an email address you own, and a new password for the project. Use the email confirmation code to complete the signup process.
 
-If using Firebase, run the emulator with init and teardown scripts to start with a clean version of the data on every run. Create seed scripts that populate the database for your various test cases.
+#### Convex Database: Init, Teardown, and Seeding
 
-We use playwright for testing in the starter project. It has a built-in UI mode where you can pause the debugger and record your interactions that will auto-generate test code as you go.
+Convex is cloud-first and does not require a local emulator. For testing, you can use Convex mutations/queries or custom scripts to reset and seed your database before each test run.
+
+- **Init/Teardown:**  
+  Create test helpers or scripts that clear relevant Convex tables/collections before and/or after your test suite runs. This can be done by calling Convex mutations that delete all documents in a table, or by using the Convex dashboard to reset data manually for development.
+
+- **Seeding:**  
+  Write seed scripts or test helpers that populate your Convex database with the data needed for your test cases. You can call Convex mutations directly from your test setup code to insert the required documents.
+
+Example (using Playwright or your test runner):
+
+```typescript
+// Example test setup (pseudo-code)
+await convex.mutation("test.clearAllData", {});
+await convex.mutation("test.seedTestData", { users: [...], posts: [...] });
+```
+
+You can create a `test` module in your Convex functions for these helpers, and restrict them to run only in development or test environments.
+
+We use Playwright for testing in the starter project. It has a built-in UI mode where you can pause the debugger and record your interactions that will auto-generate test code as you go.
 
 To open the test console:
 
@@ -427,9 +432,12 @@ import { auth } from "@clerk/nextjs/server"
 import { MailingListPreferences } from "@/types/mailing-list"
 import sgMail from "@sendgrid/mail"
 import { revalidatePath } from "next/cache"
-import { addDoc, getDocs, updateDoc } from "@/lib/firebase/utils"
-import { MailingListSubscription } from "@/types/firebase"
-import { Timestamp } from "firebase-admin/firestore"
+import {
+  addMailingListSubscription,
+  removeMailingListSubscription,
+  updateMailingListPreferences,
+  getMailingListSubscriptions
+} from "@/lib/services/mailing-list"
 
 // Configure SendGrid and track availability
 let isEmailServiceConfigured = false
@@ -447,62 +455,19 @@ function isEmailServiceAvailable() {
 }
 
 export async function subscribe(data: {
-  user_id: string
+  userId: string
   email: string
   name: string | null
   preferences: MailingListPreferences
 }) {
   try {
-    // First try to find any existing subscription for this user or email
-    const existingResult = await getDocs<MailingListSubscription>(
-      'mailing_list_subscriptions',
-      [
-        {
-          field: 'email',
-          operator: '==',
-          value: data.email
-        }
-      ]
-    )
-
-    const existingSub = existingResult.success && existingResult.data?.[0]
-
-    if (existingSub) {
-      // Update existing subscription
-      const result = await updateDoc<MailingListSubscription>(
-        'mailing_list_subscriptions',
-        existingSub.id,
-        {
-          user_id: data.user_id,
-          email: data.email,
-          name: data.name,
-          preferences: data.preferences,
-          subscribed_at: Timestamp.now(),
-          unsubscribed_at: null,
-        }
-      )
-
-      if (!result.success) throw new Error(result.error)
-    } else {
-      // Insert new subscription
-      const result = await addDoc<MailingListSubscription>(
-        'mailing_list_subscriptions',
-        {
-          user_id: data.user_id,
-          email: data.email,
-          name: data.name,
-          preferences: data.preferences,
-          subscribed_at: Timestamp.now(),
-          unsubscribed_at: null,
-        }
-      )
-
-      if (!result.success) throw new Error(result.error)
-    }
-    
+    const result = await addMailingListSubscription({
+      ...data,
+      name: data.name ?? undefined,
+    })
     revalidatePath("/mailing-list")
-    return { 
-      success: true,
+    return {
+      success: !!result,
       emailServiceAvailable: isEmailServiceAvailable()
     }
   } catch (error) {
@@ -515,37 +480,12 @@ export async function subscribe(data: {
   }
 }
 
-export async function unsubscribe(userId: string) {
+export async function unsubscribe(email: string) {
   try {
-    // Find the subscription for this user
-    const existingResult = await getDocs<MailingListSubscription>(
-      'mailing_list_subscriptions',
-      [
-        {
-          field: 'user_id',
-          operator: '==',
-          value: userId
-        }
-      ]
-    )
-
-    if (!existingResult.success || !existingResult.data?.[0]) {
-      throw new Error('Subscription not found')
-    }
-
-    const result = await updateDoc<MailingListSubscription>(
-      'mailing_list_subscriptions',
-      existingResult.data[0].id,
-      {
-        unsubscribed_at: Timestamp.now()
-      }
-    )
-
-    if (!result.success) throw new Error(result.error)
-    
+    const result = await removeMailingListSubscription(email)
     revalidatePath("/mailing-list")
-    return { 
-      success: true,
+    return {
+      success: result,
       emailServiceAvailable: isEmailServiceAvailable()
     }
   } catch (error) {
@@ -560,43 +500,12 @@ export async function unsubscribe(userId: string) {
 
 export async function updatePreferences({ preferences }: { preferences: MailingListPreferences }) {
   try {
-    // Get current user's subscription
     const { userId } = await auth()
     if (!userId) throw new Error('Not authenticated')
-
-    const existingResult = await getDocs<MailingListSubscription>(
-      'mailing_list_subscriptions',
-      [
-        {
-          field: 'user_id',
-          operator: '==',
-          value: userId
-        },
-        {
-          field: 'unsubscribed_at',
-          operator: '==',
-          value: null
-        }
-      ]
-    )
-
-    if (!existingResult.success || !existingResult.data?.[0]) {
-      throw new Error('Active subscription not found')
-    }
-
-    const result = await updateDoc<MailingListSubscription>(
-      'mailing_list_subscriptions',
-      existingResult.data[0].id,
-      {
-        preferences
-      }
-    )
-
-    if (!result.success) throw new Error(result.error)
-    
+    const result = await updateMailingListPreferences(userId, preferences)
     revalidatePath("/mailing-list")
-    return { 
-      success: true,
+    return {
+      success: result,
       emailServiceAvailable: isEmailServiceAvailable()
     }
   } catch (error) {
@@ -618,25 +527,11 @@ export async function getSubscription() {
         data: null,
       }
     }
-
-    const result = await getDocs<MailingListSubscription>(
-      'mailing_list_subscriptions',
-      [
-        {
-          field: 'user_id',
-          operator: '==',
-          value: userId
-        }
-      ]
-    )
-
-    if (!result.success) {
-      throw new Error(result.error)
-    }
-
+    const subscriptions = await getMailingListSubscriptions()
+    const sub = subscriptions.find(s => s.userId === userId && s.unsubscribedAt === null)
     return {
       success: true as const,
-      data: result.data?.[0] || null,
+      data: sub || null,
     }
   } catch (error) {
     console.error("Error in getSubscription:", error)
@@ -702,7 +597,11 @@ export async function refreshProfile(path: string) {
 import { auth } from "@clerk/nextjs/server"
 import { headers } from "next/headers"
 import { validRoutes } from "@/lib/generated/routes"
-import { addDoc } from "@/lib/firebase/utils"
+import { ConvexHttpClient } from "convex/browser"
+import { api } from "@/convex/_generated/api"
+
+// Initialize Convex HTTP client
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
 
 // Check if the user agent is from a common legitimate browser
 function isValidBrowser(userAgent: string | null): boolean {
@@ -776,21 +675,19 @@ export async function trackVisit(path: string) {
       return { success: true }
     }
 
-    // Insert the visit into Firestore
-    const result = await addDoc('user_visits', {
-        user_id: userId || null,
-        path,
-        user_agent: userAgent || null,
+    // Record the visit using Convex
+    await convex.mutation(api.visits.recordVisit, {
+      path,
+      userId: userId || null,
+      metadata: {
+        userAgent: userAgent || null,
         referrer: referrer || null,
-      timestamp: new Date().toISOString(), // Keep timestamp for consistency with previous schema
-      })
-
-    if (!result.success) {
-      return { success: false, error: result.error }
-    }
+      }
+    })
 
     return { success: true }
   } catch (error) {
+    console.error('Error tracking visit:', error)
     return { success: false, error: (error as Error).message }
   }
 } 
@@ -1277,42 +1174,24 @@ import { requireAdmin } from "@/lib/auth-utils"
 import { AdminBreadcrumb } from "@/components/nav/admin-breadcrumb"
 import { Heading } from "@/components/typography/heading"
 import { Card, CardHeader } from "@/components/ui/card"
-import { getDocs } from "@/lib/firebase/utils"
-import { Timestamp } from "firebase-admin/firestore"
-import { UserVisit } from "@/types/firebase"
+import { getAllVisits } from "@/lib/services/visits"
 
-async function getAnalyticsData(): Promise<UserVisit[]> {
-  // Get visits from the last 30 days
-  const thirtyDaysAgo = new Date()
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-
-  const result = await getDocs<UserVisit>(
-    "user_visits",
-    [
-      {
-        field: "created_at",
-        operator: ">=",
-        value: Timestamp.fromDate(thirtyDaysAgo),
-      },
-    ],
-    undefined, // no limit since we want all visits
-    { field: "created_at", direction: "desc" }
-  )
-
-  if (!result.success || !result.data) {
-    console.error("Error fetching analytics data:", result.error)
-    return []
-  }
-
-  return result.data
+function getThirtyDaysAgo() {
+  const date = new Date()
+  date.setDate(date.getDate() - 30)
+  return date
 }
 
 export default async function AdminAnalyticsPage() {
   // Check if the user is an admin
   await requireAdmin()
 
-  // Fetch analytics data
-  const analyticsData = await getAnalyticsData()
+  // Fetch all visits (or use a Convex query to filter by date if available)
+  const allVisits = await getAllVisits()
+  const thirtyDaysAgo = getThirtyDaysAgo().getTime()
+
+  // Filter visits from the last 30 days
+  const analyticsData = allVisits.filter((visit) => visit.createdAt >= thirtyDaysAgo)
 
   return (
     <div className="container py-8">
@@ -1356,11 +1235,11 @@ export default async function AdminAnalyticsPage() {
                 </thead>
                 <tbody>
                   {analyticsData.slice(0, 10).map((visit) => (
-                    <tr key={visit.id} className="border-b text-sm">
+                    <tr key={visit._id} className="border-b text-sm">
                       <td className="p-2">{visit.path}</td>
-                      <td className="p-2">{visit.created_at.toDate().toLocaleString()}</td>
-                      <td className="p-2">{visit.user_id || "Anonymous"}</td>
-                      <td className="p-2">{visit.referrer || "-"}</td>
+                      <td className="p-2">{new Date(visit.createdAt).toLocaleString()}</td>
+                      <td className="p-2">{visit.userId || "Anonymous"}</td>
+                      <td className="p-2">{visit.metadata?.referrer || "-"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1381,34 +1260,21 @@ import { AdminBreadcrumb } from "@/components/nav/admin-breadcrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MailingListSubscriberTable } from "@/components/admin/mailing-list/mailing-list-subscriber-table"
 import { getMailingListSubscriptions } from "@/lib/services/mailing-list"
-import { Timestamp } from "firebase-admin/firestore"
-import { ClientMailingListSubscription, MailingListSubscription } from "@/types/firebase"
+import { Doc } from "@/convex/_generated/dataModel"
 
-interface TimestampLike {
-  _seconds: number
-  _nanoseconds: number
-}
+type ConvexSubscription = Doc<"mailing_list_subscriptions">
 
-// Helper to serialize timestamps
-function serializeSubscriber(subscriber: MailingListSubscription): ClientMailingListSubscription {
-  const serializeTimestamp = (timestamp: Timestamp | null) => {
-    if (!timestamp) return null
-    if (timestamp instanceof Timestamp) {
-      return timestamp.toDate().toISOString()
-    }
-    if (typeof timestamp === "object" && "_seconds" in timestamp) {
-      const timestampLike = timestamp as TimestampLike
-      return new Date(timestampLike._seconds * 1000).toISOString()
-    }
-    return null
-  }
-
+function serializeForClient(subscriber: ConvexSubscription) {
   return {
-    ...subscriber,
-    subscribed_at: serializeTimestamp(subscriber.subscribed_at) || new Date().toISOString(),
-    unsubscribed_at: serializeTimestamp(subscriber.unsubscribed_at),
-    created_at: serializeTimestamp(subscriber.created_at) || new Date().toISOString(),
-    updated_at: serializeTimestamp(subscriber.updated_at) || new Date().toISOString(),
+    id: subscriber._id,
+    userId: subscriber.userId,
+    email: subscriber.email,
+    name: subscriber.name ?? null,
+    preferences: subscriber.preferences,
+    subscribedAt: new Date(subscriber.subscribedAt).toISOString(),
+    unsubscribedAt: subscriber.unsubscribedAt ? new Date(subscriber.unsubscribedAt).toISOString() : null,
+    createdAt: new Date(subscriber.createdAt).toISOString(),
+    updatedAt: new Date(subscriber.updatedAt).toISOString(),
   }
 }
 
@@ -1420,7 +1286,7 @@ export default async function AdminMailingListPage() {
   const subscribers = await getMailingListSubscriptions()
 
   // Serialize the data for client components
-  const serializedSubscribers = subscribers.map(serializeSubscriber)
+  const serializedSubscribers = subscribers.map(serializeForClient)
 
   return (
     <div className="container py-8">
@@ -1453,7 +1319,6 @@ import { Button } from "@/components/ui/button"
 import { requireAdmin } from "@/lib/auth-utils"
 import { AdminConfigMessage } from "@/components/admin/admin-config-message"
 import { DevEnvNotice } from "@/components/admin/dev-env-notice"
-import { FirebaseStatusCard } from "@/components/admin/firebase-status-card"
 import { Heading } from "@/components/typography/heading"
 
 export const metadata: Metadata = {
@@ -1536,7 +1401,6 @@ export default async function AdminPage() {
               </Link>
             </CardFooter>
           </Card>
-          <FirebaseStatusCard />
         </div>
       </div>
     </div>
@@ -1887,66 +1751,43 @@ export async function GET() {
   }
 } 
 
---- File: app/api/firebase-status/route.ts ---
+--- File: app/api/convex-status/route.ts ---
 
 import { NextResponse } from "next/server"
-import { getApps, getApp } from "firebase/app"
-import { collection, getDocs } from "firebase/firestore"
-import { db } from "@/lib/firebase/config"
 
 export async function GET() {
   try {
-    // Check if Firebase is initialized
-    const app = getApps().length > 0 ? getApp() : null
-    
-    if (!app) {
-      return NextResponse.json({
-        success: false,
-        connection: {
-          success: false,
-          message: "Firebase not initialized",
+    // Check if Convex URL is configured
+    const isConfigured = Boolean(process.env.NEXT_PUBLIC_CONVEX_URL)
+
+    if (!isConfigured) {
+      return NextResponse.json(
+        {
+          status: "not_configured",
+          message: "Convex is not configured. Please set NEXT_PUBLIC_CONVEX_URL in your .env file.",
         },
-        environment: {
-          nodeEnv: process.env.NODE_ENV,
-          projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "Not configured",
-          hasServiceKey: Boolean(process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL),
-        },
-      })
+        { status: 400 }
+      )
     }
 
-    // Try to connect to Firestore using singleton instance
-    const testCollection = collection(db, "_test_connection")
-    await getDocs(testCollection)
-
-    return NextResponse.json({
-      success: true,
-      connection: {
-        success: true,
-        message: "Connected",
+    return NextResponse.json(
+      {
+        status: "ready",
+        message: "Convex is configured and ready to use.",
+        url: process.env.NEXT_PUBLIC_CONVEX_URL,
       },
-      environment: {
-        nodeEnv: process.env.NODE_ENV,
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "Not configured",
-        hasServiceKey: Boolean(process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL),
-      },
-    })
+      { status: 200 }
+    )
   } catch (error) {
-    console.error("Firebase status check error:", error)
-    return NextResponse.json({
-      success: false,
-      connection: {
-        success: false,
-        message: "Failed to connect to Firebase",
-        details: {
-          error: error instanceof Error ? error.message : "Unknown error",
-        },
+    console.error("Error checking Convex status:", error)
+    return NextResponse.json(
+      {
+        status: "error",
+        message: "Failed to check Convex status",
+        error: error instanceof Error ? error.message : "Unknown error",
       },
-      environment: {
-        nodeEnv: process.env.NODE_ENV,
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "Not configured",
-        hasServiceKey: Boolean(process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL),
-      },
-    })
+      { status: 500 }
+    )
   }
 } 
 
@@ -2406,15 +2247,8 @@ import { isClerkConfigured, isAdminConfigured } from "@/lib/auth-utils"
 import { ShieldUser } from "lucide-react"
 import { CursorPrompt } from "./cursor-prompt"
 
-// Simple check for Firebase configuration
-const isFirebaseConfigured = () => {
-  return Boolean(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_API_KEY && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY)
-}
-
-export default async function GetStartedAdmin() {
-  // Check for required configuration
+export default function GetStartedAdmin() {
   const hasClerk = isClerkConfigured()
-  const hasFirebase = isFirebaseConfigured()
   const hasAdminConfig = isAdminConfigured()
 
   const cursorPrompt = `Please help me remove admin functionality from my project by:
@@ -2428,13 +2262,11 @@ export default async function GetStartedAdmin() {
 2. Removing these environment variables from .env:
    - ADMIN_USER_IDS
 
-3. Removing any admin-related Firestore collections and security rules
-
-4. And remove getstarted-admin from the get-started page`
+3. And remove getstarted-admin from the get-started page`
 
   return (
     <>
-      {!hasClerk || !hasFirebase || !hasAdminConfig ? (
+      {!hasClerk || !hasAdminConfig ? (
         <div className="max-w-4xl mx-auto px-4 w-full">
           <Card className="p-8 mt-8 w-full">
             <Heading variant="h4" className="text-primary">
@@ -2443,7 +2275,6 @@ export default async function GetStartedAdmin() {
             <p>To set up the admin dashboard functionality:</p>
             <ol className="list-decimal pl-6 space-y-4">
               {!hasClerk && <li className="text-muted-foreground">First, set up Clerk authentication (see above)</li>}
-              {!hasFirebase && <li className="text-muted-foreground">Set up Firebase database (see above)</li>}
               <li>
                 <strong>Configure Admin Access:</strong>
                 <ul className="list-disc pl-6 mt-2 space-y-2">
@@ -2472,7 +2303,7 @@ export default async function GetStartedAdmin() {
             <div className="mt-6 space-y-4">
               <div className="p-4 bg-amber-50 rounded-md">
                 <p className="text-amber-800 text-sm">
-                  <strong>Security Note:</strong> Only add trusted user IDs to the admin list. These users will have full access to your application’s admin features.
+                  <strong>Security Note:</strong> Only add trusted user IDs to the admin list. These users will have full access to your application's admin features.
                 </p>
               </div>
               <div className="p-4 bg-blue-50 rounded-md">
@@ -2483,7 +2314,7 @@ export default async function GetStartedAdmin() {
             </div>
 
             <div className="pt-8">
-              <CursorPrompt prompt={cursorPrompt} heading="Don’t need admin functionality?" />
+              <CursorPrompt prompt={cursorPrompt} heading="Don't need admin functionality?" />
             </div>
           </Card>
         </div>
@@ -2772,7 +2603,7 @@ import { CheckCircle2, AlertCircle } from "lucide-react"
 const defaultSiteConfig = {
   title: "Vibecode Party Starter",
   description: "A modern Next.js starter with authentication, database, storage, AI, and more.",
-  shortDescription: "Next.js Starter with Clerk, Firebase, AWS & AI",
+  shortDescription: "Next.js Starter with Clerk, Convex, AWS & AI",
   url: "https://starter.vibecode.party",
   shareImage: "https://starter.vibecode.party/screenshot.png",
   x: "",
@@ -2901,6 +2732,128 @@ export default async function GetStartedConfig() {
         )}
       </Card>
     </div>
+  )
+}
+
+
+--- File: app/get-started/_components/getstarted-convex.tsx ---
+
+import { Card } from "@/components/ui/card"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Heading } from "@/components/typography/heading"
+import { CursorPrompt } from "./cursor-prompt"
+
+// Simple check for Convex configuration
+const isConvexConfigured = () => {
+  return Boolean(process.env.NEXT_PUBLIC_CONVEX_URL)
+}
+
+export default async function GetStartedConvex() {
+  const hasConvexConfig = isConvexConfigured()
+
+  const cursorPrompt = `Please help me set up Convex in my project by:
+
+1. Installing dependencies:
+   \`\`\`bash
+   pnpm add convex
+   \`\`\`
+
+2. Initialize Convex:
+   \`\`\`bash
+   npx convex dev
+   \`\`\`
+
+3. Setting up environment variables in .env:
+   - NEXT_PUBLIC_CONVEX_URL (from your Convex dashboard, e.g. https://your-app-name.convex.cloud)
+
+4. Create the schema in convex/schema.ts
+5. Create your first mutation and query in convex/visits.ts
+6. Remove the getstarted-convex section from the get-started page
+
+After these changes, you can start the development server with \`pnpm dev\`.
+
+**Vercel Deploy Note:**
+Add \`npx convex codegen\` before your build step (e.g. \`npx convex codegen && npm run build\`) in your Vercel build settings to ensure Convex client files are generated.`
+
+  return (
+    <>
+      {!hasConvexConfig ? (
+        <div className="max-w-4xl mx-auto px-4 w-full">
+          <Card className="p-8 mt-8 w-full">
+            <Heading variant="h4" className="text-primary">
+              Setup Required: Convex Database
+            </Heading>
+            <p>To set up your database with Convex:</p>
+            <ol className="list-decimal pl-6 space-y-4">
+              <li>
+                Create a new project on{" "}
+                <a href="https://dashboard.convex.dev" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  Convex Dashboard
+                </a>
+              </li>
+              <li>
+                Install the Convex CLI and initialize your project:
+                <pre className="mt-2 p-4 bg-muted rounded-md max-w-xl overflow-x-auto">
+                  <code>
+                    pnpm add convex{"\n"}
+                    npx convex dev
+                  </code>
+                </pre>
+              </li>
+              <li>
+                Get your Convex URL from the dashboard and update your <code className="px-2 py-1 bg-muted rounded">.env</code> file:
+                <pre className="mt-2 p-4 bg-muted rounded-md max-w-xl overflow-x-auto">
+                  <code>NEXT_PUBLIC_CONVEX_URL=https://your-app-name.convex.cloud</code>
+                </pre>
+                <div className="text-xs text-muted-foreground mt-2">
+                  Find this in your{" "}
+                  <a href="https://dashboard.convex.dev" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                    Convex dashboard
+                  </a>{" "}
+                  under "Deployment URL".
+                </div>
+              </li>
+              <li>
+                <strong>Vercel Deploy:</strong> In your Vercel project settings, set your build command to <code>npx convex codegen && npm run build</code> (or <code>pnpm build</code> if you use pnpm)
+                to ensure Convex client files are generated.
+              </li>
+              <li>Restart your development server after adding the environment variables</li>
+            </ol>
+
+            <div className="pt-8">
+              <CursorPrompt prompt={cursorPrompt} heading="Need help setting up Convex?" />
+            </div>
+          </Card>
+        </div>
+      ) : (
+        <div className="mx-auto text-center max-w-2xl w-full">
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="features">
+              <AccordionTrigger className="text-green-600 font-semibold">✓ Convex is configured!</AccordionTrigger>
+              <AccordionContent>
+                <div className="text-left">
+                  <p className="mb-4">Your database is ready to use. You can now:</p>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li>Create and manage Convex tables through schema.ts</li>
+                    <li>Write queries and mutations in your Convex functions</li>
+                    <li>Set up real-time subscriptions</li>
+                    <li>Use optimistic updates for better UX</li>
+                  </ul>
+                  <div className="mt-6 p-4 bg-amber-50 rounded-md">
+                    <p className="text-amber-800 text-sm">
+                      <strong>Tip:</strong> You can manage your Convex project, monitor queries, and view your data in the{" "}
+                      <a href="https://dashboard.convex.dev" target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline">
+                        Convex Dashboard
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      )}
+    </>
   )
 }
 
@@ -3108,142 +3061,6 @@ export default function GetStartedExample({ title, prompt, children, isCommand }
         {prompt}
       </pre>
     </Card>
-  )
-}
-
-
---- File: app/get-started/_components/getstarted-firebase.tsx ---
-
-import { Card } from "@/components/ui/card"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Heading } from "@/components/typography/heading"
-import { CursorPrompt } from "./cursor-prompt"
-
-// Simple check for Firebase configuration
-const isFirebaseConfigured = () => {
-  return Boolean(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && process.env.NEXT_PUBLIC_FIREBASE_API_KEY && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY)
-}
-
-export default async function GetStartedFirebase() {
-  const hasFirebaseConfig = isFirebaseConfigured()
-
-  const cursorPrompt = `Please help me set up Firebase in my project by:
-
-1. Installing dependencies:
-   \`\`\`bash
-   pnpm add firebase firebase-admin
-   \`\`\`
-
-2. Creating these files:
-   - lib/firebase/config.ts (Firebase client config)
-   - lib/firebase/admin.ts (Firebase Admin SDK config)
-   - lib/firebase/utils.ts (Firestore utility functions)
-
-3. Setting up environment variables in .env:
-   - NEXT_PUBLIC_FIREBASE_PROJECT_ID
-   - NEXT_PUBLIC_FIREBASE_API_KEY
-   - FIREBASE_CLIENT_EMAIL
-   - FIREBASE_PRIVATE_KEY
-
-4. Initialize Firebase locally:
-   \`\`\`bash
-   pnpm db:local:init
-   \`\`\`
-
-5. Install Java for Firebase Emulator:
-   - Visit java.com to download and install Java
-   - Verify installation with \`java -version\`
-
-6. Remove the getstarted-firebase section from the get-started page
-
-After these changes, you can start the Firebase emulator with \`pnpm db:emulator:start\`.`
-
-  return (
-    <>
-      {!hasFirebaseConfig ? (
-        <div className="max-w-4xl mx-auto px-4 w-full">
-          <Card className="p-8 mt-8 w-full">
-            <Heading variant="h4" className="text-primary">
-              Setup Required: Firebase Database
-            </Heading>
-            <p>To set up your database with Firebase:</p>
-            <ol className="list-decimal pl-6 space-y-4">
-              <li>
-                Create a new project on{" "}
-                <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                  Firebase Console
-                </a>
-              </li>
-              <li>Enable Firestore in your project (for the web)</li>
-              <li>
-                Get your firebase config and update <code className="px-2 py-1 bg-muted rounded">lib/config.ts</code>
-              </li>
-              <li>
-                Go to Project Settings &gt; Service accounts then generate a new service account key and update your <code className="px-2 py-1 bg-muted rounded">.env</code> file with the following
-                variables:
-                <pre className="mt-2 p-4 bg-muted rounded-md max-w-xl overflow-x-auto">
-                  <code>
-                    NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id{"\n"}
-                    NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key{"\n"}
-                    FIREBASE_CLIENT_EMAIL=your_service_account_email{"\n"}
-                    FIREBASE_PRIVATE_KEY=&quot;-----BEGIN PRIVATE KEY-----\nYour Private Key\n-----END PRIVATE KEY-----\n&quot;
-                  </code>
-                </pre>
-              </li>
-              <li>
-                Install Java for the Firebase Emulator:
-                <ul className="list-disc pl-6 mt-2 space-y-2">
-                  <li>
-                    Download and install Java from{" "}
-                    <a href="https://www.java.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                      java.com
-                    </a>
-                  </li>
-                  <li>
-                    Verify installation by running <code className="px-2 py-1 bg-muted rounded">java -version</code>
-                  </li>
-                </ul>
-              </li>
-              <li>
-                Initialize Firebase locally by running <code className="px-2 py-1 bg-muted rounded">pnpm db:local:init</code>
-              </li>
-              <li>Restart your development server after adding the environment variables</li>
-            </ol>
-
-            <div className="pt-8">
-              <CursorPrompt prompt={cursorPrompt} heading="Don’t need Firebase?" />
-            </div>
-          </Card>
-        </div>
-      ) : (
-        <div className="mx-auto text-center max-w-2xl w-full">
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="features">
-              <AccordionTrigger className="text-green-600 font-semibold">✓ Firebase is configured!</AccordionTrigger>
-              <AccordionContent>
-                <div className="text-left">
-                  <p className="mb-4">Your database is ready to use. You can now:</p>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li>Create and manage Firestore collections</li>
-                    <li>Use the Firebase client for queries</li>
-                    <li>Set up real-time listeners</li>
-                    <li>Manage security rules and indexes</li>
-                  </ul>
-                  <div className="mt-6 p-4 bg-amber-50 rounded-md">
-                    <p className="text-amber-800 text-sm">
-                      <strong>Tip:</strong> You can manage your Firebase project, including database, authentication, and more in the{" "}
-                      <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline">
-                        Firebase Console
-                      </a>
-                    </p>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
-      )}
-    </>
   )
 }
 
@@ -3672,7 +3489,7 @@ import { Heading } from "@/components/typography/heading"
 import { redirect } from "next/navigation"
 import { headers } from "next/headers"
 import GetStartedClerk from "./_components/getstarted-clerk"
-import GetStartedFirebase from "./_components/getstarted-firebase"
+import GetStartedConvex from "./_components/getstarted-convex"
 import GetStartedStorage from "./_components/getstarted-storage"
 import GetStartedEmail from "./_components/getstarted-email"
 import GetStartedAI from "./_components/getstarted-ai"
@@ -3715,7 +3532,7 @@ Please implement this following the project's architecture patterns and using:
 - Replicate for text-to-image models
 - OpenAI for variations and text
 - AWS S3 for storage
-- Firebase for collections and social features
+- Convex for collections and social features
 - Clerk for user authentication`,
 
     marketplace: `Please help me create a marketplace feature with:
@@ -3762,7 +3579,7 @@ Please implement this following the project's architecture patterns and using ex
         <div>
           <GetStartedConfig />
           <GetStartedClerk />
-          <GetStartedFirebase />
+          <GetStartedConvex />
           <GetStartedStorage />
           <GetStartedEmail />
           <GetStartedAI />
@@ -4013,8 +3830,6 @@ button {
 
 --- File: app/layout.tsx ---
 
-import type React from "react"
-import type { Metadata } from "next"
 import Link from "next/link"
 import { Rethink_Sans } from "next/font/google"
 import { ThemeProvider } from "@/components/layout/theme-provider"
@@ -4024,7 +3839,6 @@ import { ThemeToggle } from "@/components/nav/theme-toggle"
 import AuthButtons from "@/components/nav/auth-buttons"
 import { cn } from "@/lib/utils"
 import { Toaster } from "sonner"
-import { ClerkProvider } from "@clerk/nextjs"
 import { auth } from "@clerk/nextjs/server"
 import { headers } from "next/headers"
 import { trackVisit } from "@/app/_actions/track-visit"
@@ -4032,35 +3846,12 @@ import { RouteTracker } from "@/components/analytics/route-tracker"
 import { siteConfig } from "@/lib/config"
 import "./globals.css"
 import { Github } from "lucide-react"
-import "@/lib/firebase/config.dev"
+import { Providers } from "./providers"
 
 const rethinkSans = Rethink_Sans({
   subsets: ["latin"],
   variable: "--font-rethink-sans",
 })
-
-export const metadata: Metadata = {
-  title: siteConfig.title,
-  description: siteConfig.description,
-  openGraph: {
-    title: siteConfig.title,
-    description: siteConfig.description,
-    images: [
-      {
-        url: siteConfig.shareImage,
-        width: 1200,
-        height: 630,
-        alt: siteConfig.title + " screenshot",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: siteConfig.title,
-    description: siteConfig.description,
-    images: [siteConfig.shareImage],
-  },
-}
 
 export default async function RootLayout({
   children,
@@ -4071,16 +3862,13 @@ export default async function RootLayout({
   let isAdmin = false
 
   try {
-    const authResult = await auth()
-    userId = authResult.userId
+    const { userId: id } = await auth()
+    userId = id
     const adminUserIds = process.env.ADMIN_USER_IDS?.split(",") || []
     isAdmin = userId ? adminUserIds.includes(userId) : false
   } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      // Clerk auth initialization skipped in dev
-    } else {
-      throw error // Re-throw in production
-    }
+    // Silently handle auth initialization errors
+    console.warn("Auth initialization error during initialization (this can be expected in development):", error)
   }
 
   // Track the visit
@@ -4092,9 +3880,9 @@ export default async function RootLayout({
   await trackVisit(path)
 
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning className={`${rethinkSans.variable}`}>
-        <body className={cn("min-h-screen bg-background font-sans antialiased")}>
+    <html lang="en" suppressHydrationWarning className={`${rethinkSans.variable}`}>
+      <body className={cn("min-h-screen bg-background font-sans antialiased")}>
+        <Providers>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <RouteTracker />
             <div className="relative flex min-h-screen flex-col">
@@ -4123,25 +3911,12 @@ export default async function RootLayout({
                 </div>
               </header>
               <main className="flex-1">{children}</main>
-              <footer className="border-t-4 border-primary/10 bg-primary/5 py-6 md:py-0">
-                <div className="container flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row">
-                  <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">© 2025 vibecode.party. All rights reserved.</p>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <Link href="/privacy" className="hover:underline">
-                      Privacy
-                    </Link>
-                    <Link href="/terms" className="hover:underline">
-                      Terms
-                    </Link>
-                  </div>
-                </div>
-              </footer>
             </div>
             <Toaster position="top-center" />
           </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+        </Providers>
+      </body>
+    </html>
   )
 }
 
@@ -4158,34 +3933,15 @@ import { ConfigCard } from "@/components/admin/config-card"
 
 async function handleUnsubscribe() {
   "use server"
-  const { userId } = await auth()
-  if (!userId) return
-  await unsubscribe(userId)
+  const result = await getSubscription()
+  const subscription = result.success ? result.data : null
+  if (!subscription?.email) return
+  await unsubscribe(subscription.email)
 }
 
 export default async function MailingListPage() {
   // Check if required environment variables are configured
   const missingEnvVars = [
-    {
-      key: "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
-      description: "Your Firebase project ID",
-      isMissing: !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    },
-    {
-      key: "NEXT_PUBLIC_FIREBASE_API_KEY",
-      description: "Your Firebase API key",
-      isMissing: !process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    },
-    {
-      key: "FIREBASE_CLIENT_EMAIL",
-      description: "Your Firebase service account email",
-      isMissing: !process.env.FIREBASE_CLIENT_EMAIL,
-    },
-    {
-      key: "FIREBASE_PRIVATE_KEY",
-      description: "Your Firebase service account private key",
-      isMissing: !process.env.FIREBASE_PRIVATE_KEY,
-    },
     {
       key: "SENDGRID_API_KEY",
       description: "Your SendGrid API key",
@@ -4210,7 +3966,7 @@ export default async function MailingListPage() {
         <Heading variant="h2" className="text-center leading-tight">
           {subscription ? (
             <>
-              {subscription.unsubscribed_at ? (
+              {subscription.unsubscribedAt ? (
                 <>
                   <span className="text-primary">Unsubscribed</span> <span className="text-muted-foreground">from our mailing list.</span>
                 </>
@@ -4233,7 +3989,7 @@ export default async function MailingListPage() {
               <CardTitle>Subscription Status</CardTitle>
             </CardHeader>
             <CardContent className="md:pb-4">
-              {subscription.unsubscribed_at ? (
+              {subscription.unsubscribedAt ? (
                 <div className="space-y-4">
                   <p>You are currently unsubscribed. Your previous email was {subscription.email}.</p>
                   <MailingListForm initialEmail={subscription.email} />
@@ -4413,6 +4169,25 @@ export default function PrivacyPage() {
 }
 
 
+--- File: app/providers.tsx ---
+
+"use client"
+
+import { ClerkProvider } from "@clerk/nextjs"
+import { ConvexProvider, ConvexReactClient } from "convex/react"
+import { PropsWithChildren } from "react"
+
+const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+
+export function Providers({ children }: PropsWithChildren) {
+  return (
+    <ClerkProvider>
+      <ConvexProvider client={convex}>{children}</ConvexProvider>
+    </ClerkProvider>
+  )
+}
+
+
 --- File: app/roadmap/data/featureRequests.json ---
 
 []
@@ -4510,6 +4285,71 @@ export default function TermsPage() {
 
         <p className="text-gray-700 mb-6">Put your terms of service here.</p>
       </div>
+    </div>
+  )
+}
+
+
+--- File: app/unsubscribe/page.tsx ---
+
+import { useState } from "react"
+import { unsubscribe } from "@/app/_actions/mailing-list"
+import { Heading } from "@/components/typography/heading"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+
+export default function UnsubscribePage() {
+  const [email, setEmail] = useState("")
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle")
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleUnsubscribe(e: React.FormEvent) {
+    e.preventDefault()
+    setStatus("idle")
+    setError(null)
+    try {
+      const result = await unsubscribe(email)
+      if (result.success) {
+        setStatus("success")
+      } else {
+        setStatus("error")
+        setError(result.error || "Could not unsubscribe. Please check your email.")
+      }
+    } catch (err: any) {
+      setStatus("error")
+      setError(err?.message || "Could not unsubscribe. Please try again.")
+    }
+  }
+
+  return (
+    <div className="container max-w-md py-12 flex flex-col items-center justify-center min-h-[60vh]">
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle>
+            <Heading variant="h2" className="text-center">
+              Unsubscribe from Mailing List
+            </Heading>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {status === "success" ? (
+            <div className="text-center text-green-600 font-semibold py-6">You have been unsubscribed from our mailing list.</div>
+          ) : (
+            <form onSubmit={handleUnsubscribe} className="space-y-6">
+              <div>
+                <label htmlFor="email" className="block mb-2 font-medium">
+                  Email address
+                </label>
+                <input id="email" type="email" className="w-full border rounded px-3 py-2" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />
+              </div>
+              <Button type="submit" className="w-full" size="lg" variant="destructive">
+                Unsubscribe
+              </Button>
+              {status === "error" && <div className="text-red-600 text-sm text-center mt-2">{error}</div>}
+            </form>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }
@@ -4683,124 +4523,42 @@ export function DevEnvNotice() {
 }
 
 
---- File: components/admin/firebase-status-card.tsx ---
-
-"use client"
-
-import { useEffect, useState } from "react"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Database, RefreshCw } from "lucide-react"
-
-interface FirebaseStatus {
-  success: boolean
-  connection: {
-    success: boolean
-    message: string
-    details?: {
-      error?: unknown
-      collections?: string[]
-      count?: number
-    }
-  }
-  environment: {
-    nodeEnv: string
-    projectId: string
-    hasServiceKey: boolean
-  }
-}
-
-export function FirebaseStatusCard() {
-  const [status, setStatus] = useState<FirebaseStatus | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-
-  const checkStatus = async () => {
-    try {
-      setIsLoading(true)
-      const response = await fetch("/api/firebase-status")
-      if (!response.ok) {
-        throw new Error("Failed to fetch status")
-      }
-      const data = await response.json()
-      setStatus(data)
-    } catch (error) {
-      console.error("Error checking Firebase status:", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    checkStatus()
-  }, [])
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Database className="h-5 w-5 text-primary" />
-          Firebase Status
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {status ? (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-2 items-start font-medium">
-              <div className="flex items-center gap-2">
-                <div className={`h-2 w-2 rounded-full ${status.connection.success ? "bg-green-600" : "bg-destructive"}`} />
-                <span>Status</span>
-              </div>
-              <span className={status.connection.success ? "text-green-600 text-sm" : "text-destructive text-sm"}>{status.connection.message}</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2 items-start">
-              <span className="font-medium">Environment</span>
-              <span className="capitalize">{status.environment.nodeEnv}</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2 items-start">
-              <span className="font-medium">Service Key</span>
-              <span>{status.environment.hasServiceKey ? "✅ Configured" : "❌ Missing"}</span>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-4 text-muted-foreground">Loading status...</div>
-        )}
-      </CardContent>
-      <CardFooter>
-        <Button onClick={checkStatus} disabled={isLoading} className="w-full">
-          <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
-          {isLoading ? "Checking..." : "Check Status"}
-        </Button>
-      </CardFooter>
-    </Card>
-  )
-}
-
-
 --- File: components/admin/mailing-list/mailing-list-subscriber-table.tsx ---
 
 "use client"
 
-import { ClientMailingListSubscription } from "@/types/firebase"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Id } from "@/convex/_generated/dataModel"
+import { formatDate } from "@/lib/utils"
+
+type Subscriber = {
+  id: Id<"mailing_list_subscriptions">
+  userId: string
+  email: string
+  name: string | null
+  preferences: {
+    marketing: boolean
+    updates: boolean
+  }
+  subscribedAt: string
+  unsubscribedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
 
 interface MailingListSubscriberTableProps {
-  subscribers: ClientMailingListSubscription[]
+  subscribers: Subscriber[]
 }
 
 export function MailingListSubscriberTable({ subscribers }: MailingListSubscriberTableProps) {
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "-"
-    return new Date(dateString).toLocaleDateString()
-  }
-
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead>Email</TableHead>
           <TableHead>Name</TableHead>
-          <TableHead>Subscribed At</TableHead>
+          <TableHead>Subscribed</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Preferences</TableHead>
         </TableRow>
@@ -4811,8 +4569,8 @@ export function MailingListSubscriberTable({ subscribers }: MailingListSubscribe
             <TableRow key={subscriber.id}>
               <TableCell>{subscriber.email}</TableCell>
               <TableCell>{subscriber.name || "-"}</TableCell>
-              <TableCell>{formatDate(subscriber.subscribed_at)}</TableCell>
-              <TableCell>{subscriber.unsubscribed_at ? <Badge variant="destructive">Unsubscribed</Badge> : <Badge variant="default">Active</Badge>}</TableCell>
+              <TableCell>{formatDate(subscriber.subscribedAt)}</TableCell>
+              <TableCell>{subscriber.unsubscribedAt ? <Badge variant="destructive">Unsubscribed</Badge> : <Badge variant="default">Active</Badge>}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
                   {subscriber.preferences.marketing && <Badge variant="outline">Marketing</Badge>}
@@ -6041,7 +5799,7 @@ export function MailingListForm({ initialEmail }: { initialEmail?: string }) {
     try {
       setIsLoading(true)
       await subscribe({
-        user_id: user.id,
+        userId: user.id,
         email: initialEmail || user.emailAddresses[0].emailAddress,
         name: user.fullName || user.firstName || null,
         preferences,
@@ -6161,7 +5919,7 @@ export function LogoLockup() {
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
-import { Rocket, Zap, Terminal, FileCode, FileCode2, Sparkles, CloudUpload, ShieldCheck, Blocks } from "lucide-react"
+import { Rocket, Zap, Terminal, FileCode, FileCode2, Sparkles, CloudUpload, ShieldCheck, Blocks, Database } from "lucide-react"
 import { Heading } from "@/components/typography/heading"
 import { FeatureCard } from "./feature-card"
 import { ContactFormPreview, AuthFlowPreview } from "./feature-previews"
@@ -6319,7 +6077,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Keep the party going with Firebase! Our database setup lets you vibe with real-time data and automatic scaling. 🔥</p>
+              <p className="text-sm text-muted-foreground">Keep the party going with Convex! Our database setup lets you vibe with real-time data and automatic scaling. 🔥</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -6439,7 +6197,7 @@ export function ContentSection() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Built-in visit tracking and route analytics with Firebase! 📊</p>
+              <p className="text-sm text-muted-foreground">Built-in visit tracking and route analytics with Convex! 📊</p>
             </CardContent>
           </Card>
         </div>
@@ -6528,18 +6286,12 @@ export function ContentSection() {
                   </div>
                   <div className="rounded-md bg-muted p-4">
                     <div className="flex items-center space-x-2">
-                      <p className="font-mono text-sm">🔥 Firebase Database</p>
+                      <p className="font-mono text-sm flex items-center gap-2">
+                        <Database className="h-4 w-4 text-amber-600" /> Convex Database
+                      </p>
                     </div>
                     <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
-                      <code className="text-sm font-mono">
-                        NEXT_PUBLIC_FIREBASE_PROJECT_ID=
-                        <br />
-                        NEXT_PUBLIC_FIREBASE_API_KEY=
-                        <br />
-                        FIREBASE_CLIENT_EMAIL=
-                        <br />
-                        FIREBASE_PRIVATE_KEY=
-                      </code>
+                      <code className="text-sm font-mono">CONVEX_DEPLOY_KEY=</code>
                     </pre>
                   </div>
                   <div className="rounded-md bg-muted p-4">
@@ -6863,7 +6615,7 @@ export function ContentSection() {
 
           <FeatureCard
             title="Cloud Database"
-            description="A complete database management interface with Firebase integration, including table views, data editing, and backup management."
+            description="A complete database management interface with table views, data editing, and backup management."
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 mr-1">
                 <path d="M12 2C6.5 2 2 4 2 7v10c0 3 4.5 5 10 5s10-2 10-5V7c0-3-4.5-5-10-5z"></path>
@@ -6873,7 +6625,7 @@ export function ContentSection() {
             }
             badgeText="Cloud DB"
             features={["Easy local development database setup", "Basic user analytics tracking"]}
-            envVars={["NEXT_PUBLIC_FIREBASE_API_KEY", "NEXT_PUBLIC_FIREBASE_PROJECT_ID", "FIREBASE_CLIENT_EMAIL", "FIREBASE_PRIVATE_KEY"]}
+            envVars={["CONVEX_DEPLOY_KEY", "NEXT_PUBLIC_CONVEX_URL"]}
             preview={
               <div className="bg-background/80 backdrop-blur-sm rounded-lg border border-violet-500/20 shadow-xl w-full max-w-md p-6">
                 <div className="space-y-4">
@@ -10342,6 +10094,552 @@ export { Textarea }
   "iconLibrary": "lucide"
 }
 
+--- File: convex/README.md ---
+
+# Welcome to your Convex functions directory!
+
+Write your Convex functions here.
+See https://docs.convex.dev/functions for more.
+
+A query function that takes two arguments looks like:
+
+```ts
+// functions.js
+import { query } from "./_generated/server";
+import { v } from "convex/values";
+
+export const myQueryFunction = query({
+  // Validators for arguments.
+  args: {
+    first: v.number(),
+    second: v.string(),
+  },
+
+  // Function implementation.
+  handler: async (ctx, args) => {
+    // Read the database as many times as you need here.
+    // See https://docs.convex.dev/database/reading-data.
+    const documents = await ctx.db.query("tablename").collect();
+
+    // Arguments passed from the client are properties of the args object.
+    console.log(args.first, args.second);
+
+    // Write arbitrary JavaScript here: filter, aggregate, build derived data,
+    // remove non-public properties, or create new objects.
+    return documents;
+  },
+});
+```
+
+Using this query function in a React component looks like:
+
+```ts
+const data = useQuery(api.functions.myQueryFunction, {
+  first: 10,
+  second: "hello",
+});
+```
+
+A mutation function looks like:
+
+```ts
+// functions.js
+import { mutation } from "./_generated/server";
+import { v } from "convex/values";
+
+export const myMutationFunction = mutation({
+  // Validators for arguments.
+  args: {
+    first: v.string(),
+    second: v.string(),
+  },
+
+  // Function implementation.
+  handler: async (ctx, args) => {
+    // Insert or modify documents in the database here.
+    // Mutations can also read from the database like queries.
+    // See https://docs.convex.dev/database/writing-data.
+    const message = { body: args.first, author: args.second };
+    const id = await ctx.db.insert("messages", message);
+
+    // Optionally, return a value from your mutation.
+    return await ctx.db.get(id);
+  },
+});
+```
+
+Using this mutation function in a React component looks like:
+
+```ts
+const mutation = useMutation(api.functions.myMutationFunction);
+function handleButtonPress() {
+  // fire and forget, the most common way to use mutations
+  mutation({ first: "Hello!", second: "me" });
+  // OR
+  // use the result once the mutation has completed
+  mutation({ first: "Hello!", second: "me" }).then((result) =>
+    console.log(result),
+  );
+}
+```
+
+Use the Convex CLI to push your functions to a deployment. See everything
+the Convex CLI can do by running `npx convex -h` in your project root
+directory. To learn more, launch the docs with `npx convex docs`.
+
+
+--- File: convex/mailingList.ts ---
+
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+import { Doc, Id } from "./_generated/dataModel";
+import {
+  ConvexResponse,
+  getCurrentTimestamp,
+  getBaseFields,
+  handleError,
+  handleSuccess,
+} from "./utils";
+
+// Types
+export type MailingListSubscription = Doc<"mailing_list_subscriptions">;
+
+// Queries
+export const getSubscriptions = query({
+  handler: async (ctx) => {
+    try {
+      return await ctx.db
+        .query("mailing_list_subscriptions")
+        .order("desc")
+        .collect();
+    } catch (error) {
+      console.error("Error getting subscriptions:", error);
+      throw error;
+    }
+  },
+});
+
+export const getSubscriptionByEmail = query({
+  args: { email: v.string() },
+  handler: async (ctx, args) => {
+    try {
+      return await ctx.db
+        .query("mailing_list_subscriptions")
+        .withIndex("by_email", (q) => q.eq("email", args.email))
+        .first();
+    } catch (error) {
+      console.error("Error getting subscription by email:", error);
+      throw error;
+    }
+  },
+});
+
+// Mutations
+export const subscribe = mutation({
+  args: {
+    userId: v.string(),
+    email: v.string(),
+    name: v.optional(v.string()),
+    preferences: v.object({
+      marketing: v.boolean(),
+      updates: v.boolean(),
+    }),
+  },
+  handler: async (ctx, args) => {
+    try {
+      // Check if email already exists
+      const existing = await ctx.db
+        .query("mailing_list_subscriptions")
+        .withIndex("by_email", (q) => q.eq("email", args.email))
+        .first();
+
+      if (existing) {
+        throw new Error("Email already subscribed");
+      }
+
+      const now = Date.now();
+      const subscription = {
+        userId: args.userId,
+        email: args.email,
+        name: args.name,
+        preferences: args.preferences,
+        subscribedAt: now,
+        unsubscribedAt: null,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      const id = await ctx.db.insert("mailing_list_subscriptions", subscription);
+      return await ctx.db.get(id);
+    } catch (error) {
+      console.error("Error subscribing:", error);
+      throw error;
+    }
+  },
+});
+
+export const unsubscribe = mutation({
+  args: { 
+    email: v.string(),
+  },
+  handler: async (ctx, args) => {
+    try {
+      console.log('[unsubscribe] Attempting to unsubscribe email:', args.email);
+      const subscription = await ctx.db
+        .query("mailing_list_subscriptions")
+        .withIndex("by_email", (q) => q.eq("email", args.email))
+        .first();
+      console.log('[unsubscribe] Subscription found:', subscription);
+      if (!subscription) {
+        throw new Error("Subscription not found");
+      }
+      const now = Date.now();
+      await ctx.db.patch(subscription._id, {
+        unsubscribedAt: now,
+        updatedAt: now,
+      });
+      return true;
+    } catch (error) {
+      console.error("Error unsubscribing:", error);
+      throw error;
+    }
+  },
+});
+
+export const deleteSubscription = mutation({
+  args: { id: v.id("mailing_list_subscriptions") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
+  },
+});
+
+export const updatePreferences = mutation({
+  args: {
+    userId: v.string(),
+    preferences: v.object({
+      marketing: v.boolean(),
+      updates: v.boolean(),
+    }),
+  },
+  handler: async (ctx, args) => {
+    // Find the active subscription for this user
+    const subscription = await ctx.db
+      .query("mailing_list_subscriptions")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .first();
+
+    if (!subscription || subscription.unsubscribedAt !== null) {
+      throw new Error("Active subscription not found");
+    }
+
+    await ctx.db.patch(subscription._id, {
+      preferences: args.preferences,
+      updatedAt: Date.now(),
+    });
+
+    return true;
+  },
+}); 
+
+--- File: convex/schema.ts ---
+
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
+
+// Define the base fields that all documents will have
+const baseFields = {
+  createdAt: v.number(), // Unix timestamp
+  updatedAt: v.number(), // Unix timestamp
+};
+
+// Define your schema
+export default defineSchema({
+  visits: defineTable({
+    path: v.string(),
+    userId: v.union(v.string(), v.null()),
+    metadata: v.any(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_user", ["userId"])
+    .index("by_path", ["path"])
+    .index("by_created", ["createdAt"]),
+
+  mailing_list_subscriptions: defineTable({
+    userId: v.string(),
+    email: v.string(),
+    name: v.optional(v.string()),
+    preferences: v.object({
+      marketing: v.boolean(),
+      updates: v.boolean(),
+    }),
+    subscribedAt: v.number(),
+    unsubscribedAt: v.union(v.number(), v.null()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_email", ["email"])
+    .index("by_user", ["userId"])
+    .index("by_subscribed", ["subscribedAt"]),
+}); 
+
+--- File: convex/testing.ts ---
+
+import { v } from "convex/values"
+import { mutation, query } from "./_generated/server"
+
+// Define allowed table names for type safety
+const ALLOWED_TABLES = ["visits", "mailing_list_subscriptions"] as const
+type TableName = typeof ALLOWED_TABLES[number]
+
+function isTestOrDevEnv() {
+  return process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development";
+}
+
+/**
+ * Delete all documents from a table
+ * This mutation should only be available in test environments
+ */
+export const deleteAll = mutation({
+  args: { tableName: v.union(v.literal("visits"), v.literal("mailing_list_subscriptions")) },
+  handler: async (ctx, args) => {
+    if (!isTestOrDevEnv()) {
+      throw new Error("This operation is only allowed in test or development environments");
+    }
+    const documents = await ctx.db.query(args.tableName).collect()
+    for (const doc of documents) {
+      await ctx.db.delete(doc._id)
+    }
+    return { success: true }
+  },
+})
+
+/**
+ * Count documents in a table
+ * This query should only be available in test environments
+ */
+export const countDocuments = query({
+  args: { tableName: v.union(v.literal("visits"), v.literal("mailing_list_subscriptions")) },
+  handler: async (ctx, args) => {
+    if (!isTestOrDevEnv()) {
+      throw new Error("This operation is only allowed in test or development environments");
+    }
+    const documents = await ctx.db.query(args.tableName).collect()
+    return documents.length
+  },
+})
+
+/**
+ * Seed test data for visits and mailing_list_subscriptions
+ * This mutation should only be available in test environments
+ */
+export const seedTestData = mutation({
+  args: {},
+  handler: async (ctx) => {
+    if (!isTestOrDevEnv()) {
+      throw new Error("This operation is only allowed in test or development environments");
+    }
+    // Seed visits
+    await ctx.db.insert("visits", {
+      path: "/test-path",
+      userId: "test-user",
+      metadata: { test: true },
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+    // Seed mailing list subscriptions
+    await ctx.db.insert("mailing_list_subscriptions", {
+      userId: "test-user",
+      email: "test@example.com",
+      name: "Test User",
+      preferences: { marketing: true, updates: true },
+      subscribedAt: Date.now(),
+      unsubscribedAt: null,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+    return { success: true };
+  },
+}); 
+
+--- File: convex/tsconfig.json ---
+
+{
+  /* This TypeScript project config describes the environment that
+   * Convex functions run in and is used to typecheck them.
+   * You can modify it, but some settings required to use Convex.
+   */
+  "compilerOptions": {
+    /* These settings are not required by Convex and can be modified. */
+    "allowJs": true,
+    "strict": true,
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+
+    /* These compiler options are required by Convex */
+    "target": "ESNext",
+    "lib": ["ES2021", "dom"],
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "include": ["./**/*"],
+  "exclude": ["./_generated"]
+}
+
+
+--- File: convex/utils.ts ---
+
+import { v } from "convex/values";
+import { MutationCtx, QueryCtx } from "./_generated/server";
+import { Doc, Id } from "./_generated/dataModel";
+
+// Type for successful responses
+type SuccessResponse<T> = {
+  success: true;
+  data?: T;
+  id?: Id<any>;
+};
+
+// Type for error responses
+type ErrorResponse = {
+  success: false;
+  error: string;
+};
+
+// Combined response type
+export type ConvexResponse<T = void> = SuccessResponse<T> | ErrorResponse;
+
+// Helper to get current timestamp
+export const getCurrentTimestamp = () => Date.now();
+
+// Helper to create base fields for new documents
+export const getBaseFields = () => ({
+  createdAt: getCurrentTimestamp(),
+  updatedAt: getCurrentTimestamp(),
+});
+
+// Helper to update timestamp
+export const getUpdateFields = () => ({
+  updatedAt: getCurrentTimestamp(),
+});
+
+// Helper for error handling
+export const handleError = (error: unknown): ErrorResponse => ({
+  success: false,
+  error: error instanceof Error ? error.message : "Unknown error",
+});
+
+// Helper for success response
+export const handleSuccess = <T>(data?: T, id?: Id<any>): SuccessResponse<T> => ({
+  success: true,
+  ...(data && { data }),
+  ...(id && { id }),
+});
+
+// Validation helper
+export const validateId = (id: Id<any>) => {
+  if (!id) throw new Error("Invalid ID");
+  return id;
+};
+
+// Query helper for pagination
+export type PaginationOptions = {
+  limit?: number;
+  cursor?: string;
+};
+
+// Helper for handling pagination in queries
+export const handlePagination = (
+  ctx: QueryCtx,
+  query: any,
+  options?: PaginationOptions
+) => {
+  if (options?.limit) {
+    query = query.take(options.limit);
+  }
+  if (options?.cursor) {
+    query = query.continuePaginationFrom(options.cursor);
+  }
+  return query;
+}; 
+
+--- File: convex/visits.ts ---
+
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+import { Doc, Id } from "./_generated/dataModel";
+
+// Schema is defined in schema.ts
+export type Visit = {
+  path: string;
+  userId: string | null;
+  metadata: Record<string, any>;
+  createdAt: number;
+  updatedAt: number;
+};
+
+export const recordVisit = mutation({
+  args: {
+    path: v.string(),
+    userId: v.union(v.string(), v.null()),
+    metadata: v.any(),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    return await ctx.db.insert("visits", {
+      path: args.path,
+      userId: args.userId,
+      metadata: args.metadata,
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+});
+
+export const getVisits = query({
+  args: {
+    userId: v.optional(v.union(v.string(), v.null())),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const query = args.userId !== undefined
+      ? await ctx.db
+          .query("visits")
+          .withIndex("by_user", (q) => q.eq("userId", args.userId as string | null))
+          .collect()
+      : await ctx.db
+          .query("visits")
+          .withIndex("by_created")
+          .collect();
+
+    return args.limit !== undefined ? query.slice(0, args.limit) : query;
+  },
+});
+
+export const getVisitsByPath = query({
+  args: {
+    path: v.string(),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const results = await ctx.db
+      .query("visits")
+      .withIndex("by_path", (q) => q.eq("path", args.path))
+      .collect();
+
+    return args.limit !== undefined ? results.slice(0, args.limit) : results;
+  },
+});
+
+export const deleteVisit = mutation({
+  args: { id: v.id("visits") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
+  },
+}); 
+
 --- File: eslint.config.mjs ---
 
 import { dirname } from "path";
@@ -10385,23 +10683,6 @@ const eslintConfig = [
 ];
 
 export default eslintConfig;
-
-
---- File: firebase.json ---
-
-{
-  "firestore": {},
-  "emulators": {
-    "firestore": {
-      "port": 8080,
-      "host": "127.0.0.1"
-    },
-    "ui": {
-      "enabled": true,
-      "port": 4000
-    }
-  }
-}
 
 
 --- File: lib/auth-utils.ts ---
@@ -10685,6 +10966,14 @@ export type SiteConfig = {
     logo: string
 }
 
+--- File: lib/convex/server.ts ---
+
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "@/convex/_generated/api";
+
+export const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+export { api }; 
+
 --- File: lib/email-utils.ts ---
 
 import { createHash } from "crypto"
@@ -10749,383 +11038,6 @@ export function decodeEmail(encoded: string): string {
   return Buffer.from(encoded, "base64url").toString("utf-8")
 } 
 
---- File: lib/firebase/admin.ts ---
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getFirestore, Firestore } from 'firebase-admin/firestore';
-
-// Use a module-level variable instead of global
-let _firestoreInstance: Firestore | undefined;
-
-// Mock Firestore for build phase
-class MockFirestore {
-  collection() {
-    return {
-      get: () => Promise.resolve({ docs: [] }),
-      doc: () => ({
-        get: () => Promise.resolve({ data: () => ({}) }),
-        set: () => Promise.resolve(),
-        update: () => Promise.resolve(),
-        delete: () => Promise.resolve(),
-      }),
-    };
-  }
-  settings() {}
-}
-
-function initializeFirebaseAdmin() {
-  // Skip initialization during build
-  if (process.env.NEXT_PHASE === 'phase-production-build') {
-    return;
-  }
-
-  // Only initialize if no apps exist
-  if (getApps().length === 0) {
-    // Use demo config for development and test environments
-    if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
-      initializeApp({
-        projectId: 'demo-project'
-      });
-    } else {
-      if (!process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_PRIVATE_KEY || !process.env.FIREBASE_CLIENT_EMAIL) {
-        throw new Error('Firebase Admin credentials are required in production');
-      }
-      
-      initializeApp({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        credential: cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          // Replace escaped newlines in private key
-          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-        }),
-      });
-    }
-  }
-}
-
-function getFirestoreInstance(): any {
-  // Return mock during build
-  if (process.env.NEXT_PHASE === 'phase-production-build') {
-    return new MockFirestore();
-  }
-
-  if (!_firestoreInstance) {
-    try {
-      // Ensure Firebase Admin is initialized
-      initializeFirebaseAdmin();
-      
-      // Initialize Firestore
-      _firestoreInstance = getFirestore();
-      
-      // Configure settings for development or test
-      if ((process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') && _firestoreInstance) {
-        try {
-          _firestoreInstance.settings({
-            host: '127.0.0.1:8080',
-            ssl: false,
-            ignoreUndefinedProperties: true
-          });
-        } catch (error) {
-          // If settings have already been applied, ignore the error
-          if (!(error instanceof Error) || !error.message.includes('already been initialized')) {
-            throw error;
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error initializing Firestore:', error);
-      throw error;
-    }
-  }
-  
-  return _firestoreInstance;
-}
-
-// Export a getter function instead of the instance directly
-let dbInstance: any;
-export const db = new Proxy({} as any, {
-  get: (target, prop) => {
-    if (!dbInstance) {
-      dbInstance = getFirestoreInstance();
-    }
-    return dbInstance[prop];
-  }
-}); 
-
---- File: lib/firebase/config.dev.ts ---
-
-import { connectFirestoreEmulator } from 'firebase/firestore';
-import { db } from './config';
-
-if (process.env.NODE_ENV === 'development') {
-  try {
-    connectFirestoreEmulator(db, '127.0.0.1', 8080);
-  } catch (error: unknown) {
-    // Ignore if emulator is already connected
-    if (error instanceof Error && !error.message.includes('already')) {
-      console.error('Error connecting to Firestore emulator:', error);
-    }
-  }
-} 
-
---- File: lib/firebase/config.ts ---
-
-import { initializeApp, getApps } from 'firebase/app';
-import { getFirestore, connectFirestoreEmulator, Firestore } from 'firebase/firestore';
-
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  authDomain: 'vibestarter.firebaseapp.com',
-  storageBucket: 'vibestarter.appspot.com',
-  messagingSenderId: '123456789',
-  appId: '1:123456789:web:abcdef123456789',
-};
-
-let clientDb: Firestore | undefined;
-
-// Initialize Firebase and Firestore as a singleton
-function getClientFirestoreInstance() {
-  if (clientDb) return clientDb;
-
-  try {
-    // Initialize Firebase if not already initialized
-    const apps = getApps();
-    const app = apps.length ? apps[0] : initializeApp(firebaseConfig);
-
-    // Initialize Firestore
-    clientDb = getFirestore(app);
-
-    // Connect to emulator in development or test
-    if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
-      try {
-        connectFirestoreEmulator(clientDb, '127.0.0.1', 8080);
-      } catch (error) {
-        // Ignore if already connected to emulator
-        if (!(error instanceof Error) || !error.message.includes('already')) {
-          throw error;
-        }
-      }
-    }
-
-    return clientDb;
-  } catch (error) {
-    console.error('Error initializing client Firestore:', error);
-    throw error;
-  }
-}
-
-// Export a getter function instead of the instance directly
-let dbInstance: Firestore | undefined;
-export const db = new Proxy({} as Firestore, {
-  get: (target, prop: keyof Firestore | string | symbol) => {
-    if (!dbInstance) {
-      dbInstance = getClientFirestoreInstance();
-    }
-    // Type assertion is safe here because we know dbInstance is Firestore after initialization
-    return dbInstance ? dbInstance[prop as keyof Firestore] : undefined;
-  }
-}) as Firestore; 
-
---- File: lib/firebase/utils.ts ---
-
-import { db } from './admin';
-import { Timestamp, Query, DocumentData } from 'firebase-admin/firestore';
-import { 
-  FirestoreDocument, 
-  FirestoreResponse, 
-  FirestoreQuery,
-  FirestoreOrderBy 
-} from '@/types/firebase';
-
-/**
- * Add a new document to a collection with auto-generated ID
- */
-export async function addDoc<T extends FirestoreDocument>(
-  collection: string,
-  data: Omit<T, keyof FirestoreDocument>
-): Promise<FirestoreResponse<T>> {
-  try {
-    const docRef = db.collection(collection).doc();
-    const timestamp = Timestamp.now();
-    
-    const documentData = {
-      ...data,
-      created_at: timestamp,
-      updated_at: timestamp,
-    };
-
-    await docRef.set(documentData);
-    return { 
-      success: true, 
-      id: docRef.id,
-      data: { id: docRef.id, ...documentData } as T
-    };
-  } catch (error) {
-    console.error(`Error adding document to ${collection}:`, error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
-    };
-  }
-}
-
-/**
- * Set a document with a specific ID
- */
-export async function setDoc<T extends FirestoreDocument>(
-  collection: string,
-  id: string,
-  data: Omit<T, keyof FirestoreDocument>
-): Promise<FirestoreResponse<T>> {
-  try {
-    const docRef = db.collection(collection).doc(id);
-    const timestamp = Timestamp.now();
-    
-    const documentData = {
-      ...data,
-      created_at: timestamp,
-      updated_at: timestamp,
-    };
-
-    await docRef.set(documentData);
-    return { 
-      success: true, 
-      id: docRef.id,
-      data: { id: docRef.id, ...documentData } as T
-    };
-  } catch (error) {
-    console.error(`Error setting document ${id} in ${collection}:`, error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
-    };
-  }
-}
-
-/**
- * Update an existing document
- */
-export async function updateDoc<T extends FirestoreDocument>(
-  collection: string,
-  id: string,
-  data: Partial<Omit<T, keyof FirestoreDocument>>
-): Promise<FirestoreResponse<T>> {
-  try {
-    const docRef = db.collection(collection).doc(id);
-    
-    const documentData = {
-      ...data,
-      updated_at: Timestamp.now(),
-    };
-
-    await docRef.update(documentData);
-    return { success: true, id };
-  } catch (error) {
-    console.error(`Error updating document ${id} in ${collection}:`, error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
-    };
-  }
-}
-
-/**
- * Get a document by ID
- */
-export async function getDoc<T extends FirestoreDocument>(
-  collection: string,
-  id: string
-): Promise<FirestoreResponse<T>> {
-  try {
-    const docRef = db.collection(collection).doc(id);
-    const doc = await docRef.get();
-
-    if (!doc.exists) {
-      return { success: false, error: 'Document not found' };
-    }
-
-    return { 
-      success: true, 
-      data: { id: doc.id, ...doc.data() } as T 
-    };
-  } catch (error) {
-    console.error(`Error getting document ${id} from ${collection}:`, error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
-    };
-  }
-}
-
-/**
- * Delete a document
- */
-export async function deleteDoc(
-  collection: string,
-  id: string
-): Promise<FirestoreResponse> {
-  try {
-    const docRef = db.collection(collection).doc(id);
-    await docRef.delete();
-
-    return { success: true, id };
-  } catch (error) {
-    console.error(`Error deleting document ${id} from ${collection}:`, error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
-    };
-  }
-}
-
-/**
- * Query documents in a collection
- */
-export async function getDocs<T extends FirestoreDocument>(
-  collection: string,
-  queries?: FirestoreQuery[],
-  limit?: number,
-  orderBy?: FirestoreOrderBy
-): Promise<FirestoreResponse<T[]>> {
-  try {
-    let query: Query<DocumentData> = db.collection(collection);
-
-    // Apply where clauses
-    if (queries) {
-      queries.forEach(({ field, operator, value }) => {
-        query = query.where(field, operator, value);
-      });
-    }
-
-    // Apply ordering
-    if (orderBy) {
-      query = query.orderBy(orderBy.field, orderBy.direction);
-    }
-
-    // Apply limit
-    if (limit) {
-      query = query.limit(limit);
-    }
-
-    const snapshot = await query.get();
-    const docs = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as T[];
-
-    return { success: true, data: docs };
-  } catch (error) {
-    console.error(`Error querying collection ${collection}:`, error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
-    };
-  }
-} 
-
 --- File: lib/generated/routes.ts ---
 
 // This file is auto-generated. DO NOT EDIT IT MANUALLY.
@@ -11148,7 +11060,8 @@ export const validRoutes = new Set([
   'pay',
   'privacy',
   'roadmap',
-  'terms'
+  'terms',
+  'unsubscribe'
 ])
 
 
@@ -11270,33 +11183,20 @@ export async function sendEmail({ to, subject, text, html }: SendEmailOptions) {
 
 --- File: lib/services/mailing-list.ts ---
 
-import { db } from '@/lib/firebase/admin'
-import { MailingListSubscription } from '@/types/firebase'
-import { Timestamp, QueryDocumentSnapshot, DocumentData } from 'firebase-admin/firestore'
+import { convex, api } from "@/lib/convex/server";
+import { Doc } from "@/convex/_generated/dataModel";
+
+export type MailingListSubscription = Doc<"mailing_list_subscriptions">;
 
 /**
- * Retrieves all mailing list subscriptions from Firebase
+ * Retrieves all mailing list subscriptions from Convex
  */
 export async function getMailingListSubscriptions(): Promise<MailingListSubscription[]> {
   try {
-    const querySnapshot = await db.collection('mailing_list_subscriptions').get()
-    return querySnapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => {
-      const data = doc.data()
-      return {
-        id: doc.id,
-        user_id: data.user_id,
-        email: data.email,
-        name: data.name,
-        preferences: data.preferences,
-        subscribed_at: data.subscribed_at,
-        unsubscribed_at: data.unsubscribed_at,
-        created_at: data.created_at,
-        updated_at: data.updated_at
-      } as MailingListSubscription
-    })
+    return await convex.query(api.mailingList.getSubscriptions);
   } catch (error) {
-    console.error('Error getting mailing list subscriptions:', error)
-    return []
+    console.error('Error getting mailing list subscriptions:', error);
+    return [];
   }
 }
 
@@ -11304,66 +11204,80 @@ export async function getMailingListSubscriptions(): Promise<MailingListSubscrip
  * Adds a new email subscription to the mailing list
  */
 export async function addMailingListSubscription(data: { 
-  user_id: string, 
+  userId: string, 
   email: string, 
-  name: string | null,
+  name?: string | undefined,
   preferences: {
     marketing: boolean,
     updates: boolean
   }
 }): Promise<MailingListSubscription | null> {
   try {
-    // Check if email already exists
-    const snapshot = await db.collection('mailing_list_subscriptions')
-      .where('email', '==', data.email)
-      .get()
-    
-    if (!snapshot.empty) {
-      return null
-    }
-
-    const timestamp = Timestamp.now()
-    const docRef = await db.collection('mailing_list_subscriptions').add({
-      user_id: data.user_id,
-      email: data.email,
-      name: data.name,
-      preferences: data.preferences,
-      subscribed_at: timestamp,
-      unsubscribed_at: null,
-      created_at: timestamp,
-      updated_at: timestamp
-    })
-
-    const doc = await docRef.get()
-    const docData = doc.data()
-    return {
-      id: doc.id,
-      user_id: docData?.user_id,
-      email: docData?.email,
-      name: docData?.name,
-      preferences: docData?.preferences,
-      subscribed_at: docData?.subscribed_at,
-      unsubscribed_at: docData?.unsubscribed_at,
-      created_at: docData?.created_at,
-      updated_at: docData?.updated_at
-    } as MailingListSubscription
+    return await convex.mutation(api.mailingList.subscribe, data);
   } catch (error) {
-    console.error('Error adding mailing list subscription:', error)
-    return null
+    console.error('Error adding mailing list subscription:', error);
+    return null;
   }
 }
 
 /**
  * Removes an email subscription from the mailing list
  */
-export async function removeMailingListSubscription(id: string): Promise<boolean> {
+export async function removeMailingListSubscription(email: string): Promise<boolean> {
   try {
-    await db.collection('mailing_list_subscriptions').doc(id).delete()
-    return true
+    return await convex.mutation(api.mailingList.unsubscribe, { email });
   } catch (error) {
-    console.error('Error removing mailing list subscription:', error)
-    return false
+    console.error('Error removing mailing list subscription:', error);
+    return false;
   }
+}
+
+/**
+ * Updates preferences for a user's mailing list subscription
+ */
+export async function updateMailingListPreferences(userId: string, preferences: { marketing: boolean, updates: boolean }): Promise<boolean> {
+  try {
+    return await convex.mutation(api.mailingList.updatePreferences, { userId, preferences });
+  } catch (error) {
+    console.error('Error updating mailing list preferences:', error);
+    return false;
+  }
+} 
+
+--- File: lib/services/visits.ts ---
+
+import { convex, api } from "@/lib/convex/server";
+
+/**
+ * Records a new visit to a page
+ */
+export async function recordVisit(data: {
+  path: string;
+  userId: string | null;
+  metadata: Record<string, any>;
+}) {
+  return await convex.mutation(api.visits.recordVisit, data);
+}
+
+/**
+ * Gets visits for a specific user
+ */
+export async function getVisitsByUser(userId: string | null, limit?: number) {
+  return await convex.query(api.visits.getVisits, { userId, limit });
+}
+
+/**
+ * Gets visits for a specific path
+ */
+export async function getVisitsByPath(path: string, limit?: number) {
+  return await convex.query(api.visits.getVisitsByPath, { path, limit });
+}
+
+/**
+ * Gets all visits
+ */
+export async function getAllVisits(limit?: number) {
+  return await convex.query(api.visits.getVisits, { limit });
 } 
 
 --- File: lib/stripe.ts ---
@@ -11721,7 +11635,7 @@ export default nextConfig;
 
 {
   "name": "vibecode-party-starter",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "license": "MIT",
   "description": "A Next.js starter project for vibecoding full stack web apps with auth, backend, payments, email, and more",
   "keywords": [
@@ -11733,9 +11647,12 @@ export default nextConfig;
   "author": "John Polacek",
   "scripts": {
     "kill:ports": "kill-port 3000 4000 4400 4500 5001 8080 8085 9000 9099 9199 || true",
-    "dev": "pnpm kill:ports && concurrently \"pnpm db:local:start\" \"next dev -p ${PORT:-3000}\" --kill-others --names \"firebase,next\" --prefix-colors \"yellow.bold,cyan.bold\"",
-    "restart:dev": "pnpm db:local:restart && pnpm dev",
+    "dev": "pnpm kill:ports && concurrently \"pnpm convex:dev\" \"next dev -p ${PORT:-3000}\" --kill-others --names \"convex,next\" --prefix-colors \"yellow.bold,cyan.bold\"",
+    "convex:dev": "convex dev",
+    "convex:deploy": "convex deploy",
+    "restart:dev": "pnpm dev",
     "build": "pnpm generate:routes && next build",
+    "postinstall": "npx convex codegen",
     "start": "next start",
     "lint": "next lint",
     "boot:github": "brew install gh && gh auth login",
@@ -11750,14 +11667,10 @@ export default nextConfig;
     "test:clean": "rm -rf ~/.cache/ms-playwright-tests test-results/ playwright-report/",
     "pw": "playwright test --ui --debug",
     "pw:headless": "playwright test",
-    "db:local:init": "./scripts/init-firebase.sh",
-    "db:local:start": "firebase emulators:start",
-    "db:local:stop": "pkill -f \"firebase emulators\"",
-    "db:local:restart": "pnpm db:local:stop || true && pnpm db:local:start",
-    "db:admin": "open http://localhost:4000/firestore/default/data",
+    "db:admin": "open https://dashboard.convex.dev",
     "generate:routes": "tsx scripts/generate-routes.ts",
     "generate:llm": "tsx scripts/bundle-code.ts . llm.txt",
-    "test:setup": "pnpm db:local:restart",
+    "test:setup": "pnpm dev",
     "test:full": "pnpm test:setup && pnpm test"
   },
   "dependencies": {
@@ -11797,11 +11710,10 @@ export default nextConfig;
     "ai": "^4.3.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "convex": "^1.23.0",
     "date-fns": "^4.1.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",
-    "firebase": "^11.6.0",
-    "firebase-admin": "^13.3.0",
     "ignore": "^7.0.3",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.501.0",
@@ -11839,7 +11751,6 @@ export default nextConfig;
     "dotenv-cli": "^8.0.0",
     "eslint": "^9.25.0",
     "eslint-config-next": "15.3.1",
-    "firebase-tools": "^14.2.1",
     "kill-port": "^2.0.1",
     "tailwindcss": "^4.1.4",
     "ts-node": "^10.9.2",
@@ -12238,104 +12149,6 @@ export const validRoutes = new Set([
 }
 
 generateRoutesFile() 
-
---- File: scripts/init-firebase.sh ---
-
-#!/bin/bash
-
-# Check if Java is installed
-if ! command -v java &> /dev/null; then
-    echo "🚨 Java is not installed. Installing Java..."
-    brew install openjdk
-    sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
-    echo "✅ Java installed successfully"
-else
-    echo "✅ Java is already installed"
-fi
-
-# Check if Firebase CLI is installed
-if ! command -v firebase &> /dev/null; then
-    echo "🚨 Firebase CLI is not installed. Installing Firebase CLI..."
-    pnpm add -g firebase-tools
-    echo "✅ Firebase CLI installed successfully"
-else
-    echo "✅ Firebase CLI is already installed"
-fi
-
-# Initialize Firebase if not already initialized
-if [ ! -f "firebase.json" ]; then
-    echo "🚨 Firebase not initialized. Running initialization..."
-    firebase login
-    firebase init emulators
-    
-    # Create default firebase.json if it doesn't exist or is empty
-    if [ ! -s "firebase.json" ]; then
-        echo "Creating default firebase.json..."
-        cat > firebase.json << EOL
-{
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
-  "emulators": {
-    "firestore": {
-      "port": 8080
-    },
-    "ui": {
-      "enabled": true,
-      "port": 4000
-    }
-  }
-}
-EOL
-    fi
-else
-    echo "✅ Firebase already initialized"
-fi
-
-# Create Firestore rules if they don't exist
-if [ ! -f "firestore.rules" ]; then
-    echo "Creating default firestore.rules..."
-    cat > firestore.rules << EOL
-rules_version = '2';
-
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Allow read/write access based on auth
-    match /{document=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    
-    // Mailing list subscriptions
-    match /mailing_list_subscriptions/{subscriptionId} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    
-    // User visits
-    match /user_visits/{visitId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
-    }
-  }
-}
-EOL
-fi
-
-# Create Firestore indexes if they don't exist
-if [ ! -f "firestore.indexes.json" ]; then
-    echo "Creating default firestore.indexes.json..."
-    cat > firestore.indexes.json << EOL
-{
-  "indexes": [],
-  "fieldOverrides": []
-}
-EOL
-fi
-
-echo "✨ Firebase local development environment initialized successfully!"
-echo "🚀 You can now run 'pnpm db:emulator:start' to start the emulators" 
 
 --- File: scripts/init-repo.sh ---
 
@@ -12817,38 +12630,6 @@ fi
 exit 0
 
 
---- File: scripts/test-firebase.ts ---
-
-import { db } from '../lib/firebase/admin'
-
-async function testFirebase() {
-  try {
-    console.log('Attempting to write test document...')
-    
-    const testDoc = {
-      test_field: 'test value',
-      created_at: new Date(),
-      updated_at: new Date()
-    }
-
-    const docRef = await db.collection('test_collection').add(testDoc)
-    console.log('Successfully created document with ID:', docRef.id)
-
-    // Try to read it back
-    const doc = await docRef.get()
-    console.log('Read back document data:', doc.data())
-
-    // Clean up
-    await docRef.delete()
-    console.log('Successfully deleted test document')
-
-  } catch (error) {
-    console.error('Error testing Firebase:', error)
-  }
-}
-
-testFirebase() 
-
 --- File: tailwind.config.ts ---
 
 import type { Config } from "tailwindcss"
@@ -13085,38 +12866,33 @@ test('should be able to fill out the contact form', async ({ page }) => {
 
 --- File: tests/global-setup.ts ---
 
-import { resetDatabase, verifyDatabaseReset, seedTestData } from "./utils/db-reset";
+import { setupTestDatabase } from "./utils/db-reset"
 
 /**
  * Global setup function that runs before all tests
  */
-async function globalSetup() {
-  try {
-    // Reset the database (clear all tables)
-    await resetDatabase();
-    
-    // Verify that the database was reset correctly
-    const isReset = await verifyDatabaseReset();
-    if (!isReset) {
-      console.warn('Database may not have been reset correctly. Tests may fail or have unexpected results.');
-    }
-    
-    // Seed with test data
-    await seedTestData();
-  } catch (error) {
-    console.error('Error during global setup:', error);
-    throw error;
-  }
-}
-
-export default globalSetup; 
+export default async function globalSetup() {
+  await setupTestDatabase()
+} 
 
 --- File: tests/subscribe.spec.ts ---
 
 import { test, expect } from '@playwright/test';
 import { setupAuthenticatedUser, setupCleanDatabase } from './utils/test-helpers';
-import { getFirestore } from 'firebase-admin/firestore';
-import { db } from '@/lib/firebase/admin';
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "@/convex/_generated/api";
+import { Doc } from "@/convex/_generated/dataModel";
+
+type MailingListSubscription = Doc<"mailing_list_subscriptions">;
+
+// Initialize Convex client for test verification
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+
+// Helper function to safely cast Convex response
+async function getSubscriptions() {
+  const response = await convex.query(api.mailingList.getSubscriptions);
+  return response as unknown as MailingListSubscription[];
+}
 
 test('should have to sign in to subscribe', async ({ page }) => {
   await page.goto('http://localhost:3000/mailing-list');
@@ -13148,14 +12924,13 @@ test('should be able to subscribe to the mailing list when signed in', async ({ 
   const statusText = await page.getByText('You are currently subscribed').textContent();
   console.log('Status message:', statusText);
 
-  // Verify the document in Firebase
-  const subscriptionsRef = db.collection('mailing_list_subscriptions');
-  const snapshot = await subscriptionsRef.where('email', '==', 'john.polacek@gmail.com').get();
-  expect(snapshot.empty).toBe(false);
-  const doc = snapshot.docs[0];
-  expect(doc.data().email).toBe('john.polacek@gmail.com');
-  expect(doc.data().subscribed_at).toBeTruthy();
-  expect(doc.data().unsubscribed_at).toBeNull();
+  // Verify the document in Convex
+  const subscriptions = await getSubscriptions();
+  const subscription = subscriptions.find(s => s.email === 'john.polacek@gmail.com');
+  expect(subscription).toBeTruthy();
+  expect(subscription?.email).toBe('john.polacek@gmail.com');
+  expect(subscription?.subscribedAt).toBeTruthy();
+  expect(subscription?.unsubscribedAt).toBeNull();
 
   // Navigate to admin and check list
   await page.goto('http://localhost:3000/admin/mailing-list');
@@ -13173,16 +12948,16 @@ test('should be able to subscribe to the mailing list when signed in', async ({ 
   // Unsubscribe
   await page.goto('http://localhost:3000/mailing-list');
   await page.getByRole('button', { name: 'Unsubscribe' }).click();
-  await expect(page.getByText('Unsubscribed', { exact: true })).toBeVisible();
+  await expect(page.getByText('Subscribe to Our Mailing List')).toBeVisible();
   await page.goto('http://localhost:3000/admin/mailing-list');
   await expect(page.getByRole('cell', { name: 'john.polacek@gmail.com' })).toBeVisible();
   await expect(page.getByText('Unsubscribed')).toBeVisible();
 
-  // Verify unsubscribe in Firebase
-  const unsubSnapshot = await subscriptionsRef.where('email', '==', 'john.polacek@gmail.com').get();
-  expect(unsubSnapshot.empty).toBe(false);
-  const unsubDoc = unsubSnapshot.docs[0];
-  expect(unsubDoc.data().unsubscribed_at).toBeTruthy();
+  // Verify unsubscribe in Convex
+  const updatedSubscriptions = await getSubscriptions();
+  const unsubscription = updatedSubscriptions.find(s => s.email === 'john.polacek@gmail.com');
+  expect(unsubscription).toBeTruthy();
+  expect(unsubscription?.unsubscribedAt).toBeTruthy();
 });
 
 
@@ -13256,37 +13031,33 @@ export async function logoutUser(page: Page): Promise<void> {
 
 --- File: tests/utils/db-reset.ts ---
 
-import { db } from '@/lib/firebase/admin'
-import { QueryDocumentSnapshot, DocumentData } from 'firebase-admin/firestore'
-import { clerkClient } from '@clerk/clerk-sdk-node'
+import { ConvexHttpClient } from "convex/browser"
+import { api } from "@/convex/_generated/api"
 import dotenv from 'dotenv'
 
 dotenv.config()
 
-const COLLECTIONS_TO_RESET = ['mailing_list_subscriptions', 'user_visits']
+// Ensure we're in test environment
+if (process.env.NODE_ENV !== 'test') {
+  throw new Error('Database reset utilities should only be used in test environment')
+}
+
+// Initialize Convex client
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+
+const TABLES_TO_RESET = ['mailing_list_subscriptions', 'visits'] as const
+// Restrict to allowed table names for type safety
+type TableName = typeof TABLES_TO_RESET[number]
 
 /**
- * Delete all documents in a collection
+ * Delete all documents in a table
  */
-export async function deleteCollection(collectionName: string): Promise<void> {
+export async function deleteCollection(tableName: TableName): Promise<void> {
   try {
-    const collectionRef = db.collection(collectionName)
-    const snapshot = await collectionRef.get()
-
-    if (snapshot.empty) {
-      console.log(`Collection ${collectionName} is empty or does not exist. Skipping...`)
-      return
-    }
-
-    const batch = db.batch()
-    snapshot.docs.forEach((doc: QueryDocumentSnapshot<DocumentData>) => {
-      batch.delete(doc.ref)
-    })
-
-    await batch.commit()
-    console.log(`Deleted ${snapshot.size} documents from ${collectionName}`)
+    await convex.mutation(api.testing.deleteAll, { tableName })
+    console.log(`Deleted all documents from ${tableName}`)
   } catch (error) {
-    console.warn(`Warning: Failed to delete collection ${collectionName}:`, error)
+    console.warn(`Warning: Failed to delete table ${tableName}:`, error)
   }
 }
 
@@ -13295,26 +13066,38 @@ export async function deleteCollection(collectionName: string): Promise<void> {
  */
 export async function resetDatabase(): Promise<void> {
   console.log('Resetting database...')
-
-  for (const collection of COLLECTIONS_TO_RESET) {
-    await deleteCollection(collection)
+  for (const table of TABLES_TO_RESET) {
+    await deleteCollection(table)
   }
-
   console.log('Database reset complete')
 }
 
 /**
- * Verify that all collections are empty
+ * Seed test data using Convex test mutation
+ */
+export async function seedTestData(): Promise<void> {
+  console.log('Seeding test data...')
+  await convex.mutation(api.testing.seedTestData, {})
+  console.log('Test data seeding complete')
+}
+
+/**
+ * Verify that all tables are empty
  */
 export async function verifyDatabaseReset(): Promise<boolean> {
-  for (const collection of COLLECTIONS_TO_RESET) {
-    const snapshot = await db.collection(collection).get()
-    if (!snapshot.empty) {
-      console.error(`Collection ${collection} is not empty`)
-      return false
+  try {
+    for (const table of TABLES_TO_RESET) {
+      const count = await convex.query(api.testing.countDocuments, { tableName: table })
+      if (count > 0) {
+        console.error(`Table ${table} is not empty`)
+        return false
+      }
     }
+    return true
+  } catch (error) {
+    console.error('Error verifying database reset:', error)
+    return false
   }
-  return true
 }
 
 /**
@@ -13322,14 +13105,10 @@ export async function verifyDatabaseReset(): Promise<boolean> {
  */
 export async function setupTestDatabase(): Promise<void> {
   await resetDatabase()
-}
-
-/**
- * Seed test data
- */
-export async function seedTestData(): Promise<void> {
-  console.log('Seeding test data...')
-  console.log('Test data seeding complete')
+  const isReset = await verifyDatabaseReset()
+  if (!isReset) {
+    throw new Error('Failed to reset database')
+  }
 } 
 
 --- File: tests/utils/test-helpers.ts ---
@@ -13402,92 +13181,6 @@ export { test, expect };
   "exclude": ["node_modules"]
 }
 
-
---- File: types/firebase.ts ---
-
-import { Timestamp } from 'firebase-admin/firestore';
-
-type DateType<T> = T extends 'client' ? string : Timestamp;
-
-/**
- * Base interface for all Firestore documents
- */
-export interface FirestoreDocument<T extends 'client' | 'server' = 'server'> {
-  id: string;
-  created_at: DateType<T>;
-  updated_at: DateType<T>;
-}
-
-/**
- * User visit data
- */
-export interface UserVisit extends FirestoreDocument {
-  user_id: string | null;
-  path: string;
-  referrer: string | null;
-  user_agent: string | null;
-  timestamp: string; // ISO string for consistency with previous implementation
-}
-
-/**
- * Mailing list subscription data
- */
-export interface BaseMailingListSubscription<T extends 'client' | 'server'> extends FirestoreDocument<T> {
-  user_id: string;
-  email: string;
-  name: string | null;
-  subscribed_at: DateType<T>;
-  unsubscribed_at: DateType<T> | null;
-  preferences: {
-    marketing: boolean;
-    updates: boolean;
-  };
-}
-
-export type MailingListSubscription = BaseMailingListSubscription<'server'>;
-export type ClientMailingListSubscription = BaseMailingListSubscription<'client'>;
-
-/**
- * Common response type for Firestore operations
- */
-export interface FirestoreResponse<T = any> {
-  success: boolean;
-  id?: string;
-  error?: string;
-  data?: T;
-}
-
-/**
- * Query operators type for Firestore
- */
-export type FirestoreOperator = 
-  | '<' 
-  | '<=' 
-  | '==' 
-  | '!=' 
-  | '>=' 
-  | '>' 
-  | 'array-contains' 
-  | 'array-contains-any' 
-  | 'in' 
-  | 'not-in';
-
-/**
- * Query parameters for Firestore
- */
-export interface FirestoreQuery {
-  field: string;
-  operator: FirestoreOperator;
-  value: any;
-}
-
-/**
- * Sort parameters for Firestore
- */
-export interface FirestoreOrderBy {
-  field: string;
-  direction: 'asc' | 'desc';
-} 
 
 --- File: types/mailing-list.ts ---
 

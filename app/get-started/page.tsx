@@ -4,7 +4,7 @@ import { Heading } from "@/components/typography/heading"
 import { redirect } from "next/navigation"
 import { headers } from "next/headers"
 import GetStartedClerk from "./_components/getstarted-clerk"
-import GetStartedFirebase from "./_components/getstarted-firebase"
+import GetStartedConvex from "./_components/getstarted-convex"
 import GetStartedStorage from "./_components/getstarted-storage"
 import GetStartedEmail from "./_components/getstarted-email"
 import GetStartedAI from "./_components/getstarted-ai"
@@ -47,7 +47,7 @@ Please implement this following the project's architecture patterns and using:
 - Replicate for text-to-image models
 - OpenAI for variations and text
 - AWS S3 for storage
-- Firebase for collections and social features
+- Convex for collections and social features
 - Clerk for user authentication`,
 
     marketplace: `Please help me create a marketplace feature with:
@@ -94,7 +94,7 @@ Please implement this following the project's architecture patterns and using ex
         <div>
           <GetStartedConfig />
           <GetStartedClerk />
-          <GetStartedFirebase />
+          <GetStartedConvex />
           <GetStartedStorage />
           <GetStartedEmail />
           <GetStartedAI />

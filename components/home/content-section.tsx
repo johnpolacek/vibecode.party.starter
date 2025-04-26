@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
-import { Rocket, Zap, Terminal, FileCode, FileCode2, Sparkles, CloudUpload, ShieldCheck, Blocks } from "lucide-react"
+import { Rocket, Zap, Terminal, FileCode, FileCode2, Sparkles, CloudUpload, ShieldCheck, Blocks, Database } from "lucide-react"
 import { Heading } from "@/components/typography/heading"
 import { FeatureCard } from "./feature-card"
 import { ContactFormPreview, AuthFlowPreview } from "./feature-previews"
@@ -160,7 +160,7 @@ export function ContentSection() {
               </svg>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Keep the party going with Firebase! Our database setup lets you vibe with real-time data and automatic scaling. 🔥</p>
+              <p className="text-sm text-muted-foreground">Keep the party going with Convex! Our database setup lets you vibe with real-time data and automatic scaling. 🔥</p>
             </CardContent>
           </Card>
           <Card className="border-primary/20 bg-background/60 backdrop-blur-sm hover:bg-background/80 transition-all hover:shadow-md hover:shadow-primary/10 hover:-translate-y-1">
@@ -280,7 +280,7 @@ export function ContentSection() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Built-in visit tracking and route analytics with Firebase! 📊</p>
+              <p className="text-sm text-muted-foreground">Built-in visit tracking and route analytics with Convex! 📊</p>
             </CardContent>
           </Card>
         </div>
@@ -369,18 +369,12 @@ export function ContentSection() {
                   </div>
                   <div className="rounded-md bg-muted p-4">
                     <div className="flex items-center space-x-2">
-                      <p className="font-mono text-sm">🔥 Firebase Database</p>
+                      <p className="font-mono text-sm flex items-center gap-2">
+                        <Database className="h-4 w-4 text-amber-600" /> Convex Database
+                      </p>
                     </div>
                     <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
-                      <code className="text-sm font-mono">
-                        NEXT_PUBLIC_FIREBASE_PROJECT_ID=
-                        <br />
-                        NEXT_PUBLIC_FIREBASE_API_KEY=
-                        <br />
-                        FIREBASE_CLIENT_EMAIL=
-                        <br />
-                        FIREBASE_PRIVATE_KEY=
-                      </code>
+                      <code className="text-sm font-mono">CONVEX_DEPLOY_KEY=</code>
                     </pre>
                   </div>
                   <div className="rounded-md bg-muted p-4">
@@ -704,7 +698,7 @@ export function ContentSection() {
 
           <FeatureCard
             title="Cloud Database"
-            description="A complete database management interface with Firebase integration, including table views, data editing, and backup management."
+            description="A complete database management interface with table views, data editing, and backup management."
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 mr-1">
                 <path d="M12 2C6.5 2 2 4 2 7v10c0 3 4.5 5 10 5s10-2 10-5V7c0-3-4.5-5-10-5z"></path>
@@ -714,7 +708,7 @@ export function ContentSection() {
             }
             badgeText="Cloud DB"
             features={["Easy local development database setup", "Basic user analytics tracking"]}
-            envVars={["NEXT_PUBLIC_FIREBASE_API_KEY", "NEXT_PUBLIC_FIREBASE_PROJECT_ID", "FIREBASE_CLIENT_EMAIL", "FIREBASE_PRIVATE_KEY"]}
+            envVars={["CONVEX_DEPLOY_KEY", "NEXT_PUBLIC_CONVEX_URL"]}
             preview={
               <div className="bg-background/80 backdrop-blur-sm rounded-lg border border-violet-500/20 shadow-xl w-full max-w-md p-6">
                 <div className="space-y-4">
