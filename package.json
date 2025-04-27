@@ -24,7 +24,7 @@
     "boot:vercel": "pnpm i -g vercel",
     "boot:repo": "chmod +x ./scripts/init-repo.sh && ./scripts/init-repo.sh",
     "boot": "pnpm boot:github && pnpm boot:vercel && pnpm boot:convex && pnpm boot:repo",
-    "go": "pnpm generate:routes && pnpm generate:llm && git add . && aicommits && git push origin main",
+    "go": "pnpm generate:routes && git add . && aicommits && pnpm generate:llm && git add . && git commit -m 'update llm.txt' && git push origin main",
     "test:run": "playwright test",
     "test:wait": "wait-on tcp:3000 tcp:4000 && pnpm test:run",
     "test": "pnpm build && concurrently \"pnpm dev\" \"pnpm test:wait\" --success first --kill-others --names \"dev,test\" --prefix-colors \"yellow.bold,cyan.bold\"",
