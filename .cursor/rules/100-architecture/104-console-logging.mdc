@@ -1,0 +1,28 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Console Logging Best Practices
+
+## Description
+When adding console logs for debugging, always use `JSON.stringify` with pretty print (spacing) when logging objects. This makes logs easier to read and copy/paste, especially for complex or nested data.
+
+## Guidelines
+- Use `console.log(JSON.stringify(obj, null, 2))` when logging objects or arrays.
+- Avoid logging raw objects directly (e.g., `console.log(obj)`), as this can result in collapsed or hard-to-read output in some environments.
+- For single values or strings, regular `console.log` is fine.
+- Remove or comment out debugging logs before committing production code, unless logs are intentionally permanent.
+
+## Example
+```typescript
+// ✅ Good:
+console.log(JSON.stringify(userProfile, null, 2))
+
+// ❌ Bad:
+console.log(userProfile)
+```
+
+## Rationale
+- Pretty-printed JSON is easier to scan, debug, and copy/paste into tools or documentation.
+- Reduces confusion when sharing logs with teammates or in issues.

@@ -3,10 +3,11 @@ import { api } from "@/convex/_generated/api"
 import dotenv from 'dotenv'
 
 dotenv.config()
+const NODE_ENV = process.env.NODE_ENV || 'test'
 
 // Ensure we're in test environment
-if (process.env.NODE_ENV !== 'test') {
-  throw new Error('Database reset utilities should only be used in test environment')
+if (NODE_ENV !== 'test' && NODE_ENV !== 'development') {
+  throw new Error('Database reset utilities should only be used in test or development environment')
 }
 
 // Initialize Convex client
