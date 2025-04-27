@@ -11660,7 +11660,7 @@ export default nextConfig;
 
 {
   "name": "vibecode-party-starter",
-  "version": "0.4.4",
+  "version": "0.4.6",
   "license": "MIT",
   "description": "A Next.js starter project for vibecoding full stack web apps with auth, backend, payments, email, and more",
   "keywords": [
@@ -13097,10 +13097,11 @@ import { api } from "@/convex/_generated/api"
 import dotenv from 'dotenv'
 
 dotenv.config()
+const NODE_ENV = process.env.NODE_ENV || 'test'
 
 // Ensure we're in test environment
-if (process.env.NODE_ENV !== 'test') {
-  throw new Error('Database reset utilities should only be used in test environment')
+if (NODE_ENV !== 'test' && NODE_ENV !== 'development') {
+  throw new Error('Database reset utilities should only be used in test or development environment')
 }
 
 // Initialize Convex client
