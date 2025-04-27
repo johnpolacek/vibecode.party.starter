@@ -47,6 +47,8 @@ export default async function RootLayout({
 
   await trackVisit(path)
 
+  const currentYear = new Date().getFullYear()
+
   return (
     <html lang="en" suppressHydrationWarning className={`${rethinkSans.variable}`}>
       <body className={cn("min-h-screen bg-background font-sans antialiased")}>
@@ -79,6 +81,26 @@ export default async function RootLayout({
                 </div>
               </header>
               <main className="flex-1">{children}</main>
+              <footer className="border-t py-6">
+                <div className="container px-4 md:px-6">
+                  <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left text-sm">
+                    <p>
+                      © {currentYear} {siteConfig.title}. All rights reserved.
+                    </p>
+                    <nav className="flex gap-4">
+                      <Link href="#" className="hover:underline underline-offset-4">
+                        Terms
+                      </Link>
+                      <Link href="#" className="hover:underline underline-offset-4">
+                        Privacy
+                      </Link>
+                      <Link href="#" className="hover:underline underline-offset-4">
+                        Contact
+                      </Link>
+                    </nav>
+                  </div>
+                </div>
+              </footer>
             </div>
             <Toaster position="top-center" />
           </ThemeProvider>

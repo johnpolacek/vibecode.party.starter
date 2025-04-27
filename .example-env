@@ -1,6 +1,11 @@
 NEXT_PUBLIC_APP_URL=https://starter.vibecode.party
+
+# Clerk Auth
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
+
+# Convex DB
+CONVEX_DEPLOY_KEY=
 
 # AI Keys
 OPENAI_API_KEY=
