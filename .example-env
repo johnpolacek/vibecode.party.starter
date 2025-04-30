@@ -6,6 +6,7 @@ CLERK_SECRET_KEY=
 
 # Convex DB
 CONVEX_DEPLOY_KEY=
+# NEXT_PUBLIC_CONVEX_URL will be different for production and local dev
 NEXT_PUBLIC_CONVEX_URL=https://<your-project-slug>.convex.cloud
 
 # AI Keys
