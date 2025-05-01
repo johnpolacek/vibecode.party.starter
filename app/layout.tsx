@@ -88,10 +88,10 @@ export default async function RootLayout({
                       © {currentYear} {siteConfig.title}. All rights reserved.
                     </p>
                     <nav className="flex gap-4">
-                      <Link href="#" className="hover:underline underline-offset-4">
+                      <Link href="/terms" className="hover:underline underline-offset-4">
                         Terms
                       </Link>
-                      <Link href="#" className="hover:underline underline-offset-4">
+                      <Link href="/privacy" className="hover:underline underline-offset-4">
                         Privacy
                       </Link>
                       <Link href="#" className="hover:underline underline-offset-4">
