@@ -16,7 +16,7 @@ export function isStripeConfigured(): boolean {
 // Create a Stripe instance if configured
 export const stripe = stripeSecretKey
   ? new Stripe(stripeSecretKey, {
-      apiVersion: "2025-02-24.acacia",
+      apiVersion: "2025-04-30.basil",
     })
   : null
 
