@@ -44,8 +44,8 @@
     "@ai-sdk/replicate": "^0.2.8",
     "@aws-sdk/client-s3": "^3.812.0",
     "@aws-sdk/s3-request-presigner": "^3.812.0",
-    "@clerk/backend": "^1.32.2",
-    "@clerk/nextjs": "^6.19.4",
+    "@clerk/backend": "^1.32.3",
+    "@clerk/nextjs": "^6.19.5",
     "@heroicons/react": "^2.2.0",
     "@octokit/rest": "^21.1.1",
     "@radix-ui/react-accordion": "^1.2.10",
@@ -94,14 +94,14 @@
     "server": "link:@clerk/nextjs/server",
     "slugify": "^1.6.6",
     "sonner": "^2.0.3",
-    "stripe": "^18.1.0",
+    "stripe": "^18.1.1",
     "tailwind-merge": "^3.3.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.1.0",
-    "zod": "^3.24.4"
+    "zod": "^3.25.7"
   },
   "devDependencies": {
-    "@clerk/testing": "^1.7.1",
+    "@clerk/testing": "^1.7.2",
     "@eslint/eslintrc": "^3.3.1",
     "@playwright/test": "^1.52.0",
     "@tailwindcss/postcss": "^4.1.7",
