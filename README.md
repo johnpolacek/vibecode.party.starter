@@ -56,7 +56,7 @@ For the database, create a new project in [Convex Console](https://dashboard.con
 When you are ready to deploy, you will need to add a deploy key and public convex url - `https://<your-project>.convex.cloud` - to your environment variables. See more at [docs.convex.dev](https://docs.convex.dev/production/hosting/)
 
 ```
-CONVEX_DEPLOY_KEY=
+CONVEX_DEPLOYMENT=
 NEXT_PUBLIC_CONVEX_URL=
 ```
 

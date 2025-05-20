@@ -374,7 +374,7 @@ export function ContentSection() {
                       </p>
                     </div>
                     <pre className="mt-2 overflow-x-auto rounded-lg border bg-background p-4">
-                      <code className="text-sm font-mono">CONVEX_DEPLOY_KEY=</code>
+                      <code className="text-sm font-mono">CONVEX_DEPLOYMENT=</code>
                     </pre>
                   </div>
                   <div className="rounded-md bg-muted p-4">
@@ -708,7 +708,7 @@ export function ContentSection() {
             }
             badgeText="Cloud DB"
             features={["Easy local development database setup", "Basic user analytics tracking"]}
-            envVars={["CONVEX_DEPLOY_KEY", "NEXT_PUBLIC_CONVEX_URL"]}
+            envVars={["CONVEX_DEPLOYMENT", "NEXT_PUBLIC_CONVEX_URL"]}
             preview={
               <div className="bg-background/80 backdrop-blur-sm rounded-lg border border-violet-500/20 shadow-xl w-full max-w-md p-6">
                 <div className="space-y-4">

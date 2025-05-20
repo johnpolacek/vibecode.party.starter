@@ -4,7 +4,7 @@ import { Heading } from "@/components/typography/heading"
 import { CursorPrompt } from "./cursor-prompt"
 
 export default async function GetStartedConvex() {
-  const hasConvexConfig = Boolean(process.env.CONVEX_DEPLOY_KEY)
+  const hasConvexConfig = Boolean(process.env.CONVEX_DEPLOYMENT)
 
   const cursorPrompt = `Add a new table to convex/schema.ts. For example, to add a posts table:\n\n\`\`\`typescript\nposts: defineTable({\n  title: v.string(),\n  content: v.string(),\n  createdAt: v.number(),\n})\n\`\`\`\n\n[ Describe the table you want to add here... ]\n\nThen run \`npx convex codegen\` to update your generated types.`
 
@@ -16,7 +16,7 @@ export default async function GetStartedConvex() {
             Setup Required: Convex Database
           </Heading>
           <p>
-            To finish setting up Convex, add your <strong>CONVEX_DEPLOY_KEY</strong> to your <code className="px-2 py-1 bg-muted rounded">.env</code> file:
+            To finish setting up Convex, add your <strong>CONVEX_DEPLOYMENT</strong> to your <code className="px-2 py-1 bg-muted rounded">.env</code> file:
           </p>
           <ol className="list-decimal pl-6 space-y-4 mt-4">
             <li>
@@ -29,7 +29,7 @@ export default async function GetStartedConvex() {
             <li>
               Add it to your <code className="px-2 py-1 bg-muted rounded">.env</code> file as:
               <pre className="mt-2 p-4 bg-muted rounded-md max-w-xl overflow-x-auto">
-                <code>{`CONVEX_DEPLOY_KEY=your_deploy_key_here`}</code>
+                <code>{`CONVEX_DEPLOYMENT=your_deploy_key_here`}</code>
               </pre>
             </li>
             <li>Restart your development server after adding the environment variable.</li>
