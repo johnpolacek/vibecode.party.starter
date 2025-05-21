@@ -65,10 +65,7 @@ export default async function RootLayout({
 
   // Track the visit
   const headersList = await headers()
-
-  // Get path from x-matched-path, fallback to x-url, then x-invoke-path, then /
-  const path = headersList.get("x-matched-path") || (headersList.get("x-url") ? new URL(headersList.get("x-url")!).pathname : null) || headersList.get("x-invoke-path") || "/"
-
+  let path = headersList.get("x-pathname") || "/"
   await trackVisit(path)
 
   const currentYear = new Date().getFullYear()
