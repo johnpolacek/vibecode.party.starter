@@ -20,7 +20,7 @@ export default function AuthButtons() {
       </SignedOut>
       <SignedIn>
         <div className="flex items-center">
-          <UserButton afterSignOutUrl="/" userProfileUrl="/account" />
+          <UserButton userProfileUrl="/account" />
         </div>
       </SignedIn>
     </div>
