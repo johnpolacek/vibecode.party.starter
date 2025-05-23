@@ -1,51 +1,26 @@
 import { experimental_useObject as useObject } from "@ai-sdk/react"
 import { z } from "zod"
 import { useState } from "react"
+import { zodToJsonSchema } from "zod-to-json-schema"
 
-// Example schema for a person
-const personSchema = z.object({
-  name: z.string().describe("The person's full name"),
-  age: z.number().describe("The person's age"),
-  occupation: z.string().describe("The person's job or profession"),
-  interests: z.array(z.string()).describe("List of the person's hobbies and interests"),
-  contact: z.object({
-    email: z.string().email().describe("The person's email address"),
-    phone: z.string().describe("The person's phone number"),
-  }).describe("Contact information"),
-})
-
-type Person = z.infer<typeof personSchema>
-
-export function useGenerateObject() {
+export function useGenerateObject<T extends z.ZodTypeAny>(schema: T) {
   const [error, setError] = useState<string>("")
-  const { object, isLoading, submit } = useObject<Person>({
+  
+  type InferredType = z.infer<T>
+  
+  const { object, isLoading, submit } = useObject<InferredType>({
     api: "/api/ai/generate/object",
-    schema: personSchema,
+    schema,
   })
 
   const generate = async (prompt: string) => {
     setError("")
     try {
+      // Convert Zod schema to JSON schema
+      const jsonSchema = zodToJsonSchema(schema)
+      
       await submit({
-        schema: {
-          type: "object",
-          properties: {
-            name: { type: "string" },
-            age: { type: "number" },
-            occupation: { type: "string" },
-            interests: { 
-              type: "array",
-              items: { type: "string" }
-            },
-            contact: {
-              type: "object",
-              properties: {
-                email: { type: "string" },
-                phone: { type: "string" }
-              }
-            }
-          }
-        },
+        schema: jsonSchema,
         prompt,
       })
     } catch (err) {
@@ -60,4 +35,23 @@ export function useGenerateObject() {
     error,
     generate,
   }
-} 
+}
+
+// Example usage:
+const personSchema = z.object({
+  name: z.string().describe("The person's full name"),
+  age: z.number().describe("The person's age"),
+  occupation: z.string().describe("The person's job or profession"),
+  interests: z
+    .array(z.string())
+    .describe("List of the person's hobbies and interests"),
+  contact: z
+    .object({
+      email: z.string().email().describe("The person's email address"),
+      phone: z.string().describe("The person's phone number"),
+    })
+    .describe("Contact information"),
+})
+
+// Usage in a component:
+// const { object, isLoading, error, generate } = useGenerateObject(personSchema)

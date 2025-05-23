@@ -188,6 +188,9 @@ importers:
       zod:
         specifier: ^3.25.7
         version: 3.25.7
+      zod-to-json-schema:
+        specifier: ^3.24.5
+        version: 3.24.5(zod@3.25.7)
     devDependencies:
       '@clerk/testing':
         specifier: ^1.7.2

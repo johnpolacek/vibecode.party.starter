@@ -10,6 +10,20 @@ import { useGenerateImage } from "@/app/_hooks/useGenerateImage"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import Image from "next/image"
+import { z } from "zod"
+
+const personSchema = z.object({
+  name: z.string().describe("The person's full name"),
+  age: z.number().describe("The person's age"),
+  occupation: z.string().describe("The person's job or profession"),
+  interests: z.array(z.string()).describe("List of the person's hobbies and interests"),
+  contact: z
+    .object({
+      email: z.string().email().describe("The person's email address"),
+      phone: z.string().describe("The person's phone number"),
+    })
+    .describe("Contact information"),
+})
 
 export function AIDemoClient({ isMissingReplicateToken }: { isMissingReplicateToken: boolean }) {
   const [generatedText, setGeneratedText] = useState("")
@@ -17,7 +31,7 @@ export function AIDemoClient({ isMissingReplicateToken }: { isMissingReplicateTo
   const [isGenerating, setIsGenerating] = useState(false)
   const { streamText } = useGenerateText()
   const { generate: generateStrings } = useGenerateStrings()
-  const { generate: generateObject, object: generatedObject, isLoading: isGeneratingObject } = useGenerateObject()
+  const { generate: generateObject, object: generatedObject, isLoading: isGeneratingObject } = useGenerateObject(personSchema)
   const { generate: generateImage, imageUrl, isLoading: isGeneratingImage, error: imageError } = useGenerateImage()
 
   const handleGenerateText = async (e: React.FormEvent<HTMLFormElement>) => {

@@ -1,6 +1,6 @@
 {
   "name": "vibecode-party-starter",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "license": "MIT",
   "description": "A Next.js starter project for vibecoding full stack web apps with auth, backend, payments, email, and more",
   "keywords": [
@@ -98,7 +98,8 @@
     "tailwind-merge": "^3.3.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.1.0",
-    "zod": "^3.25.7"
+    "zod": "^3.25.7",
+    "zod-to-json-schema": "^3.24.5"
   },
   "devDependencies": {
     "@clerk/testing": "^1.7.2",
