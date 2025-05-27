@@ -147,11 +147,18 @@ async function walkDir(dir: string, projectRoot: string, allContents: string[]):
                 const content = await fs.readFile(fullPath, 'utf-8');
                 // Normalize line endings to prevent excessive diffs if files have mixed endings
                 const normalizedContent = content.replace(/\r\n/g, '\n');
-                allContents.push(`--- File: ${relativePath} ---\n\n${normalizedContent}\n\n`);
+                // Directory structure (relative, split by path.sep, joined by /)
+                const dirStructure = path.dirname(relativePath).split(path.sep).filter(Boolean).join('/');
+                // Reference comment block
+                const referenceBlock = `/*\n  File: ${relativePath}\n  Absolute: ${fullPath}\n  Directory: ${dirStructure || '.'}\n*/\n`;
+                allContents.push(`${referenceBlock}\n--- File: ${relativePath} ---\n\n${normalizedContent}\n\n`);
             } catch (err: unknown) {
                 if (err instanceof Error) {
                     console.error(`Error reading file ${fullPath}: ${err.message}`);
-                    allContents.push(`--- File: ${relativePath} ---\n\n!!! Error reading file: ${err.message} !!!\n\n`);
+                    // Directory structure for error case
+                    const dirStructure = path.dirname(relativePath).split(path.sep).filter(Boolean).join('/');
+                    const referenceBlock = `/*\n  File: ${relativePath}\n  Absolute: ${fullPath}\n  Directory: ${dirStructure || '.'}\n*/\n`;
+                    allContents.push(`${referenceBlock}\n--- File: ${relativePath} ---\n\n!!! Error reading file: ${err.message} !!!\n\n`);
                 }
             }
         } else {
