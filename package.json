@@ -1,6 +1,6 @@
 {
   "name": "vibecode-party-starter",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "license": "MIT",
   "description": "A Next.js starter project for vibecoding full stack web apps with auth, backend, payments, email, and more",
   "keywords": [
